@@ -35,6 +35,12 @@ export default {
       return json({ ok: false, error: 'rate_limit_exceeded', retry_after: rl.reset }, 429, rl.headers);
     }
 
+    if (path === '/robots.txt') {
+      return new Response('User-agent: *\nAllow: /\n', {
+        headers: { 'Content-Type': 'text/plain' }
+      });
+    }
+
     if (path === '/' || path === '') {
       if ((request.headers.get('Accept') || '').includes('text/html')) {
         return statusPage(env, rl.headers);
