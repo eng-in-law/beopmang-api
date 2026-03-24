@@ -2,8 +2,10 @@
   "name": "법령 검색 API",
   "description": "대한민국 법령 DB 실시간 쿼리. 법률 1,707개, 조문 499K, 판례 171K.",
   "skills": [
-    {"id": "search", "name": "법령 검색", "path": "/search?q={query}", "description": "키워드로 법령 조문 검색"},
-    {"id": "law", "name": "법령 조회", "path": "/law/{id}", "description": "법령 기본정보 (소관부처, 시행일, 조문 수)"},
+    {"id": "find", "name": "법령 찾기", "path": "/find?q={name}", "description": "법령명/약칭으로 찾기 (부분매칭). 법령 ID를 모를 때 먼저 사용"},
+    {"id": "law", "name": "법령 조회", "path": "/law/{id}", "description": "법령 기본정보 (소관부처, 시행일, 조문 수). ID는 /find로 확인"},
+    {"id": "search", "name": "조문 검색", "path": "/search?q={keyword}", "description": "조문 본문 내 키워드 검색"},
+    {"id": "usearch", "name": "시맨틱 검색", "path": "/usearch?q={query}", "description": "자연어로 법령+판례+제안이유 통합 검색"},
     {"id": "history", "name": "연혁 조회", "path": "/history/{id}", "description": "법령 연혁 (제정→최근, 개정별 변경 조문 수)"},
     {"id": "article", "name": "조문 조회", "path": "/article/{id}/{label}", "description": "특정 조문 상세 (항/호/목 포함)"},
     {"id": "xref", "name": "인용관계", "path": "/xref/{id}", "description": "이 법이 인용하는/인용되는 법령"},
@@ -15,6 +17,6 @@
   "url": "https://api.beopmang.org",
   "openapi": "https://api.beopmang.org/openapi.json",
   "source": "live_database",
-  "rate_limit": "30/min per IP",
+  "rate_limit": "100/min per IP",
   "brief_mode": "?brief=1 (default) for minimal fields, ?full=1 for complete data"
 }

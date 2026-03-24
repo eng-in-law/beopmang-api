@@ -17,7 +17,7 @@ const BRIEF_FIELDS = {
   timeline: ['date','type','content'],
 };
 
-const RATE_LIMIT = 30;
+const RATE_LIMIT = 100;
 const RATE_WINDOW = 60;
 
 export default {
@@ -174,10 +174,13 @@ function applyBrief(data, fields) {
 function parseCommand(path, params) {
   const parts = path.split('/').filter(Boolean);
   if (!parts.length) return null;
-  const cmd = parts[0];
+  let cmd = parts[0];
   let args = parts.slice(1).map(decodeURIComponent).join(' ');
   const q = params.get('q');
   if (q && !args) args = q;
+  // /find → lawcli law (법령명 매칭)
+  // /search → lawcli search (조문 본문 검색)
+  if (cmd === 'find') cmd = 'law';
   let flags = '';
   if (params.get('cited-by') === '1') flags = '--cited-by';
   for (const f of ['limit','top-k','date','type','age']) {
@@ -267,7 +270,7 @@ a:hover{text-decoration-color:#222}
 <div class="row">
 <div class="box"><div class="label">서버</div><div class="val"><span class="status"></span> online</div></div>
 <div class="box"><div class="label">오늘 요청</div><div class="val">${daily}</div></div>
-<div class="box"><div class="label">rate limit</div><div class="val">30/min</div></div>
+<div class="box"><div class="label">rate limit</div><div class="val">100/min</div></div>
 </div>
 
 <div class="row">
@@ -283,7 +286,9 @@ a:hover{text-decoration-color:#222}
 <hr>
 <p style="font-size:12px;color:#555;margin-bottom:8px">endpoints</p>
 <table>
-<tr><td><code>/search?q=민법</code></td><td>법령 검색</td></tr>
+<tr><td><code>/find?q=민법</code></td><td>법령명으로 찾기</td></tr>
+<tr><td><code>/search?q=키워드</code></td><td>조문 본문 검색</td></tr>
+<tr><td><code>/usearch?q=자연어</code></td><td>시맨틱 통합 검색</td></tr>
 <tr><td><code>/law/{id}</code></td><td>법령 정보</td></tr>
 <tr><td><code>/history/{id}</code></td><td>개정 연혁</td></tr>
 <tr><td><code>/article/{id}/{조문}</code></td><td>조문 상세</td></tr>
