@@ -1,0 +1,14 @@
+name = "beopmang-api"
+main = "index.js"
+compatibility_date = "2025-01-01"
+
+routes = [
+  { pattern = "api.beopmang.org/*", zone_name = "beopmang.org" }
+]
+
+[vars]
+ORIGIN_BASE = "https://bt-internal.beopmang.org"
+
+[[kv_namespaces]]
+binding = "API_KV"
+id = "TO_BE_CREATED"
