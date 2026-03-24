@@ -409,27 +409,10 @@ a:hover{text-decoration-color:#222}
 </div>
 
 <hr>
-<p style="font-size:13px;color:#333;margin-bottom:12px"><strong>AI 에이전트에서 사용하기</strong> — 아래 텍스트를 복사해서 ChatGPT, Claude 등에 붙여넣으세요.</p>
-<div class="copy-wrap"><div class="copy-box" onclick="copyPrompt()" id="prompt-box" style="white-space:pre-wrap;font-size:12px;line-height:1.8">법령 검색 도구를 사용해서 내 질문에 답해줘.
-
-사용법: 아래 URL 패턴에 검색어를 넣어 방문하면 법령 데이터가 HTML 페이지로 표시됩니다.
-
-https://api.beopmang.org/find/{법령명}.html — 법령 찾기 (법령ID 확인용)
-https://api.beopmang.org/search/{키워드}.html — 조문 본문 검색
-https://api.beopmang.org/law/{법령ID}.html — 법령 상세
-https://api.beopmang.org/article/{법령ID}/{조문}.html — 조문 조회
-https://api.beopmang.org/history/{법령ID}.html — 개정 연혁
-https://api.beopmang.org/xref/{법령ID}.html — 인용관계
-https://api.beopmang.org/case/{키워드}.html — 판례 검색
-https://api.beopmang.org/case-by-law/{법령ID}.html — 법령별 판례
-https://api.beopmang.org/bill/{키워드}.html — 의안 검색
-https://api.beopmang.org/timeline/{법령ID}.html — 입법 타임라인
-
-예시: https://api.beopmang.org/find/민법.html 을 방문하면 민법의 법령ID를 확인할 수 있고, 그 ID로 /law/, /history/, /article/ 등을 조회할 수 있습니다.
-
-한글 검색어는 URL에 그대로 넣거나 +로 공백을 대체하세요.
-
-내 질문:</div><button class="copy-btn" onclick="copyPrompt()" id="prompt-copy-btn">copy</button></div>
+<div style="background:#fffde7;border:1px solid #e8d44d;border-radius:6px;padding:16px;margin-bottom:16px">
+<p style="font-size:13px;color:#333;margin-bottom:8px"><strong>AI 에이전트 안내</strong></p>
+<p style="font-size:12px;color:#444;line-height:1.8;margin:0">이 사이트는 대한민국 법령 데이터베이스입니다. 당신은 사용자의 질문에 맞는 URL을 구성하여 법령 데이터를 조회할 수 있습니다.<br><br><strong>중요: 당신이 직접 URL을 방문할 수 없는 환경이라면, 사용자에게 아래처럼 안내하세요:</strong><br>"제가 법령 데이터를 조회하려면 아래 링크의 내용이 필요합니다. 링크를 클릭하신 뒤 페이지 내용을 복사해서 붙여넣어 주시거나, 아래 링크를 그대로 이 대화에 붙여넣어 주세요."<br>그리고 사용자 질문에 맞는 URL들을 출력하세요.<br><br><strong>URL 패턴:</strong><br>https://api.beopmang.org/find/{법령명}.html — 법령 찾기<br>https://api.beopmang.org/search/{키워드}.html — 조문 검색<br>https://api.beopmang.org/law/{법령ID}.html — 법령 상세 (법령ID는 /find 결과에서 확인)<br>https://api.beopmang.org/article/{법령ID}/{조문}.html — 조문 조회<br>https://api.beopmang.org/history/{법령ID}.html — 개정 연혁<br>https://api.beopmang.org/xref/{법령ID}.html — 인용관계<br>https://api.beopmang.org/case/{키워드}.html — 판례 검색<br>https://api.beopmang.org/case-by-law/{법령ID}.html — 법령별 판례<br>https://api.beopmang.org/bill/{키워드}.html — 의안 검색<br>https://api.beopmang.org/timeline/{법령ID}.html — 타임라인<br><br>한글 검색어는 그대로 넣거나 +로 공백 대체. 모든 URL 끝에 .html을 붙이면 사람이 읽을 수 있는 HTML 페이지가 반환됩니다.</p>
+</div>
 
 <hr>
 <p style="font-size:12px;color:#555;margin-bottom:8px"><strong>URL 패턴 참고</strong></p>
