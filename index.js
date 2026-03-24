@@ -36,9 +36,20 @@ export default {
     }
 
     if (path === '/robots.txt') {
-      return new Response('User-agent: *\nAllow: /\n', {
+      return new Response('User-agent: *\nAllow: /\n\nSitemap: https://api.beopmang.org/sitemap.xml\n', {
         headers: { 'Content-Type': 'text/plain' }
       });
+    }
+
+    if (path === '/sitemap.xml') {
+      const urls = ['/', '/stats', '/openapi.json', '/.well-known/agent.json',
+        '/find?q=민법', '/law/001692', '/history/001692', '/article/001692/제1조',
+        '/xref/001692', '/case-by-law/001692', '/bill?q=형법', '/timeline/001692',
+        '/explore/001692', '/usearch?q=법률행위', '/health'];
+      const xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
+        urls.map(u => '  <url><loc>https://api.beopmang.org' + u + '</loc><changefreq>daily</changefreq></url>').join('\n') +
+        '\n</urlset>';
+      return new Response(xml, { headers: { 'Content-Type': 'application/xml' } });
     }
 
     if (path === '/' || path === '') {
@@ -266,7 +277,7 @@ async function statusPage(env, rlHeaders) {
   const laws = dbStats?.laws || '1,707';
   const articles = dbStats?.articles || '499K';
   const cases = dbStats?.cases || '171K';
-  const html = `<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>api.beopmang.org — 법령 검색 API</title><meta name="description" content="대한민국 법령 DB 실시간 쿼리 API. 법률 1,707개, 조문 499K, 판례 171K."><meta property="og:title" content="api.beopmang.org"><meta property="og:description" content="프롬프트 한 줄로 법률AI 에이전트 흉내내기"><meta property="og:type" content="website"><meta property="og:url" content="https://api.beopmang.org"><link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦒</text></svg>"><meta property="og:image" content="https://raw.githubusercontent.com/eng-in-law/beopmang-api/main/og.svg">
+  const html = `<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>api.beopmang.org — 법령 검색 API</title><meta name="description" content="대한민국 법령 DB 실시간 쿼리 API. 법률 1,707개, 조문 499K, 판례 171K."><meta property="og:title" content="api.beopmang.org"><meta property="og:description" content="프롬프트 한 줄로 법률AI 에이전트 흉내내기"><meta property="og:type" content="website"><meta property="og:url" content="https://api.beopmang.org"><link rel="canonical" href="https://api.beopmang.org"><link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦒</text></svg>"><meta property="og:image" content="https://raw.githubusercontent.com/eng-in-law/beopmang-api/main/og.svg">
 <style>
 *{box-sizing:border-box;margin:0}
 body{font-family:'SF Mono',Menlo,'Courier New',monospace;background:#fdfdfd;color:#222;max-width:680px;margin:0 auto;padding:40px 24px;font-size:14px;line-height:1.7}
