@@ -193,24 +193,97 @@ function json(data, status = 200, extra = {}) {
 }
 
 async function statusPage(env, rlHeaders) {
+  const daily = await env.API_KV.get('stats:daily') || '0';
+  // Try to get cached DB stats, fetch fresh if missing
+  let dbStats = null;
+  try { dbStats = JSON.parse(await env.API_KV.get('stats:db') || 'null'); } catch {}
+  const laws = dbStats?.laws || '1,707';
+  const articles = dbStats?.articles || '499K';
+  const cases = dbStats?.cases || '171K';
   const html = `<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>api.beopmang.org</title>
-<style>*{box-sizing:border-box;margin:0}body{font-family:'Inter',system-ui,sans-serif;background:#fff;color:#111;max-width:600px;margin:0 auto;padding:48px 24px}h1{font-size:1.1rem;font-weight:500;letter-spacing:-.01em;margin-bottom:4px}p.sub{color:#888;font-size:.85rem;margin-bottom:48px}.section{margin-bottom:40px}.section h2{font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:#999;margin-bottom:12px;font-weight:500}code{font-family:'SF Mono',Menlo,monospace;font-size:.82rem}.endpoint{display:block;padding:6px 0;color:#111;border-bottom:1px solid #f0f0f0}.endpoint:last-child{border:none}.endpoint code{color:#111}.endpoint span{color:#888;font-size:.8rem;margin-left:8px}a{color:#111;text-decoration:none;border-bottom:1px solid #ddd}a:hover{border-color:#111}.meta{display:flex;gap:32px;margin-bottom:48px}.meta-item{font-size:.8rem;color:#888}.meta-item strong{display:block;font-size:1rem;color:#111;font-weight:500;margin-bottom:2px}.copy{background:#f8f8f8;border-radius:6px;padding:12px 16px;font-size:.85rem;color:#333;margin:12px 0}</style></head>
+<style>
+*{box-sizing:border-box;margin:0}
+body{font-family:'SF Mono',Menlo,'Courier New',monospace;background:#fdfdfd;color:#222;max-width:680px;margin:0 auto;padding:40px 24px;font-size:14px;line-height:1.7}
+h1{font-family:system-ui,sans-serif;font-size:15px;font-weight:600;margin-bottom:2px}
+.sub{color:#666;font-size:12px;margin-bottom:32px}
+hr{border:none;border-top:1px solid #e8e8e8;margin:28px 0}
+.status{display:inline-block;width:8px;height:8px;border-radius:50%;background:#22c55e;margin-right:6px;vertical-align:middle}
+.status.off{background:#ef4444}
+.row{display:flex;gap:24px;margin-bottom:24px;flex-wrap:wrap}
+.box{background:#f6f6f6;border:1px solid #eee;border-radius:4px;padding:10px 14px;flex:1;min-width:120px}
+.box .label{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.5px}
+.box .val{font-size:18px;font-weight:600;color:#111;font-family:system-ui,sans-serif}
+.copy-wrap{position:relative;margin:12px 0}
+.copy-box{background:#f0f0f0;border:1px solid #ddd;border-radius:4px;padding:10px 40px 10px 14px;font-size:13px;word-break:break-all;cursor:pointer}
+.copy-box:hover{background:#e8e8e8}
+.copy-btn{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:1px solid #ccc;border-radius:3px;padding:2px 8px;font-size:11px;cursor:pointer;color:#555}
+.copy-btn:hover{background:#ddd}
+table{width:100%;border-collapse:collapse;margin:8px 0}
+td{padding:4px 0;vertical-align:top}
+td:first-child{width:45%;color:#111}
+td:last-child{color:#888;font-size:13px}
+tr{border-bottom:1px solid #f0f0f0}
+tr:last-child{border:none}
+.note{font-size:11px;color:#999;line-height:1.6;margin-top:8px}
+a{color:#222;text-decoration:underline;text-decoration-color:#ccc;text-underline-offset:2px}
+a:hover{text-decoration-color:#222}
+.tag{display:inline-block;background:#eee;border-radius:3px;padding:1px 6px;font-size:11px;color:#555;margin-left:4px}
+</style></head>
 <body>
 <h1>api.beopmang.org</h1>
-<p class="sub">대한민국 법령 DB</p>
-<div class="meta"><div class="meta-item"><strong>법률 1,707</strong>현행 전체</div><div class="meta-item"><strong>조문 499K</strong>전문 검색</div><div class="meta-item"><strong>판례 171K</strong>시맨틱 검색</div></div>
-<div class="section"><h2>사용법</h2><div class="copy">에이전트에 전달: https://api.beopmang.org</div></div>
-<div class="section"><h2>엔드포인트</h2>
-<div class="endpoint"><code>/search?q=민법</code><span>법령 검색</span></div>
-<div class="endpoint"><code>/law/{id}</code><span>법령 정보</span></div>
-<div class="endpoint"><code>/history/{id}</code><span>연혁</span></div>
-<div class="endpoint"><code>/article/{id}/{조문}</code><span>조문 상세</span></div>
-<div class="endpoint"><code>/xref/{id}</code><span>인용관계</span></div>
-<div class="endpoint"><code>/case-by-law/{id}</code><span>관련 판례</span></div>
-<div class="endpoint"><code>/bill?q=형법</code><span>의안</span></div>
-<div class="endpoint"><code>/stats</code><span>DB 통계</span></div>
+<p class="sub">대한민국 법령 DB — 실시간 쿼리 API</p>
+
+<div class="row">
+<div class="box"><div class="label">서버</div><div class="val"><span class="status"></span> online</div></div>
+<div class="box"><div class="label">오늘 요청</div><div class="val">${daily}</div></div>
+<div class="box"><div class="label">rate limit</div><div class="val">30/min</div></div>
 </div>
-<div class="section"><h2>참고</h2><p style="font-size:.85rem;color:#888;line-height:1.8"><code>?brief=1</code> 요약 (기본) · <code>?full=1</code> 전체<br><a href="/.well-known/agent.json">Agent Card</a> · <a href="/openapi.json">OpenAPI Spec</a></p></div>
+
+<div class="row">
+<div class="box"><div class="label">법률</div><div class="val">${laws}</div></div>
+<div class="box"><div class="label">조문</div><div class="val">${articles}</div></div>
+<div class="box"><div class="label">판례</div><div class="val">${cases}</div></div>
+</div>
+
+<hr>
+<p style="font-size:12px;color:#555;margin-bottom:8px">에이전트에 이 URL을 전달하세요:</p>
+<div class="copy-wrap"><div class="copy-box" onclick="copyUrl()" id="url-box">https://api.beopmang.org</div><button class="copy-btn" onclick="copyUrl()" id="copy-btn">copy</button></div>
+
+<hr>
+<p style="font-size:12px;color:#555;margin-bottom:8px">endpoints</p>
+<table>
+<tr><td><code>/search?q=민법</code></td><td>법령 검색</td></tr>
+<tr><td><code>/law/{id}</code></td><td>법령 정보</td></tr>
+<tr><td><code>/history/{id}</code></td><td>개정 연혁</td></tr>
+<tr><td><code>/article/{id}/{조문}</code></td><td>조문 상세</td></tr>
+<tr><td><code>/xref/{id}</code></td><td>인용관계</td></tr>
+<tr><td><code>/timeline/{id}</code></td><td>입법 타임라인</td></tr>
+<tr><td><code>/diff/{name}</code></td><td>최근 개정 신구대조</td></tr>
+<tr><td><code>/explore/{id}</code></td><td>종합 탐색 (그래프)</td></tr>
+<tr><td><code>/case?q=키워드</code></td><td>판례 검색</td></tr>
+<tr><td><code>/case-by-law/{id}</code></td><td>법령별 판례</td></tr>
+<tr><td><code>/hsearch?q=키워드</code></td><td>판례 하이브리드 검색</td></tr>
+<tr><td><code>/bill?q=키워드</code></td><td>의안 검색</td></tr>
+<tr><td><code>/usearch?q=질문</code></td><td>통합 시맨틱 검색</td></tr>
+<tr><td><code>/stats</code></td><td>DB 현황</td></tr>
+</table>
+<p class="note"><code>?brief=1</code> 요약 (기본) · <code>?full=1</code> 전체 데이터</p>
+
+<hr>
+<p style="font-size:12px;color:#555;margin-bottom:8px">links</p>
+<p style="font-size:13px"><a href="/.well-known/agent.json">agent.json</a> · <a href="/openapi.json">openapi.json</a><span class="tag">21 endpoints</span></p>
+
+<hr>
+<p class="note">데이터 출처: 법제처 Open API · 국회 Open API · Semantic Scholar<br>매주 일요일 03:00 KST 갱신. 이 API의 출력은 참고용이며 법적 효력이 없습니다.</p>
+
+<script>
+function copyUrl(){
+  navigator.clipboard.writeText('https://api.beopmang.org').then(function(){
+    document.getElementById('copy-btn').textContent='copied!';
+    setTimeout(function(){document.getElementById('copy-btn').textContent='copy'},1500);
+  });
+}
+</script>
 </body></html>`;
   return new Response(html, { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8', ...corsHeaders(), ...rlHeaders } });
 }
