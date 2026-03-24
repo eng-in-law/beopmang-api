@@ -394,85 +394,77 @@ function json(data, status = 200, extra = {}) {
 
 async function statusPage(env, rlHeaders) {
   const daily = await env.API_KV.get('stats:daily') || '0';
-  // Try to get cached DB stats, fetch fresh if missing
-  let dbStats = null;
-  try { dbStats = JSON.parse(await env.API_KV.get('stats:db') || 'null'); } catch {}
-  const laws = dbStats?.laws || '1,707';
-  const articles = dbStats?.articles || '499K';
-  const cases = dbStats?.cases || '171K';
-  const html = `<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>api.beopmang.org — 법령 검색 API</title><meta name="description" content="대한민국 법령 DB 실시간 쿼리 API. 법률 1,707개, 조문 499K, 판례 171K."><meta property="og:title" content="api.beopmang.org"><meta property="og:description" content="프롬프트 한 줄로 법률AI 에이전트 흉내내기"><meta property="og:type" content="website"><meta property="og:url" content="https://api.beopmang.org"><link rel="canonical" href="https://api.beopmang.org"><link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦒</text></svg>"><meta property="og:image" content="https://raw.githubusercontent.com/eng-in-law/beopmang-api/main/og.svg">
+  const html = `<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>법망 API — api.beopmang.org</title><meta name="description" content="AI가 법령에 근거한 답변을 만들도록 돕습니다."><meta property="og:title" content="법망 API"><meta property="og:description" content="프롬프트 한 줄로 법률AI 에이전트 흉내내기"><meta property="og:type" content="website"><meta property="og:url" content="https://api.beopmang.org"><link rel="canonical" href="https://api.beopmang.org"><link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦒</text></svg>"><meta property="og:image" content="https://raw.githubusercontent.com/eng-in-law/beopmang-api/main/og.svg">
 <style>
-*{box-sizing:border-box;margin:0}
-body{font-family:'SF Mono',Menlo,'Courier New',monospace;background:#fdfdfd;color:#222;max-width:680px;margin:0 auto;padding:40px 24px;font-size:14px;line-height:1.7}
-h1{font-family:system-ui,sans-serif;font-size:15px;font-weight:600;margin-bottom:2px}
-.sub{color:#666;font-size:12px;margin-bottom:32px}
-hr{border:none;border-top:1px solid #e8e8e8;margin:28px 0}
-.status{display:inline-block;width:8px;height:8px;border-radius:50%;background:#22c55e;margin-right:6px;vertical-align:middle}
-.status.off{background:#ef4444}
-.row{display:flex;gap:24px;margin-bottom:24px;flex-wrap:wrap}
-.box{background:#f6f6f6;border:1px solid #eee;border-radius:4px;padding:10px 14px;flex:1;min-width:120px}
-.box .label{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.5px}
-.box .val{font-size:18px;font-weight:600;color:#111;font-family:system-ui,sans-serif}
-.copy-wrap{position:relative;margin:12px 0}
-.copy-box{background:#f0f0f0;border:1px solid #ddd;border-radius:4px;padding:10px 40px 10px 14px;font-size:13px;word-break:break-all;cursor:pointer}
-.copy-box:hover{background:#e8e8e8}
-.copy-btn{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:1px solid #ccc;border-radius:3px;padding:2px 8px;font-size:11px;cursor:pointer;color:#555}
-.copy-btn:hover{background:#ddd}
-table{width:100%;border-collapse:collapse;margin:8px 0}
-td{padding:4px 0;vertical-align:top}
-td:first-child{width:45%;color:#111}
-td:last-child{color:#888;font-size:13px}
-tr{border-bottom:1px solid #f0f0f0}
-tr:last-child{border:none}
-.note{font-size:11px;color:#999;line-height:1.6;margin-top:8px}
-a{color:#222;text-decoration:underline;text-decoration-color:#ccc;text-underline-offset:2px}
-a:hover{text-decoration-color:#222}
-.tag{display:inline-block;background:#eee;border-radius:3px;padding:1px 6px;font-size:11px;color:#555;margin-left:4px}
-.cp{cursor:pointer;display:block;margin:6px 0;padding:8px 12px;background:#f6f6f6;border:1px solid #e0e0e0;border-radius:4px}.cp:hover{background:#eee}.cp code{color:#111;font-size:13px;font-weight:500}.cp .copy-btn{float:right;background:#222;color:#fff;border:none;border-radius:3px;padding:2px 10px;font-size:11px;cursor:pointer}.cp .copy-btn:hover{background:#444}
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap");
+:root{--bg0:#f2ead3;--bg1:#f7ecd2;--stroke0:#c6ae84;--stroke1:#dcc8a5;--text0:#3b2f20;--text1:#4f3f2b;--text2:#6d593f;--text3:#897457;--text4:#aa9a80;--amber:#9b7c4d;--amber2:rgba(194,166,118,0.3);--green:#2f6b4e;--green2:rgba(47,107,78,0.16);--card-bg:#fffdf7;--card-border:#c2a676;--mono:"JetBrains Mono",ui-monospace,monospace;--sans:"Manrope",system-ui,sans-serif;--serif:"Fraunces",ui-serif,Georgia,serif}
+*{box-sizing:border-box}html,body{height:100%;margin:0}
+body{background-color:var(--bg0);background-image:linear-gradient(rgba(59,47,32,0.035) 1px,transparent 1px),linear-gradient(90deg,rgba(59,47,32,0.035) 1px,transparent 1px);background-size:30px 30px;color:var(--text1);font-family:var(--sans)}
+button,input{font:inherit}button{cursor:pointer}
+.page{width:100%;min-height:100vh;padding:34px 20px 42px;display:flex;justify-content:center;align-items:flex-start}
+.page-inner{position:relative;width:100%;max-width:760px;text-align:center;background:var(--card-bg);border:1px solid var(--card-border);box-shadow:0 1px 6px rgba(59,47,32,0.08);border-radius:14px;padding:32px 28px}
+.h1{font-family:var(--serif);font-weight:600;font-size:44px;color:var(--text0);letter-spacing:-0.03em;line-height:1.08;margin:0 0 12px 0}
+.h2{font-family:var(--serif);font-weight:600;font-size:20px;color:var(--text0);letter-spacing:-0.02em;margin:32px 0 16px 0;padding-bottom:8px;border-bottom:1px solid var(--stroke1);text-align:left}
+.sub{margin:0 auto 26px auto;max-width:520px;font-size:15px;line-height:1.6;color:var(--text2)}
+.stats{display:flex;gap:24px;justify-content:center;flex-wrap:wrap;margin:24px 0}
+.stat{text-align:center}.stat-value{font-family:var(--serif);font-size:32px;font-weight:700;color:var(--text0)}.stat-label{font-size:12px;color:var(--text3);margin-top:4px}
+.cards{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin:16px 0}
+.card{flex:1 1 200px;max-width:240px;background:var(--bg1);border:1px solid var(--stroke1);border-radius:12px;padding:20px 16px;text-align:left}
+.card-title{margin:0 0 6px 0;font-size:14px;font-weight:700;color:var(--text0)}.card-desc{margin:0;font-size:12px;line-height:1.6;color:var(--text3)}
+.section{margin-top:32px;text-align:left}
+table{width:100%;border-collapse:collapse;font-size:13px;text-align:left}
+th{font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--text3);border-bottom:2px solid var(--stroke1);padding:8px 12px}
+td{padding:10px 12px;border-bottom:1px solid var(--stroke1);color:var(--text1)}tr:last-child td{border-bottom:none}tr:hover td{background:rgba(194,166,118,0.08)}
+code{font-family:var(--mono);font-size:12px;background:rgba(194,166,118,0.15);padding:2px 6px;border-radius:4px;color:var(--text0)}
+.copy-field{display:block;margin:6px 0;padding:8px 12px;background:var(--bg1);border:1px solid var(--stroke1);border-radius:6px;cursor:pointer;text-align:left}
+.copy-field:hover{background:rgba(194,166,118,0.2)}
+.copy-field code{font-size:13px;font-weight:500}
+.copy-btn{float:right;background:var(--amber2);border:1px solid var(--amber);border-radius:4px;padding:2px 10px;font-size:11px;color:var(--text0);cursor:pointer}
+.copy-btn:hover{background:var(--amber)}
+.note{font-size:11px;color:var(--text4);line-height:1.6;margin-top:8px;text-align:left}
+a{color:var(--text0);text-decoration:underline;text-decoration-color:var(--stroke1);text-underline-offset:2px}a:hover{text-decoration-color:var(--text0)}
+.foot{margin-top:44px;font-size:12px;color:var(--text4);font-style:italic}
+@media(max-width:640px){.page{padding:16px 10px 22px}.page-inner{padding:16px 14px;border-radius:10px}.h1{font-size:32px}.cards{flex-direction:column;align-items:center}.card{max-width:100%}.stats{gap:16px}.stat-value{font-size:24px}table{font-size:12px}th,td{padding:6px 8px}}
 </style></head>
 <body>
-<h1>api.beopmang.org</h1>
-<p class="sub">대한민국 법령 실시간 검색 API</p>
+<div class="page"><div class="page-inner">
 
-<p style="font-size:13px;color:#333;line-height:1.8;margin-bottom:24px">AI가 법령에 근거한 답변을 만들도록 돕습니다.<br>법제처·국회 Open API에서 수집한 법령·판례·의안 데이터를 조문 단위로 파싱하고, 인용관계 그래프 구축 및 벡터 임베딩을 거쳐 PostgreSQL + pgvector에 저장하여 키워드·시맨틱·하이브리드 검색을 제공합니다.</p>
+<h1 class="h1">🦒 법망 API</h1>
+<p class="sub">AI가 법령에 근거한 답변을 만들도록 돕습니다.<br>법제처·국회 Open API에서 수집한 법령·판례·의안 데이터를 조문 단위로 파싱하고, 인용관계 그래프 구축 및 벡터 임베딩을 거쳐 PostgreSQL + pgvector에 저장하여 키워드·시맨틱·하이브리드 검색을 제공합니다.</p>
 
-<div class="row">
-<div class="box"><div class="label">법률</div><div class="val">${laws}</div></div>
-<div class="box"><div class="label">조문</div><div class="val">${articles}</div></div>
-<div class="box"><div class="label">판례</div><div class="val">${cases}</div></div>
+<div class="stats">
+<div class="stat"><div class="stat-value">1,707</div><div class="stat-label">법률</div></div>
+<div class="stat"><div class="stat-value">499K</div><div class="stat-label">조문</div></div>
+<div class="stat"><div class="stat-value">171K</div><div class="stat-label">판례</div></div>
+<div class="stat"><div class="stat-value">62K</div><div class="stat-label">인용관계</div></div>
 </div>
 
-<div class="row">
-<div class="box"><div class="label">인용관계</div><div class="val">62K</div></div>
-<div class="box"><div class="label">국회 의안</div><div class="val">추적 중</div></div>
-<div class="box"><div class="label">서버</div><div class="val"><span class="status"></span> online</div></div>
+<h2 class="h2">사용하기</h2>
+<div class="cards">
+<div class="card"><div class="card-title">Claude</div><div class="card-desc">대화에 <code>https://api.beopmang.org</code> 붙여넣기 — 알아서 호출</div></div>
+<div class="card"><div class="card-title">ChatGPT</div><div class="card-desc">설정 → 앱 → 고급 → 개발자 모드 → 앱 만들기<br><br><span class="copy-field" onclick="cc(this)" data-v="법망"><code>이름: 법망</code> <button class="copy-btn">copy</button></span><span class="copy-field" onclick="cc(this)" data-v="https://api.beopmang.org/mcp"><code>URL: https://api.beopmang.org/mcp</code> <button class="copy-btn">copy</button></span><span class="copy-field" onclick="cc(this)" data-v="반드시 여러 번 호출하고 조문번호와 법령명을 구체적으로 인용하여 답하세요"><code>설명: 반드시 여러 번 호출...</code> <button class="copy-btn">copy</button></span>인증: 없음 · "+" → 더 보기 → 법망<br>⚠ Plus 이상 필요 · 추천: GPT 5.4 Thinking 이상</div></div>
+<div class="card"><div class="card-title">Gemini</div><div class="card-desc">미지원 — 외부 API 호출 기능 없음</div></div>
 </div>
 
-<hr>
-<p style="font-size:13px;color:#333;margin-bottom:12px"><strong>사용하기</strong></p>
+<h2 class="h2">직접 써보기</h2>
 <table>
-<tr><td><strong>Claude Web</strong></td><td>대화에 <code>https://api.beopmang.org</code> 붙여넣기 — 알아서 호출</td></tr>
-<tr><td><strong>Claude Code</strong></td><td>터미널에서 <code>curl https://api.beopmang.org/find/민법</code></td></tr>
-<tr><td><strong>ChatGPT</strong></td><td>설정 → 앱 → 고급 설정 → 개발자 모드 → 앱 만들기<br><span class="cp" onclick="cc(this)" data-v="법망">이름: <code>법망</code> <button class="copy-btn">copy</button></span><br><span class="cp" onclick="cc(this)" data-v="https://api.beopmang.org/mcp">URL: <code>https://api.beopmang.org/mcp</code> <button class="copy-btn">copy</button></span><br><span class="cp" onclick="cc(this)" data-v="반드시 여러 번 호출하고 조문번호와 법령명을 구체적으로 인용하여 답하세요">설명: <code>반드시 여러 번 호출하고 조문번호와 법령명을 구체적으로 인용하여 답하세요</code> <button class="copy-btn">copy</button></span><br>인증: 없음 · 사용: 채팅창 "+" → 더 보기 → 법망 선택<br>⚠ Plus 이상 필요 (무료 계정 미지원) · 추천 모델: GPT 5.4 Thinking 경량 추론 이상</td></tr>
-</table>
-
-<hr>
-<p style="font-size:13px;color:#333;margin-bottom:12px"><strong>직접 써보기</strong></p>
-<table>
+<thead><tr><th>링크</th><th>설명</th></tr></thead>
+<tbody>
 <tr><td><a href="/find/%EB%AF%BC%EB%B2%95.html">민법 찾기</a></td><td>법령 검색의 시작</td></tr>
 <tr><td><a href="/law/001706.html?full=1">민법 상세정보</a></td><td>조문 1,193개</td></tr>
-<tr><td><a href="/article/001706/%EC%A0%9C750%EC%A1%B0.html">민법 제750조</a></td><td>불법행위 — 가장 많이 인용되는 조문</td></tr>
-<tr><td><a href="/history/001706.html">민법 개정 연혁</a></td><td>제정부터 최근 개정까지</td></tr>
+<tr><td><a href="/article/001706/%EC%A0%9C750%EC%A1%B0.html">민법 제750조</a></td><td>불법행위</td></tr>
+<tr><td><a href="/history/001706.html">민법 개정 연혁</a></td><td>제정부터 최근까지</td></tr>
 <tr><td><a href="/xref/001706.html">민법 인용관계</a></td><td>민법이 인용하는 법령</td></tr>
 <tr><td><a href="/case-by-law/001706.html">민법 관련 판례</a></td><td>대법원 판례</td></tr>
 <tr><td><a href="/bill/%EB%AF%BC%EB%B2%95.html">민법 관련 의안</a></td><td>국회 계류 의안</td></tr>
-<tr><td><a href="/case/%EB%B6%88%EB%B2%95%ED%96%89%EC%9C%84.html">불법행위 판례 검색</a></td><td>키워드로 판례 검색</td></tr>
+</tbody>
 </table>
 
-<hr>
-<p style="font-size:13px;color:#333;margin-bottom:12px"><strong>개발자용 API</strong></p>
-<p style="font-size:12px;color:#555;margin-bottom:8px">모든 엔드포인트는 JSON으로 응답합니다. 인증 없이 무료.</p>
+<h2 class="h2">개발자 API</h2>
+<p class="note" style="margin-bottom:12px">모든 엔드포인트는 JSON 응답. 인증 없이 무료. <code>?brief=1</code> 요약(기본) · <code>?full=1</code> 전체 · <code>?include=history,cases</code> 추가 데이터 병렬 반환.</p>
 <table>
+<thead><tr><th>경로</th><th>설명</th></tr></thead>
+<tbody>
 <tr><td><code>GET /find/{법령명}</code></td><td>법령 찾기</td></tr>
 <tr><td><code>GET /law/{id}</code></td><td>법령 정보</td></tr>
 <tr><td><code>GET /article/{id}/{조문}</code></td><td>조문 상세</td></tr>
@@ -482,18 +474,19 @@ a:hover{text-decoration-color:#222}
 <tr><td><code>GET /case/{키워드}</code></td><td>판례 검색</td></tr>
 <tr><td><code>GET /case-by-law/{id}</code></td><td>법령별 판례</td></tr>
 <tr><td><code>GET /bill/{키워드}</code></td><td>의안 검색</td></tr>
-<tr><td><code>GET /timeline/{id}</code></td><td>입법 타임라인</td></tr>
 <tr><td><code>GET /explore/{id}</code></td><td>종합 탐색</td></tr>
+<tr><td><code>GET /timeline/{id}</code></td><td>타임라인</td></tr>
 <tr><td><code>GET /stats</code></td><td>DB 현황</td></tr>
+<tr><td><code>POST /mcp</code></td><td>MCP 서버 (JSON-RPC 2.0)</td></tr>
+</tbody>
 </table>
-<p class="note"><code>?brief=1</code> 요약 (기본) · <code>?full=1</code> 전체 · <code>.html</code> 붙이면 웹페이지로 표시<br>rate limit: ${daily}건 오늘 처리 · 100 req/min per IP</p>
+<p class="note">rate limit: ${daily}건 오늘 처리 · 100 req/min per IP</p>
 
-<hr>
-<p style="font-size:13px"><a href="/openapi.json">OpenAPI Spec</a> · <a href="/.well-known/agent.json">Agent Card</a> · <a href="/privacy">Privacy</a></p>
+<p style="margin-top:24px;font-size:13px;text-align:left"><a href="/openapi.json">OpenAPI Spec</a> · <a href="/.well-known/agent.json">Agent Card</a> · <a href="/privacy">Privacy</a> · <a href="/health">Health</a></p>
 
-<hr>
-<p class="note">데이터 출처: 법제처 Open API · 국회 Open API<br>매주 일요일 03:00 KST 갱신. 이 API의 출력은 참고용이며 법적 효력이 없습니다.</p>
+<p class="foot">데이터 출처: 법제처 Open API · 국회 Open API<br>매주 일요일 03:00 KST 갱신. 이 API의 출력은 참고용이며 법적 효력이 없습니다.</p>
 
+</div></div>
 <script>function cc(el){var v=el.dataset.v;navigator.clipboard.writeText(v).then(function(){var b=el.querySelector('.copy-btn');if(b){b.textContent='copied!';setTimeout(function(){b.textContent='copy'},1500)}})}</script>
 </body></html>`;
   return new Response(html, { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8', ...corsHeaders(), ...rlHeaders } });
