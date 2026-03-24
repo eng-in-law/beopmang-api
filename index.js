@@ -40,6 +40,27 @@ export default {
       return json({ ok: false, error: 'rate_limit_exceeded', retry_after: rl.reset }, 429, rl.headers);
     }
 
+    // Feedback endpoint
+    if (path === '/feedback' && request.method === 'POST') {
+      try {
+        const body = await request.json();
+        const msg = (body.message || '').slice(0, 1000);
+        if (!msg) return json({ ok: false, error: 'message required' }, 400);
+        const entry = { message: msg, type: body.type || 'general', context: body.context || '', ip, ts: new Date().toISOString() };
+        await env.API_KV.put('fb:' + Date.now() + ':' + Math.random().toString(36).slice(2, 6), JSON.stringify(entry), { expirationTtl: 86400 * 90 });
+        return json({ ok: true, message: 'feedback received' });
+      } catch { return json({ ok: false, error: 'invalid request' }, 400); }
+    }
+    if (path === '/feedback' && request.method === 'GET') {
+      const list = await env.API_KV.list({ prefix: 'fb:', limit: 50 });
+      const items = [];
+      for (const key of list.keys) {
+        const val = await env.API_KV.get(key.name);
+        if (val) try { items.push(JSON.parse(val)); } catch {}
+      }
+      return json({ ok: true, count: items.length, feedback: items });
+    }
+
     if (path === '/privacy') {
       return new Response('<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><title>Privacy Policy — api.beopmang.org</title></head><body style="font-family:system-ui;max-width:600px;margin:40px auto;padding:0 20px;color:#222;line-height:1.8"><h1 style="font-size:18px">Privacy Policy</h1><p>api.beopmang.org는 대한민국 법령 공개 데이터를 제공하는 API입니다.</p><h2 style="font-size:15px">수집하는 정보</h2><p>이 API는 개인정보를 수집하지 않습니다. 로그인이 없으며, 쿠키를 사용하지 않습니다. 요청 시 IP 주소가 레이트 리밋 목적으로 일시적으로 처리되며, 저장되지 않습니다.</p><h2 style="font-size:15px">데이터 출처</h2><p>법제처 Open API (law.go.kr), 국회 Open API (open.assembly.go.kr)의 공개 데이터를 제공합니다.</p><h2 style="font-size:15px">면책</h2><p>이 API의 출력은 참고용이며 법적 효력이 없습니다.</p><h2 style="font-size:15px">문의</h2><p>eng.in.law@gmail.com</p></body></html>', {
         status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8' }
@@ -510,6 +531,7 @@ const MCP_TOOLS = [
   { name: 'getTimeline', description: '법령 입법 타임라인', inputSchema: { type: 'object', properties: { id: { type: 'string', description: '법령 ID' } }, required: ['id'] }, cmd: 'timeline' },
   { name: 'exploreLaw', description: '법령 종합 탐색. 개별 호출 전에 먼저 사용하세요. 조문 목록, 관련 판례, 의안, 인용관계를 한 번에 반환합니다.', inputSchema: { type: 'object', properties: { id: { type: 'string', description: '법령 ID' } }, required: ['id'] }, cmd: 'explore' },
   { name: 'getStats', description: 'DB 전체 현황', inputSchema: { type: 'object', properties: {} }, cmd: 'stats' },
+  { name: 'sendFeedback', description: 'API에 대한 피드백 전송 (버그, 기능 요청, 품질 의견)', inputSchema: { type: 'object', properties: { message: { type: 'string', description: '피드백 내용' }, type: { type: 'string', description: 'bug, feature, quality 중 하나' }, context: { type: 'string', description: '관련 도구/쿼리 (선택)' } }, required: ['message'] }, cmd: '_feedback' },
 ];
 
 function mcpOk(id, result) {
@@ -542,6 +564,15 @@ async function handleMcp(request, env) {
     const args = params?.arguments || {};
     const tool = MCP_TOOLS.find(t => t.name === toolName);
     if (!tool) return mcpErr(id, -32602, 'Unknown tool: ' + toolName);
+
+    // Handle sendFeedback locally
+    if (toolName === 'sendFeedback') {
+      const msg = (args.message || '').slice(0, 1000);
+      if (!msg) return mcpOk(id, { content: [{ type: 'text', text: 'Error: message required' }], isError: true });
+      const entry = { message: msg, type: args.type || 'general', context: args.context || '', ts: new Date().toISOString() };
+      await env.API_KV.put('fb:' + Date.now() + ':' + Math.random().toString(36).slice(2, 6), JSON.stringify(entry), { expirationTtl: 86400 * 90 });
+      return mcpOk(id, { content: [{ type: 'text', text: 'Feedback received. Thank you.' }] });
+    }
 
     // Build origin URL
     let cmdArgs = args.query || args.id || args.case_id || '';
