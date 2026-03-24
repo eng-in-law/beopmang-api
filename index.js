@@ -175,12 +175,15 @@ function applyBrief(data, fields) {
 }
 
 function parseCommand(path, params) {
-  const parts = path.split('/').filter(Boolean);
+  // Decode any percent-encoded path segments, also handle raw + as space
+  const decoded = decodeURIComponent(path.replace(/\+/g, ' '));
+  const parts = decoded.split('/').filter(Boolean);
   if (!parts.length) return null;
   let cmd = parts[0];
-  let args = parts.slice(1).map(decodeURIComponent).join(' ');
+  let args = parts.slice(1).join(' ');
+  // ?q= takes priority — agents should prefer this for Korean/spaces
   const q = params.get('q');
-  if (q && !args) args = q;
+  if (q) args = q;
   // /find → lawcli law (법령명 매칭)
   // /search → lawcli search (조문 본문 검색)
   if (cmd === 'find') cmd = 'law';
