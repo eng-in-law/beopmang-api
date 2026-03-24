@@ -417,8 +417,12 @@ a:hover{text-decoration-color:#222}
 </div>
 
 <hr>
-<p style="font-size:13px;color:#333;margin-bottom:12px"><strong>ChatGPT에서 사용하기</strong></p>
-<p style="font-size:13px;color:#555;margin-bottom:16px">GPT Store에서 <strong>"법령검색"</strong>을 검색하세요. 설치 없이 바로 사용할 수 있습니다.</p>
+<p style="font-size:13px;color:#333;margin-bottom:12px"><strong>사용하기</strong></p>
+<table>
+<tr><td><strong><a href="https://chatgpt.com/g/g-69c28676709c8191a3e95b5d28b9a432-beobmangapi">ChatGPT</a></strong></td><td>GPT Store에서 바로 사용</td></tr>
+<tr><td><strong>Claude</strong></td><td>Projects에 <a href="/openapi.json">OpenAPI Spec</a> 첨부</td></tr>
+<tr><td><strong>Gemini</strong></td><td>Gems에서 API 연동 (개발자)</td></tr>
+</table>
 
 <hr>
 <p style="font-size:13px;color:#333;margin-bottom:12px"><strong>직접 써보기</strong></p>
