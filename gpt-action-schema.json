@@ -1,5 +1,5 @@
 {
-  "openapi": "3.0.3",
+  "openapi": "3.1.0",
   "info": {
     "title": "법령검색 API",
     "description": "대한민국 법령 DB 실시간 쿼리. 법률 1,707개, 조문 499K, 판례 171K.",
