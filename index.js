@@ -402,6 +402,7 @@ tr:last-child{border:none}
 a{color:#222;text-decoration:underline;text-decoration-color:#ccc;text-underline-offset:2px}
 a:hover{text-decoration-color:#222}
 .tag{display:inline-block;background:#eee;border-radius:3px;padding:1px 6px;font-size:11px;color:#555;margin-left:4px}
+.cp{cursor:pointer;display:inline-block;margin:2px 0}.cp:hover{background:#f0f0f0;border-radius:3px}.cp .copy-btn{background:none;border:1px solid #ccc;border-radius:3px;padding:0 6px;font-size:10px;cursor:pointer;color:#888;margin-left:4px}.cp .copy-btn:hover{background:#eee}
 </style></head>
 <body>
 <h1>api.beopmang.org</h1>
@@ -426,7 +427,7 @@ a:hover{text-decoration-color:#222}
 <table>
 <tr><td><strong>Claude Web</strong></td><td>대화에 <code>https://api.beopmang.org</code> 붙여넣기 — 알아서 호출</td></tr>
 <tr><td><strong>Claude Code</strong></td><td>터미널에서 <code>curl https://api.beopmang.org/find/민법</code></td></tr>
-<tr><td><strong>ChatGPT</strong></td><td>설정 → 앱 → 고급 설정 → 개발자 모드 → 앱 만들기<br>이름: <code>법망</code> · URL: <code>https://api.beopmang.org/mcp</code> · 인증: 없음<br>사용: 채팅창 "+" → 더 보기 → 법망 선택</td></tr>
+<tr><td><strong>ChatGPT</strong></td><td>설정 → 앱 → 고급 설정 → 개발자 모드 → 앱 만들기<br><span class="cp" onclick="cc(this)" data-v="법망">이름: <code>법망</code> <button class="copy-btn">copy</button></span><br><span class="cp" onclick="cc(this)" data-v="https://api.beopmang.org/mcp">URL: <code>https://api.beopmang.org/mcp</code> <button class="copy-btn">copy</button></span><br><span class="cp" onclick="cc(this)" data-v="반드시 여러 번 호출하고 조문번호와 법령명을 구체적으로 인용하여 답하세요">설명: <code>반드시 여러 번 호출하고 조문번호와 법령명을 구체적으로 인용하여 답하세요</code> <button class="copy-btn">copy</button></span><br>인증: 없음 · 사용: 채팅창 "+" → 더 보기 → 법망 선택</td></tr>
 </table>
 
 <hr>
@@ -467,6 +468,7 @@ a:hover{text-decoration-color:#222}
 <hr>
 <p class="note">데이터 출처: 법제처 Open API · 국회 Open API<br>매주 일요일 03:00 KST 갱신. 이 API의 출력은 참고용이며 법적 효력이 없습니다.</p>
 
+<script>function cc(el){var v=el.dataset.v;navigator.clipboard.writeText(v).then(function(){var b=el.querySelector('.copy-btn');if(b){b.textContent='copied!';setTimeout(function(){b.textContent='copy'},1500)}})}</script>
 </body></html>`;
   return new Response(html, { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8', ...corsHeaders(), ...rlHeaders } });
 }
