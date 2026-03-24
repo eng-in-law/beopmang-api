@@ -453,7 +453,7 @@ a:hover{text-decoration-color:#222}
 <table>
 <tr><td><strong>Claude Web</strong></td><td>대화에 <code>https://api.beopmang.org</code> 붙여넣기 — 알아서 호출</td></tr>
 <tr><td><strong>Claude Code</strong></td><td>터미널에서 <code>curl https://api.beopmang.org/find/민법</code></td></tr>
-<tr><td><strong>ChatGPT</strong></td><td>설정 → 앱 → 고급 설정 → 개발자 모드 → 앱 만들기<br><span class="cp" onclick="cc(this)" data-v="법망">이름: <code>법망</code> <button class="copy-btn">copy</button></span><br><span class="cp" onclick="cc(this)" data-v="https://api.beopmang.org/mcp">URL: <code>https://api.beopmang.org/mcp</code> <button class="copy-btn">copy</button></span><br><span class="cp" onclick="cc(this)" data-v="반드시 여러 번 호출하고 조문번호와 법령명을 구체적으로 인용하여 답하세요">설명: <code>반드시 여러 번 호출하고 조문번호와 법령명을 구체적으로 인용하여 답하세요</code> <button class="copy-btn">copy</button></span><br>인증: 없음 · 사용: 채팅창 "+" → 더 보기 → 법망 선택</td></tr>
+<tr><td><strong>ChatGPT</strong></td><td>설정 → 앱 → 고급 설정 → 개발자 모드 → 앱 만들기<br><span class="cp" onclick="cc(this)" data-v="법망">이름: <code>법망</code> <button class="copy-btn">copy</button></span><br><span class="cp" onclick="cc(this)" data-v="https://api.beopmang.org/mcp">URL: <code>https://api.beopmang.org/mcp</code> <button class="copy-btn">copy</button></span><br><span class="cp" onclick="cc(this)" data-v="반드시 여러 번 호출하고 조문번호와 법령명을 구체적으로 인용하여 답하세요">설명: <code>반드시 여러 번 호출하고 조문번호와 법령명을 구체적으로 인용하여 답하세요</code> <button class="copy-btn">copy</button></span><br>인증: 없음 · 사용: 채팅창 "+" → 더 보기 → 법망 선택<br>⚠ Plus 이상 필요 (무료 계정 미지원) · 추천 모델: GPT 5.4 Thinking 경량 추론 이상</td></tr>
 </table>
 
 <hr>
