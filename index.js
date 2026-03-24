@@ -52,8 +52,8 @@ export default {
       } catch { return json({ ok: false, error: 'invalid request' }, 400); }
     }
     if (path === '/feedback' && request.method === 'GET') {
-      const secret = url.searchParams.get('key');
-      if (secret !== env.FEEDBACK_KEY) return json({ ok: false, error: 'unauthorized' }, 401);
+      const secret = (request.headers.get('Authorization') || '').replace('Bearer ', '');
+      if (!secret || secret !== env.FEEDBACK_KEY) return json({ ok: false, error: 'unauthorized' }, 401);
       const list = await env.API_KV.list({ prefix: 'fb:', limit: 50 });
       const items = [];
       for (const key of list.keys) {
