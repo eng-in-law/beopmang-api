@@ -63,6 +63,25 @@ export default {
       });
     }
 
+    if (path === '/health') {
+      try {
+        const t = Date.now();
+        const r = await fetch(env.ORIGIN_BASE + '/api/lawcli?cmd=stats&json=1', {
+          headers: { 'User-Agent': 'beopmang-api/health' },
+          signal: AbortSignal.timeout(5000),
+        });
+        const ms = Date.now() - t;
+        if (r.ok) {
+          env.API_KV.put('health:status', 'ok', { expirationTtl: 120 }).catch(() => {});
+          env.API_KV.put('health:latency', String(ms), { expirationTtl: 120 }).catch(() => {});
+          return json({ status: 'ok', origin_ms: ms }, 200, rl.headers);
+        }
+        return json({ status: 'degraded', origin_status: r.status }, 200, rl.headers);
+      } catch (e) {
+        return json({ status: 'down', error: e.message }, 200, rl.headers);
+      }
+    }
+
     const parsed = parseCommand(path, url.searchParams);
     if (!parsed) {
       return json({ ok: false, error: 'not_found', hint: 'GET / for API info' }, 404, rl.headers);
@@ -74,30 +93,42 @@ export default {
     const full = url.searchParams.get('full') === '1';
     const mode = full ? 'full' : 'brief';
 
-    const originUrl = new URL(env.ORIGIN_BASE + '/api/lawcli');
-    originUrl.searchParams.set('cmd', parsed.cmd);
-    if (parsed.args) originUrl.searchParams.set('args', parsed.args);
-    if (parsed.flags) originUrl.searchParams.set('flags', parsed.flags);
-    originUrl.searchParams.set('json', '1');
+    let originQs = 'cmd=' + encodeURIComponent(parsed.cmd);
+    if (parsed.args) originQs += '&args=' + encodeURIComponent(parsed.args);
+    if (parsed.flags) originQs += '&flags=' + encodeURIComponent(parsed.flags);
+    originQs += '&json=1';
+    const originUrl = env.ORIGIN_BASE + '/api/lawcli?' + originQs;
 
+    const cacheKey = `cache:${parsed.cmd}:${parsed.args||''}:${parsed.flags||''}`;
     const t0 = Date.now();
-    let originResp;
+    let originData;
+    let fromCache = false;
+
     try {
-      originResp = await fetch(originUrl.toString(), { headers: { 'User-Agent': 'beopmang-api/1.0' } });
+      const originResp = await fetch(originUrl, {
+        headers: { 'User-Agent': 'beopmang-api/1.0' },
+        cf: { cacheTtl: 0 },
+      });
+      if (!originResp.ok) throw new Error('origin ' + originResp.status);
+      originData = await originResp.json();
+      // Cache successful responses (5 min TTL)
+      env.API_KV.put(cacheKey, JSON.stringify(originData), { expirationTtl: 300 }).catch(() => {});
     } catch (e) {
-      return json({ ok: false, error: 'service_unavailable', retry_after: 30 }, 503, rl.headers);
-    }
-    if (!originResp.ok) {
-      return json({ ok: false, error: 'origin_error', status: originResp.status }, 502, rl.headers);
+      // Fallback: try KV cache
+      try {
+        const cached = await env.API_KV.get(cacheKey);
+        if (cached) {
+          originData = JSON.parse(cached);
+          fromCache = true;
+        } else {
+          return json({ ok: false, error: 'service_unavailable', retry_after: 30 }, 503, rl.headers);
+        }
+      } catch {
+        return json({ ok: false, error: 'service_unavailable', retry_after: 30 }, 503, rl.headers);
+      }
     }
 
     const elapsed = Date.now() - t0;
-    let originData;
-    try {
-      originData = await originResp.json();
-    } catch (e) {
-      return json({ ok: false, error: 'invalid_origin_response' }, 502, rl.headers);
-    }
 
     if (originData.exit_code !== 0) {
       return json({ ok: false, error: 'command_failed', detail: originData.output || '', command: parsed.cmd }, 422, rl.headers);
@@ -124,7 +155,7 @@ export default {
       mode,
       result,
       ...(count !== undefined && { count }),
-      meta: { source: 'live_database', db_query_ms: originData.meta?.elapsed_ms || elapsed, elapsed_ms: Date.now() - t0, ...(originData.meta || {}) }
+      meta: { source: fromCache ? 'cache' : 'live_database', db_query_ms: originData.meta?.elapsed_ms || elapsed, elapsed_ms: Date.now() - t0, ...(originData.meta || {}), ...(fromCache && { cached: true }) }
     }, 200, rl.headers);
   }
 };
