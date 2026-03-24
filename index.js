@@ -193,19 +193,24 @@ function json(data, status = 200, extra = {}) {
 }
 
 async function statusPage(env, rlHeaders) {
-  const daily = await env.API_KV.get('stats:daily') || '0';
   const html = `<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>api.beopmang.org</title>
-<style>*{box-sizing:border-box;margin:0}body{font-family:system-ui,sans-serif;background:#0f172a;color:#e2e8f0;padding:32px;min-height:100vh}h1{font-size:1.4rem;color:#fff;margin-bottom:8px}.sub{color:#64748b;font-size:.9rem;margin-bottom:32px}.card{background:#1e293b;border-radius:12px;padding:20px;margin-bottom:16px}.card h2{font-size:1rem;color:#94a3b8;margin-bottom:12px}.stat{font-size:2rem;color:#fff;font-weight:600}.stat small{font-size:.9rem;color:#64748b;font-weight:400}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px}code{background:#334155;padding:2px 6px;border-radius:4px;font-size:.85rem}a{color:#60a5fa;text-decoration:none}a:hover{text-decoration:underline}.cmd{color:#94a3b8;font-size:.85rem;line-height:2}</style></head>
+<style>*{box-sizing:border-box;margin:0}body{font-family:'Inter',system-ui,sans-serif;background:#fff;color:#111;max-width:600px;margin:0 auto;padding:48px 24px}h1{font-size:1.1rem;font-weight:500;letter-spacing:-.01em;margin-bottom:4px}p.sub{color:#888;font-size:.85rem;margin-bottom:48px}.section{margin-bottom:40px}.section h2{font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:#999;margin-bottom:12px;font-weight:500}code{font-family:'SF Mono',Menlo,monospace;font-size:.82rem}.endpoint{display:block;padding:6px 0;color:#111;border-bottom:1px solid #f0f0f0}.endpoint:last-child{border:none}.endpoint code{color:#111}.endpoint span{color:#888;font-size:.8rem;margin-left:8px}a{color:#111;text-decoration:none;border-bottom:1px solid #ddd}a:hover{border-color:#111}.meta{display:flex;gap:32px;margin-bottom:48px}.meta-item{font-size:.8rem;color:#888}.meta-item strong{display:block;font-size:1rem;color:#111;font-weight:500;margin-bottom:2px}.copy{background:#f8f8f8;border-radius:6px;padding:12px 16px;font-size:.85rem;color:#333;margin:12px 0}</style></head>
 <body>
 <h1>api.beopmang.org</h1>
-<p class="sub">대한민국 법령 DB 실시간 쿼리 API</p>
-<div class="grid">
-<div class="card"><h2>상태</h2><div class="stat">● <small>온라인</small></div></div>
-<div class="card"><h2>오늘 요청</h2><div class="stat">${daily} <small>건</small></div></div>
-<div class="card"><h2>레이트 리밋</h2><div class="stat">30 <small>/min per IP</small></div></div>
+<p class="sub">대한민국 법령 DB</p>
+<div class="meta"><div class="meta-item"><strong>법률 1,707</strong>현행 전체</div><div class="meta-item"><strong>조문 499K</strong>전문 검색</div><div class="meta-item"><strong>판례 171K</strong>시맨틱 검색</div></div>
+<div class="section"><h2>사용법</h2><div class="copy">에이전트에 전달: https://api.beopmang.org</div></div>
+<div class="section"><h2>엔드포인트</h2>
+<div class="endpoint"><code>/search?q=민법</code><span>법령 검색</span></div>
+<div class="endpoint"><code>/law/{id}</code><span>법령 정보</span></div>
+<div class="endpoint"><code>/history/{id}</code><span>연혁</span></div>
+<div class="endpoint"><code>/article/{id}/{조문}</code><span>조문 상세</span></div>
+<div class="endpoint"><code>/xref/{id}</code><span>인용관계</span></div>
+<div class="endpoint"><code>/case-by-law/{id}</code><span>관련 판례</span></div>
+<div class="endpoint"><code>/bill?q=형법</code><span>의안</span></div>
+<div class="endpoint"><code>/stats</code><span>DB 통계</span></div>
 </div>
-<div class="card"><h2>시작하기</h2><p style="margin-bottom:12px">에이전트에 이 한 줄을 전달하세요:</p><code>법령 검색 API: https://api.beopmang.org</code><p style="margin-top:16px"><a href="/.well-known/agent.json">Agent Card</a> · <a href="/openapi.json">OpenAPI Spec</a> · <a href="/stats">DB 통계</a></p></div>
-<div class="card"><h2>사용 예시</h2><div class="cmd"><code>GET /search?q=민법</code> 법령 검색<br><code>GET /law/001692</code> 법령 조회<br><code>GET /history/001692</code> 연혁 조회<br><code>GET /article/001692/제1조</code> 조문 조회<br><code>GET /xref/001692</code> 인용관계<br><code>GET /case-by-law/001692</code> 관련 판례<br><code>GET /bill?q=형법</code> 의안 검색<br><code>GET /stats</code> DB 통계<br><br><code>?brief=1</code> 핵심만 (기본) · <code>?full=1</code> 전체 데이터</div></div>
+<div class="section"><h2>참고</h2><p style="font-size:.85rem;color:#888;line-height:1.8"><code>?brief=1</code> 요약 (기본) · <code>?full=1</code> 전체<br><a href="/.well-known/agent.json">Agent Card</a> · <a href="/openapi.json">OpenAPI Spec</a></p></div>
 </body></html>`;
   return new Response(html, { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8', ...corsHeaders(), ...rlHeaders } });
 }
