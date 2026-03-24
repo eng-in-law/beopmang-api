@@ -39,10 +39,14 @@ export default {
       if ((request.headers.get('Accept') || '').includes('text/html')) {
         return statusPage(env, rl.headers);
       }
+      const ts = new Date().toISOString();
+      const daily = await env.API_KV.get('stats:daily') || '0';
       return json({
         name: '법령 검색 API',
         description: '대한민국 법령 DB 실시간 쿼리. 법률 1,707개, 조문 499K, 판례 171K.',
         source: 'live_database',
+        timestamp: ts,
+        today_requests: parseInt(daily),
         rate_limit: '100/min per IP',
         endpoints: {
           '/find?q={name}': '법령명으로 찾기 (완전일치 우선). 먼저 이걸로 law_id를 확인',
