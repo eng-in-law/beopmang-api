@@ -397,18 +397,19 @@ async function statusPage(env, rlHeaders) {
   const daily = await env.API_KV.get('stats:daily') || '0';
   const html = `<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>법망 API — api.beopmang.org</title><meta name="description" content="AI가 법령에 근거한 답변을 만들도록 돕습니다."><meta property="og:title" content="법망 API"><meta property="og:description" content="프롬프트 한 줄로 법률AI 에이전트 흉내내기"><meta property="og:type" content="website"><meta property="og:url" content="https://api.beopmang.org"><link rel="canonical" href="https://api.beopmang.org"><link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦒</text></svg>"><meta property="og:image" content="https://raw.githubusercontent.com/eng-in-law/beopmang-api/main/og.svg">
 <style>
-@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap");
-:root{--bg0:#f2ead3;--bg1:#f7ecd2;--stroke0:#c6ae84;--stroke1:#dcc8a5;--text0:#3b2f20;--text1:#4f3f2b;--text2:#6d593f;--text3:#897457;--text4:#aa9a80;--amber:#9b7c4d;--amber2:rgba(194,166,118,0.3);--green:#2f6b4e;--green2:rgba(47,107,78,0.16);--card-bg:#fffdf7;--card-border:#c2a676;--mono:"JetBrains Mono",ui-monospace,monospace;--sans:"Manrope",system-ui,sans-serif;--serif:"Fraunces",ui-serif,Georgia,serif}
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css");
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&display=swap");
+:root{--bg0:#f2ead3;--bg1:#f7ecd2;--stroke0:#c6ae84;--stroke1:#dcc8a5;--text0:#3b2f20;--text1:#4f3f2b;--text2:#6d593f;--text3:#897457;--text4:#aa9a80;--amber:#9b7c4d;--amber2:rgba(194,166,118,0.3);--green:#2f6b4e;--green2:rgba(47,107,78,0.16);--card-bg:#fffdf7;--card-border:#c2a676;--mono:"JetBrains Mono",ui-monospace,monospace;--sans:"Pretendard Variable","Pretendard",system-ui,-apple-system,sans-serif;--serif:"Pretendard Variable","Pretendard",system-ui,sans-serif}
 *{box-sizing:border-box}html,body{height:100%;margin:0}
 body{background-color:var(--bg0);background-image:linear-gradient(rgba(59,47,32,0.035) 1px,transparent 1px),linear-gradient(90deg,rgba(59,47,32,0.035) 1px,transparent 1px);background-size:30px 30px;color:var(--text1);font-family:var(--sans)}
 button,input{font:inherit}button{cursor:pointer}
 .page{width:100%;min-height:100vh;padding:34px 20px 42px;display:flex;justify-content:center;align-items:flex-start}
 .page-inner{position:relative;width:100%;max-width:760px;text-align:center;background:var(--card-bg);border:1px solid var(--card-border);box-shadow:0 1px 6px rgba(59,47,32,0.08);border-radius:14px;padding:32px 28px}
-.h1{font-family:var(--serif);font-weight:600;font-size:44px;color:var(--text0);letter-spacing:-0.03em;line-height:1.08;margin:0 0 12px 0}
-.h2{font-family:var(--serif);font-weight:600;font-size:20px;color:var(--text0);letter-spacing:-0.02em;margin:32px 0 16px 0;padding-bottom:8px;border-bottom:1px solid var(--stroke1);text-align:left}
-.sub{margin:0 auto 26px auto;max-width:520px;font-size:15px;line-height:1.6;color:var(--text2)}
+.h1{font-family:var(--sans);font-weight:800;font-size:36px;color:var(--text0);letter-spacing:-0.02em;line-height:1.2;margin:0 0 12px 0}
+.h2{font-family:var(--sans);font-weight:700;font-size:18px;color:var(--text0);letter-spacing:-0.01em;margin:32px 0 16px 0;padding-bottom:8px;border-bottom:1px solid var(--stroke1);text-align:left}
+.sub{margin:0 auto 26px auto;max-width:560px;font-size:14px;line-height:1.7;color:var(--text2)}
 .stats{display:flex;gap:24px;justify-content:center;flex-wrap:wrap;margin:24px 0}
-.stat{text-align:center}.stat-value{font-family:var(--serif);font-size:32px;font-weight:700;color:var(--text0)}.stat-label{font-size:12px;color:var(--text3);margin-top:4px}
+.stat{text-align:center}.stat-value{font-family:var(--sans);font-size:28px;font-weight:800;color:var(--text0);letter-spacing:-0.02em}.stat-label{font-size:12px;color:var(--text3);margin-top:4px}
 .cards{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin:16px 0}
 .card{flex:1 1 200px;max-width:240px;background:var(--bg1);border:1px solid var(--stroke1);border-radius:12px;padding:20px 16px;text-align:left}
 .card-title{margin:0 0 6px 0;font-size:14px;font-weight:700;color:var(--text0)}.card-desc{margin:0;font-size:12px;line-height:1.6;color:var(--text3)}
