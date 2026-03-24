@@ -204,8 +204,9 @@ export default {
     if (includeParam) {
       const lawId = (typeof result === 'object' && !Array.isArray(result) && result?.law_id) ? result.law_id : (Array.isArray(result) && result[0]?.law_id) ? result[0].law_id : null;
       if (lawId) {
-        const incFields = includeParam.split(',').map(s => s.trim()).filter(Boolean);
-        const incMap = { history: 'history', xref: 'xref', cases: 'case-by-law', bills: 'bill', timeline: 'timeline', explore: 'explore' };
+        const VALID_INCLUDES = { history: 'history', xref: 'xref', cases: 'case-by-law', bills: 'bill', timeline: 'timeline', explore: 'explore' };
+        const incFields = includeParam.split(',').map(s => s.trim()).filter(f => VALID_INCLUDES[f]);
+        const incMap = VALID_INCLUDES;
         const fetches = incFields.filter(f => incMap[f]).map(async f => {
           const cmd = incMap[f];
           const args = f === 'bills' ? (result?.law_name || lawId) : lawId;
@@ -571,11 +572,12 @@ async function handleMcp(request, env) {
             try {
               const r = await fetch(env.ORIGIN_BASE + '/api/lawcli?cmd=' + encodeURIComponent(incMap[f]) + '&args=' + encodeURIComponent(a) + '&json=1', { headers: { 'User-Agent': 'beopmang-mcp/1.0' } });
               const d = await r.json();
-              return d.exit_code === 0 ? [f, d.output] : [f, null];
+              if (d.exit_code !== 0) return [f, null];
+              try { return [f, JSON.parse(d.output)]; } catch { return [f, d.output]; }
             } catch { return [f, null]; }
           });
           const results = await Promise.all(fetches);
-          const inc = {}; for (const [k, v] of results) { if (v) inc[k] = v; }
+          const inc = {}; for (const [k, v] of results) { if (v !== null) inc[k] = v; }
           mainResult = JSON.stringify({ main: parsed, included: inc }, null, 2);
         }
       }
