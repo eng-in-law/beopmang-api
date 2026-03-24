@@ -112,6 +112,15 @@
               "default": 1
             },
             "description": "1=핵심 필드만 (기본), 0=전체 데이터"
+          },
+          {
+            "name": "include",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "추가 데이터를 함께 반환. 쉼표 구분: history,cases,xref,bills,timeline,explore"
           }
         ],
         "responses": {

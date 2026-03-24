@@ -14,7 +14,7 @@
     "/find/{name}": {
       "get": {
         "operationId": "findLaw",
-        "summary": "법령명으로 법령 찾기 (law_id 확인용). law_id를 확인한 뒤 exploreLaw로 종합 탐색하세요.",
+        "summary": "법령명으로 법령 찾기. law_id를 확인한 뒤 exploreLaw로 종합 탐색하세요.",
         "parameters": [
           {
             "name": "name",
@@ -37,6 +37,15 @@
               "default": 0
             },
             "description": "1이면 전체 데이터"
+          },
+          {
+            "name": "include",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "추가 데이터: history,cases,xref,bills,timeline"
           }
         ],
         "responses": {
@@ -72,6 +81,15 @@
               "default": 0
             },
             "description": "1이면 조문 목록 포함"
+          },
+          {
+            "name": "include",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "추가 데이터: history,cases,xref,bills,timeline"
           }
         ],
         "responses": {
