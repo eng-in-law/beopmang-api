@@ -426,7 +426,7 @@ a:hover{text-decoration-color:#222}
 <table>
 <tr><td><strong>Claude Web</strong></td><td>대화에 <code>https://api.beopmang.org</code> 붙여넣기 — 알아서 호출</td></tr>
 <tr><td><strong>Claude Code</strong></td><td>터미널에서 <code>curl https://api.beopmang.org/find/민법</code></td></tr>
-<tr><td><strong>ChatGPT</strong></td><td>설정 → 앱 → 고급 설정 → 개발자 모드 → 앱 만들기<br>이름: <code>법령검색</code> · URL: <code>https://api.beopmang.org/mcp</code> · 인증: 없음</td></tr>
+<tr><td><strong>ChatGPT</strong></td><td>설정 → 앱 → 고급 설정 → 개발자 모드 → 앱 만들기<br>이름: <code>법령검색</code> · URL: <code>https://api.beopmang.org/mcp</code> · 인증: 없음<br>사용: 채팅창 "+" → 더 보기 → 법령검색 선택</td></tr>
 </table>
 
 <hr>
