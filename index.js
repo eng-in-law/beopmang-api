@@ -409,54 +409,42 @@ a:hover{text-decoration-color:#222}
 </div>
 
 <hr>
-<p style="font-size:12px;color:#555;margin-bottom:8px">에이전트에 이 URL을 전달하세요:</p>
-<div class="copy-wrap"><div class="copy-box" onclick="copyUrl()" id="url-box">https://api.beopmang.org</div><button class="copy-btn" onclick="copyUrl()" id="copy-btn">copy</button></div>
+<p style="font-size:13px;color:#333;margin-bottom:12px"><strong>이 API는 모든 페이지를 HTML로 볼 수 있습니다.</strong> 아래 링크를 클릭하면 결과가 웹페이지로 표시되고, 각 결과에서 다음 단계로 이동할 수 있는 링크가 제공됩니다.</p>
+
+<p style="font-size:12px;color:#555;margin-bottom:8px"><strong>법령 찾기</strong> — 법령명으로 검색해서 시작하세요</p>
+<p style="margin-bottom:16px">
+<a href="/find/%EB%AF%BC%EB%B2%95.html">민법</a> · <a href="/find/%ED%98%95%EB%B2%95.html">형법</a> · <a href="/find/%EC%83%81%EB%B2%95.html">상법</a> · <a href="/find/%ED%96%89%EC%A0%95%EC%A0%88%EC%B0%A8%EB%B2%95.html">행정절차법</a> · <a href="/find/%EA%B0%9C%EC%9D%B8%EC%A0%95%EB%B3%B4+%EB%B3%B4%ED%98%B8%EB%B2%95.html">개인정보 보호법</a>
+</p>
+
+<p style="font-size:12px;color:#555;margin-bottom:8px"><strong>시맨틱 검색</strong> — 자연어 질문으로 법령+판례+제안이유 통합 검색</p>
+<p style="margin-bottom:16px">
+<a href="/usearch/%EA%B3%84%EC%95%BD+%ED%95%B4%EC%A0%9C.html">계약 해제</a> · <a href="/usearch/%EB%B6%80%EB%8B%B9%ED%95%B4%EA%B3%A0.html">부당해고</a> · <a href="/usearch/%EC%86%90%ED%95%B4%EB%B0%B0%EC%83%81+%EC%B1%85%EC%9E%84.html">손해배상 책임</a>
+</p>
+
+<p style="font-size:12px;color:#555;margin-bottom:8px"><strong>조문 검색</strong> — 조문 본문에서 키워드 검색</p>
+<p style="margin-bottom:16px">
+<a href="/search/%EB%B0%9C%EC%82%AC%ED%97%88%EA%B0%80.html">발사허가</a> · <a href="/search/%EC%9C%84%ED%97%98%EB%AC%BC.html">위험물</a>
+</p>
+
+<p style="font-size:12px;color:#555;margin-bottom:8px"><strong>판례</strong></p>
+<p style="margin-bottom:16px">
+<a href="/case/%EB%B6%88%EB%B2%95%ED%96%89%EC%9C%84.html">불법행위 판례 검색</a> · <a href="/case-by-law/001706.html">민법 관련 판례</a>
+</p>
+
+<p style="font-size:12px;color:#555;margin-bottom:8px"><strong>의안</strong></p>
+<p style="margin-bottom:16px">
+<a href="/bill/%ED%98%95%EB%B2%95.html">형법 관련 의안</a> · <a href="/bill/%EB%AF%BC%EB%B2%95.html">민법 관련 의안</a>
+</p>
+
+<p style="font-size:12px;color:#555;margin-bottom:8px"><strong>기타</strong></p>
+<p style="margin-bottom:16px">
+<a href="/stats.html">DB 현황</a> · <a href="/health">서버 상태</a>
+</p>
+
+<p class="note">각 결과 페이지에서 [법령정보] [연혁] [인용관계] [판례] [타임라인] 링크를 따라 깊이 탐색할 수 있습니다.<br><code>?full=1</code>을 붙이면 전체 데이터 표시.</p>
 
 <hr>
-<p style="font-size:12px;color:#555;margin-bottom:8px">endpoints</p>
-<table>
-<tr><td><code>/find?q=민법</code></td><td>법령명으로 찾기</td></tr>
-<tr><td><code>/search?q=키워드</code></td><td>조문 본문 검색</td></tr>
-<tr><td><code>/usearch?q=자연어</code></td><td>시맨틱 통합 검색</td></tr>
-<tr><td><code>/law/{id}</code></td><td>법령 정보</td></tr>
-<tr><td><code>/history/{id}</code></td><td>개정 연혁</td></tr>
-<tr><td><code>/article/{id}/{조문}</code></td><td>조문 상세</td></tr>
-<tr><td><code>/xref/{id}</code></td><td>인용관계</td></tr>
-<tr><td><code>/timeline/{id}</code></td><td>입법 타임라인</td></tr>
-<tr><td><code>/diff/{name}</code></td><td>최근 개정 신구대조</td></tr>
-<tr><td><code>/explore/{id}</code></td><td>종합 탐색 (그래프)</td></tr>
-<tr><td><code>/case?q=키워드</code></td><td>판례 검색</td></tr>
-<tr><td><code>/case-by-law/{id}</code></td><td>법령별 판례</td></tr>
-<tr><td><code>/hsearch?q=키워드</code></td><td>판례 하이브리드 검색</td></tr>
-<tr><td><code>/bill?q=키워드</code></td><td>의안 검색</td></tr>
-<tr><td><code>/usearch?q=질문</code></td><td>통합 시맨틱 검색</td></tr>
-<tr><td><code>/stats</code></td><td>DB 현황</td></tr>
-</table>
-<p class="note"><code>?brief=1</code> 요약 (기본) · <code>?full=1</code> 전체 데이터. 한글은 URL-encode 필수.</p>
-
-<hr>
-<p style="font-size:12px;color:#555;margin-bottom:8px">사용 예시와 응답</p>
-<p style="font-size:12px;color:#555">1단계: 법령 찾기</p>
-<pre style="background:#f6f6f6;border:1px solid #eee;padding:10px;border-radius:4px;overflow-x:auto;font-size:12px">GET /find?q=%EB%AF%BC%EB%B2%95
-
-{"ok":true,"command":"law","mode":"brief","result":{"law_id":"001706","law_name":"민법","law_type":"법률","article_count":1193}}</pre>
-<p style="font-size:12px;color:#555">2단계: 법령 상세</p>
-<pre style="background:#f6f6f6;border:1px solid #eee;padding:10px;border-radius:4px;overflow-x:auto;font-size:12px">GET /law/001706?full=1
-
-{"ok":true,"command":"law","mode":"full","result":{"law_id":"001706","law_name":"민법","law_type":"법률","article_count":1193,"articles":["제1조","제2조",...]}}</pre>
-<p style="font-size:12px;color:#555">3단계: 조문 조회</p>
-<pre style="background:#f6f6f6;border:1px solid #eee;padding:10px;border-radius:4px;overflow-x:auto;font-size:12px">GET /article/001706/%EC%A0%9C1%EC%A1%B0
-
-{"ok":true,"command":"article","result":{"law_name":"민법","label":"제1조","content":"..."}}</pre>
-<p style="font-size:12px;color:#555;margin-top:12px">Python 예시:</p>
-<pre style="background:#f6f6f6;border:1px solid #eee;padding:10px;border-radius:4px;overflow-x:auto;font-size:12px">import requests
-r = requests.get("https://api.beopmang.org/find", params={"q": "민법"})
-law_id = r.json()["result"]["law_id"]
-detail = requests.get(f"https://api.beopmang.org/law/{law_id}?full=1").json()</pre>
-
-<hr>
-<p style="font-size:12px;color:#555;margin-bottom:8px">links</p>
-<p style="font-size:13px"><a href="/.well-known/agent.json">agent.json</a> · <a href="/openapi.json">openapi.json</a><span class="tag">21 endpoints</span></p>
+<p style="font-size:13px"><a href="/.well-known/agent.json">agent.json</a> · <a href="/openapi.json">openapi.json</a><span class="tag">JSON API</span></p>
 
 <hr>
 <p class="note">데이터 출처: 법제처 Open API · 국회 Open API<br>매주 일요일 03:00 KST 갱신. 이 API의 출력은 참고용이며 법적 효력이 없습니다.</p>
