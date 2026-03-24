@@ -41,11 +41,27 @@ export default {
       }
       return json({
         name: '법령 검색 API',
-        description: '대한민국 법령 DB 실시간 쿼리',
-        discovery: '/.well-known/agent.json',
+        description: '대한민국 법령 DB 실시간 쿼리. 법률 1,707개, 조문 499K, 판례 171K.',
+        source: 'live_database',
+        rate_limit: '100/min per IP',
+        endpoints: {
+          '/find?q={name}': '법령명으로 찾기 (완전일치 우선). 먼저 이걸로 law_id를 확인',
+          '/law/{id}': '법령 기본정보',
+          '/history/{id}': '개정 연혁',
+          '/article/{id}/{조문}': '조문 상세',
+          '/search?q={keyword}': '조문 본문 키워드 검색',
+          '/usearch?q={query}': '자연어 시맨틱 검색 (법령+판례+제안이유)',
+          '/xref/{id}': '법령 간 인용관계',
+          '/case-by-law/{id}': '법령별 판례',
+          '/bill?q={keyword}': '국회 의안 검색',
+          '/timeline/{id}': '입법 타임라인',
+          '/explore/{id}': '법령 종합 탐색 (그래프)',
+          '/stats': 'DB 현황',
+          '/health': '서버 상태',
+        },
+        usage: '?brief=1 (기본, 핵심만) / ?full=1 (전체). 한글은 URL-encode 필수.',
         docs: '/openapi.json',
-        example: '/search?q=민법&brief=1',
-        source: 'live_database'
+        agent_card: '/.well-known/agent.json',
       }, 200, rl.headers);
     }
 
@@ -240,7 +256,7 @@ async function statusPage(env, rlHeaders) {
   const laws = dbStats?.laws || '1,707';
   const articles = dbStats?.articles || '499K';
   const cases = dbStats?.cases || '171K';
-  const html = `<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>api.beopmang.org</title>
+  const html = `<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>api.beopmang.org — 법령 검색 API</title><meta name="description" content="대한민국 법령 DB 실시간 쿼리 API. 법률 1,707개, 조문 499K, 판례 171K."><meta property="og:title" content="api.beopmang.org"><meta property="og:description" content="대한민국 법령 DB 실시간 쿼리 API"><meta property="og:type" content="website"><meta property="og:url" content="https://api.beopmang.org">
 <style>
 *{box-sizing:border-box;margin:0}
 body{font-family:'SF Mono',Menlo,'Courier New',monospace;background:#fdfdfd;color:#222;max-width:680px;margin:0 auto;padding:40px 24px;font-size:14px;line-height:1.7}
