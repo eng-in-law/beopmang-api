@@ -274,26 +274,57 @@ function corsHeaders() {
 }
 
 function resultPage(cmd, args, payload, rlHeaders) {
-  const title = cmd + (args ? ': ' + args : '');
+  // Title = CLI command style
+  let title = 'lawcli ' + cmd + (args ? ' ' + args : '');
+  // Append brief result summary to title
+  const r = payload.result;
+  if (Array.isArray(r) && r.length > 0) {
+    const names = r.slice(0, 3).map(i => (i && typeof i === 'object') ? (i.law_name || i.case_name || i.BILL_NAME || i.label || '') : '').filter(Boolean);
+    title += ' — ' + names.join(', ') + (r.length > 3 ? ' 외 ' + (r.length - 3) + '건' : '');
+  } else if (typeof r === 'object' && r !== null && !Array.isArray(r)) {
+    const name = r.law_name || r.case_name || r.BILL_NAME || '';
+    if (name) title += ' — ' + name;
+  }
   const resultJson = JSON.stringify(payload.result, null, 2);
   const meta = payload.meta || {};
   let resultHtml = '';
-  const r = payload.result;
+  const B = 'https://api.beopmang.org';
+  function lawLinks(id, name) {
+    if (!id) return '';
+    const e = encodeURIComponent;
+    return ' <a href="' + B + '/law/' + e(id) + '.html">법령정보</a>' +
+      ' · <a href="' + B + '/history/' + e(id) + '.html">연혁</a>' +
+      ' · <a href="' + B + '/xref/' + e(id) + '.html">인용관계</a>' +
+      ' · <a href="' + B + '/case-by-law/' + e(id) + '.html">판례</a>' +
+      ' · <a href="' + B + '/timeline/' + e(id) + '.html">타임라인</a>';
+  }
   if (Array.isArray(r)) {
     resultHtml = '<ul>' + r.slice(0, 20).map(item => {
       if (typeof item === 'object' && item !== null) {
         const name = item.law_name || item.case_name || item.BILL_NAME || item.label || '';
         const id = item.law_id || item.case_id || item.BILL_ID || '';
         const detail = item.content || item.unit_level || item.revision_type || '';
-        return '<li><strong>' + escapeHtmlW(name) + '</strong>' + (id ? ' <code>' + id + '</code>' : '') + (detail ? ' — ' + escapeHtmlW(String(detail).slice(0, 120)) : '') + '</li>';
+        let links = '';
+        if (item.law_id) links = lawLinks(item.law_id, name);
+        else if (item.case_id) links = ' <a href="' + B + '/case-view/' + encodeURIComponent(item.case_id) + '.html">상세</a>';
+        else if (item.BILL_ID) links = ' <a href="' + B + '/bill-detail/' + encodeURIComponent(item.BILL_ID) + '.html">상세</a>';
+        return '<li><strong>' + escapeHtmlW(name) + '</strong>' + (id ? ' <code>' + id + '</code>' : '') + (detail ? ' — ' + escapeHtmlW(String(detail).slice(0, 120)) : '') + (links ? '<br>' + links : '') + '</li>';
       }
       return '<li>' + escapeHtmlW(String(item).slice(0, 200)) + '</li>';
     }).join('') + '</ul>' + (r.length > 20 ? '<p>... 외 ' + (r.length - 20) + '건</p>' : '');
   } else if (typeof r === 'object' && r !== null) {
-    resultHtml = '<dl>' + Object.entries(r).slice(0, 30).map(([k, v]) => {
+    const id = r.law_id || '';
+    let nav = '';
+    if (id) nav = '<p style="margin:12px 0">' + lawLinks(id, r.law_name || '') + '</p>';
+    // Show articles as links if present
+    let articlesHtml = '';
+    if (r.articles && Array.isArray(r.articles)) {
+      articlesHtml = '<p style="margin-top:12px"><strong>조문:</strong> ' + r.articles.slice(0, 30).map(a => '<a href="' + B + '/article/' + encodeURIComponent(id) + '/' + encodeURIComponent(a) + '.html">' + escapeHtmlW(a) + '</a>').join(' · ') + (r.articles.length > 30 ? ' ... 외 ' + (r.articles.length - 30) + '개' : '') + '</p>';
+    }
+    resultHtml = nav + '<dl>' + Object.entries(r).filter(([k]) => k !== 'articles').slice(0, 30).map(([k, v]) => {
       const val = typeof v === 'object' ? JSON.stringify(v) : String(v);
       return '<dt>' + escapeHtmlW(k) + '</dt><dd>' + escapeHtmlW(val.slice(0, 300)) + '</dd>';
-    }).join('') + '</dl>';
+    }).join('') + '</dl>' + articlesHtml;
   } else {
     resultHtml = '<pre>' + escapeHtmlW(String(r).slice(0, 2000)) + '</pre>';
   }
