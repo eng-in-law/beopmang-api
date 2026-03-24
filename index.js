@@ -421,6 +421,7 @@ a:hover{text-decoration-color:#222}
 <table>
 <tr><td><strong>Claude</strong></td><td>대화에 <code>https://api.beopmang.org</code> 붙여넣기 — 알아서 호출</td></tr>
 <tr><td><strong><a href="https://chatgpt.com/g/g-69c28676709c8191a3e95b5d28b9a432-beobmangapi">ChatGPT</a></strong></td><td>GPT Store에서 "법령검색" 사용</td></tr>
+<tr><td><strong>Gemini</strong></td><td>미지원 — 외부 API 호출 기능 없음</td></tr>
 </table>
 
 <hr>
