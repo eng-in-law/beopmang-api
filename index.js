@@ -207,20 +207,18 @@ export default {
         const VALID_INCLUDES = { history: 'history', xref: 'xref', cases: 'case-by-law', bills: 'bill', timeline: 'timeline', explore: 'explore' };
         const incFields = includeParam.split(',').map(s => s.trim()).filter(f => VALID_INCLUDES[f]);
         const incMap = VALID_INCLUDES;
-        const fetches = incFields.filter(f => incMap[f]).map(async f => {
+        included = {};
+        for (const f of incFields) {
+          if (!incMap[f]) continue;
           const cmd = incMap[f];
-          const args = f === 'bills' ? (result?.law_name || lawId) : lawId;
-          const qs = 'cmd=' + encodeURIComponent(cmd) + '&args=' + encodeURIComponent(args) + '&json=1';
+          const a = f === 'bills' ? (typeof result === 'object' && !Array.isArray(result) ? result?.law_name : '') || lawId : lawId;
+          const qs = 'cmd=' + encodeURIComponent(cmd) + '&args=' + encodeURIComponent(a) + '&json=1';
           try {
             const r = await fetch(env.ORIGIN_BASE + '/api/lawcli?' + qs, { headers: { 'User-Agent': 'beopmang-api/1.0' } });
             const d = await r.json();
-            if (d.exit_code === 0) { try { return [f, JSON.parse(d.output)]; } catch { return [f, d.output]; } }
-            return [f, null];
-          } catch { return [f, null]; }
-        });
-        const results = await Promise.all(fetches);
-        included = {};
-        for (const [k, v] of results) { if (v !== null) included[k] = v; }
+            if (d.exit_code === 0) { try { included[f] = JSON.parse(d.output); } catch { included[f] = d.output; } }
+          } catch {}
+        }
       }
     }
 
@@ -568,17 +566,15 @@ async function handleMcp(request, env) {
         if (lawId) {
           const incMap = { history: 'history', xref: 'xref', cases: 'case-by-law', bills: 'bill', timeline: 'timeline', explore: 'explore' };
           const fields = args.include.split(',').map(s => s.trim()).filter(f => incMap[f]);
-          const fetches = fields.map(async f => {
+          const inc = {};
+          for (const f of fields) {
             const a = f === 'bills' ? (parsed?.law_name || lawId) : lawId;
             try {
               const r = await fetch(env.ORIGIN_BASE + '/api/lawcli?cmd=' + encodeURIComponent(incMap[f]) + '&args=' + encodeURIComponent(a) + '&json=1', { headers: { 'User-Agent': 'beopmang-mcp/1.0' } });
               const d = await r.json();
-              if (d.exit_code !== 0) return [f, null];
-              try { return [f, JSON.parse(d.output)]; } catch { return [f, d.output]; }
-            } catch { return [f, null]; }
-          });
-          const results = await Promise.all(fetches);
-          const inc = {}; for (const [k, v] of results) { if (v !== null) inc[k] = v; }
+              if (d.exit_code === 0) { try { inc[f] = JSON.parse(d.output); } catch { inc[f] = d.output; } }
+            } catch {}
+          }
           mainResult = JSON.stringify({ main: parsed, included: inc }, null, 2);
         }
       }
