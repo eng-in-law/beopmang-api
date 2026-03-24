@@ -90,8 +90,9 @@ export default {
       return json({ ok: false, error: 'command_not_allowed', command: parsed.cmd }, 403, rl.headers);
     }
 
-    const full = url.searchParams.get('full') === '1';
-    const mode = full ? 'full' : 'brief';
+    const briefParam = url.searchParams.get('brief');
+    const fullParam = url.searchParams.get('full');
+    const mode = fullParam === '1' || briefParam === '0' ? 'full' : 'brief';
 
     let originQs = 'cmd=' + encodeURIComponent(parsed.cmd);
     if (parsed.args) originQs += '&args=' + encodeURIComponent(parsed.args);
@@ -131,7 +132,9 @@ export default {
     const elapsed = Date.now() - t0;
 
     if (originData.exit_code !== 0) {
-      return json({ ok: false, error: 'command_failed', detail: originData.output || '', command: parsed.cmd }, 422, rl.headers);
+      const rawDetail = originData.output || '';
+      const cleanDetail = rawDetail.replace(/lawcli\.py/g, 'lawcli').replace(/\/home\/[^\s]+/g, '').replace(/Traceback[\s\S]*$/m, '').trim();
+      return json({ ok: false, error: 'command_failed', detail: cleanDetail || 'command returned an error', command: parsed.cmd }, 422, rl.headers);
     }
 
     let result;
