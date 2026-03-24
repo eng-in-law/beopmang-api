@@ -198,7 +198,7 @@ export default {
       meta: { source: fromCache ? 'cache' : 'live_database', db_query_ms: originData.meta?.elapsed_ms || elapsed, elapsed_ms: Date.now() - t0, ...(originData.meta || {}), ...(fromCache && { cached: true }) }
     };
 
-    if ((request.headers.get('Accept') || '').includes('text/html')) {
+    if (parsed.forceHtml || (request.headers.get('Accept') || '').includes('text/html')) {
       return resultPage(parsed.cmd, parsed.args, payload, rl.headers);
     }
     return json(payload, 200, rl.headers);
@@ -217,8 +217,14 @@ function applyBrief(data, fields) {
 }
 
 function parseCommand(path, params) {
-  // Decode any percent-encoded path segments, also handle raw + as space
-  const decoded = decodeURIComponent(path.replace(/\+/g, ' '));
+  // Strip .html suffix — agents treat .html URLs as webpages and will browse them
+  let forceHtml = false;
+  let cleanPath = path;
+  if (cleanPath.endsWith('.html')) {
+    cleanPath = cleanPath.slice(0, -5);
+    forceHtml = true;
+  }
+  const decoded = decodeURIComponent(cleanPath.replace(/\+/g, ' '));
   const parts = decoded.split('/').filter(Boolean);
   if (!parts.length) return null;
   let cmd = parts[0];
@@ -235,7 +241,7 @@ function parseCommand(path, params) {
     const v = params.get(f);
     if (v) flags += (flags ? ' ' : '') + '--' + f + ' ' + v;
   }
-  return { cmd, args: args || undefined, flags: flags || undefined };
+  return { cmd, args: args || undefined, flags: flags || undefined, forceHtml };
 }
 
 async function checkRateLimit(kv, ip) {
