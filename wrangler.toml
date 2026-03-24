@@ -1,6 +1,7 @@
 name = "beopmang-api"
 main = "index.js"
 compatibility_date = "2025-01-01"
+account_id = "620f18d4a719cadf71aece4130208c41"
 
 routes = [
   { pattern = "api.beopmang.org/*", zone_name = "beopmang.org" }
@@ -11,4 +12,4 @@ ORIGIN_BASE = "https://bt-internal.beopmang.org"
 
 [[kv_namespaces]]
 binding = "API_KV"
-id = "TO_BE_CREATED"
+id = "8d65ddd831ff4377bcb2e175defdf5e0"

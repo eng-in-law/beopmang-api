@@ -2,7 +2,8 @@ const WHITELIST = new Set([
   'search','law','history','article','byulpyo','timeline','usearch','hsearch',
   'stats','xref','case','case-view','case-text','case-vsearch','case-by-law',
   'bill','bill-detail','bill-minutes','bill-sponsors','bill-vote',
-  'treaty','treaty-view','paper','neighbors','explore'
+  'treaty','treaty-view','paper','neighbors','explore',
+  'diff','ordinance','jo-code','ref','follow'
 ]);
 
 const BRIEF_FIELDS = {
@@ -123,7 +124,7 @@ export default {
       mode,
       result,
       ...(count !== undefined && { count }),
-      meta: { source: 'live_database', db_query_ms: elapsed, elapsed_ms: Date.now() - t0 }
+      meta: { source: 'live_database', db_query_ms: originData.meta?.elapsed_ms || elapsed, elapsed_ms: Date.now() - t0, ...(originData.meta || {}) }
     }, 200, rl.headers);
   }
 };
