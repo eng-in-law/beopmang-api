@@ -2,7 +2,7 @@ const WHITELIST = new Set([
   'search','law','history','article','byulpyo','timeline','usearch','hsearch',
   'stats','xref','case','case-view','case-text','case-vsearch','case-by-law',
   'bill','bill-detail','bill-minutes','bill-sponsors','bill-vote',
-  'treaty','treaty-view','paper','neighbors','explore',
+  'treaty','treaty-view','neighbors','explore',
   'diff','ordinance','jo-code','ref','follow'
 ]);
 
