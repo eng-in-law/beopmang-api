@@ -402,7 +402,7 @@ a:hover{text-decoration-color:#222}
 <h1>api.beopmang.org</h1>
 <p class="sub">대한민국 법령 실시간 검색 API</p>
 
-<p style="font-size:13px;color:#333;line-height:1.8;margin-bottom:24px">AI가 법령에 근거한 답변을 만들도록 돕습니다.<br>법제처·국회 공식 데이터를 매주 갱신합니다.</p>
+<p style="font-size:13px;color:#333;line-height:1.8;margin-bottom:24px">AI가 법령에 근거한 답변을 만들도록 돕습니다.<br>법제처·국회 Open API에서 수집한 법령·판례·의안 데이터를 조문 단위로 파싱하고, 인용관계 그래프 구축 및 벡터 임베딩을 거쳐 PostgreSQL + pgvector에 저장하여 키워드·시맨틱·하이브리드 검색을 제공합니다.</p>
 
 <div class="row">
 <div class="box"><div class="label">법률</div><div class="val">${laws}</div></div>
