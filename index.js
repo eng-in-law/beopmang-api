@@ -428,7 +428,7 @@ tr:last-child{border:none}
 a{color:#222;text-decoration:underline;text-decoration-color:#ccc;text-underline-offset:2px}
 a:hover{text-decoration-color:#222}
 .tag{display:inline-block;background:#eee;border-radius:3px;padding:1px 6px;font-size:11px;color:#555;margin-left:4px}
-.cp{cursor:pointer;display:inline-block;margin:2px 0}.cp:hover{background:#f0f0f0;border-radius:3px}.cp .copy-btn{background:none;border:1px solid #ccc;border-radius:3px;padding:0 6px;font-size:10px;cursor:pointer;color:#888;margin-left:4px}.cp .copy-btn:hover{background:#eee}
+.cp{cursor:pointer;display:block;margin:6px 0;padding:8px 12px;background:#f6f6f6;border:1px solid #e0e0e0;border-radius:4px}.cp:hover{background:#eee}.cp code{color:#111;font-size:13px;font-weight:500}.cp .copy-btn{float:right;background:#222;color:#fff;border:none;border-radius:3px;padding:2px 10px;font-size:11px;cursor:pointer}.cp .copy-btn:hover{background:#444}
 </style></head>
 <body>
 <h1>api.beopmang.org</h1>
