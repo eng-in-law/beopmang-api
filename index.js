@@ -189,14 +189,19 @@ export default {
 
     env.API_KV.put('stats:daily', String((parseInt(await env.API_KV.get('stats:daily') || '0') + 1)), { expirationTtl: 86400 }).catch(() => {});
 
-    return json({
+    const payload = {
       ok: true,
       command: parsed.cmd,
       mode,
       result,
       ...(count !== undefined && { count }),
       meta: { source: fromCache ? 'cache' : 'live_database', db_query_ms: originData.meta?.elapsed_ms || elapsed, elapsed_ms: Date.now() - t0, ...(originData.meta || {}), ...(fromCache && { cached: true }) }
-    }, 200, rl.headers);
+    };
+
+    if ((request.headers.get('Accept') || '').includes('text/html')) {
+      return resultPage(parsed.cmd, parsed.args, payload, rl.headers);
+    }
+    return json(payload, 200, rl.headers);
   }
 };
 
@@ -261,6 +266,50 @@ function corsHeaders() {
     'Access-Control-Max-Age': '86400',
   };
 }
+
+function resultPage(cmd, args, payload, rlHeaders) {
+  const title = cmd + (args ? ': ' + args : '');
+  const resultJson = JSON.stringify(payload.result, null, 2);
+  const meta = payload.meta || {};
+  let resultHtml = '';
+  const r = payload.result;
+  if (Array.isArray(r)) {
+    resultHtml = '<ul>' + r.slice(0, 20).map(item => {
+      if (typeof item === 'object' && item !== null) {
+        const name = item.law_name || item.case_name || item.BILL_NAME || item.label || '';
+        const id = item.law_id || item.case_id || item.BILL_ID || '';
+        const detail = item.content || item.unit_level || item.revision_type || '';
+        return '<li><strong>' + escapeHtmlW(name) + '</strong>' + (id ? ' <code>' + id + '</code>' : '') + (detail ? ' — ' + escapeHtmlW(String(detail).slice(0, 120)) : '') + '</li>';
+      }
+      return '<li>' + escapeHtmlW(String(item).slice(0, 200)) + '</li>';
+    }).join('') + '</ul>' + (r.length > 20 ? '<p>... 외 ' + (r.length - 20) + '건</p>' : '');
+  } else if (typeof r === 'object' && r !== null) {
+    resultHtml = '<dl>' + Object.entries(r).slice(0, 30).map(([k, v]) => {
+      const val = typeof v === 'object' ? JSON.stringify(v) : String(v);
+      return '<dt>' + escapeHtmlW(k) + '</dt><dd>' + escapeHtmlW(val.slice(0, 300)) + '</dd>';
+    }).join('') + '</dl>';
+  } else {
+    resultHtml = '<pre>' + escapeHtmlW(String(r).slice(0, 2000)) + '</pre>';
+  }
+  const html = '<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + escapeHtmlW(title) + ' — api.beopmang.org</title>' +
+    '<style>*{box-sizing:border-box;margin:0}body{font-family:system-ui,sans-serif;background:#fdfdfd;color:#222;max-width:720px;margin:0 auto;padding:32px 24px;font-size:14px;line-height:1.7}' +
+    'h1{font-size:16px;margin-bottom:4px}code{background:#f0f0f0;padding:1px 4px;border-radius:3px;font-size:13px}' +
+    'pre{background:#f6f6f6;border:1px solid #eee;padding:12px;border-radius:6px;overflow-x:auto;font-size:12px;line-height:1.5}' +
+    'dl{margin:8px 0}dt{font-weight:600;color:#555;font-size:12px;margin-top:8px}dd{margin-left:0;margin-bottom:4px}' +
+    'ul{padding-left:20px}li{margin:4px 0}.meta{color:#888;font-size:12px;margin:12px 0}' +
+    'a{color:#222;text-decoration:underline;text-decoration-color:#ccc}a:hover{text-decoration-color:#222}</style></head>' +
+    '<body><h1>' + escapeHtmlW(title) + '</h1>' +
+    '<p class="meta">source: ' + (meta.source || 'live_database') + ' · ' + (meta.db_query_ms || '?') + 'ms' + (payload.count !== undefined ? ' · ' + payload.count + '건' : '') + '</p>' +
+    resultHtml +
+    '<hr style="margin:24px 0;border:none;border-top:1px solid #eee">' +
+    '<p style="font-size:12px;color:#888">JSON: <code>curl https://api.beopmang.org/' + cmd + (args ? '/' + encodeURIComponent(args) : '') + '</code></p>' +
+    '<details style="margin-top:8px"><summary style="font-size:12px;color:#888;cursor:pointer">raw JSON</summary><pre>' + escapeHtmlW(resultJson.slice(0, 3000)) + '</pre></details>' +
+    '<p style="margin-top:16px;font-size:11px;color:#bbb"><a href="/">api.beopmang.org</a> · 법제처 Open API · 국회 Open API</p>' +
+    '</body></html>';
+  return new Response(html, { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8', ...corsHeaders(), ...rlHeaders } });
+}
+
+function escapeHtmlW(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 function json(data, status = 200, extra = {}) {
   return new Response(JSON.stringify(data, null, 2), {
@@ -346,7 +395,27 @@ a:hover{text-decoration-color:#222}
 <tr><td><code>/usearch?q=질문</code></td><td>통합 시맨틱 검색</td></tr>
 <tr><td><code>/stats</code></td><td>DB 현황</td></tr>
 </table>
-<p class="note"><code>?brief=1</code> 요약 (기본) · <code>?full=1</code> 전체 데이터</p>
+<p class="note"><code>?brief=1</code> 요약 (기본) · <code>?full=1</code> 전체 데이터. 한글은 URL-encode 필수.</p>
+
+<hr>
+<p style="font-size:12px;color:#555;margin-bottom:8px">사용 예시와 응답</p>
+<p style="font-size:12px;color:#555">1단계: 법령 찾기</p>
+<pre style="background:#f6f6f6;border:1px solid #eee;padding:10px;border-radius:4px;overflow-x:auto;font-size:12px">GET /find?q=%EB%AF%BC%EB%B2%95
+
+{"ok":true,"command":"law","mode":"brief","result":{"law_id":"001706","law_name":"민법","law_type":"법률","article_count":1193}}</pre>
+<p style="font-size:12px;color:#555">2단계: 법령 상세</p>
+<pre style="background:#f6f6f6;border:1px solid #eee;padding:10px;border-radius:4px;overflow-x:auto;font-size:12px">GET /law/001706?full=1
+
+{"ok":true,"command":"law","mode":"full","result":{"law_id":"001706","law_name":"민법","law_type":"법률","article_count":1193,"articles":["제1조","제2조",...]}}</pre>
+<p style="font-size:12px;color:#555">3단계: 조문 조회</p>
+<pre style="background:#f6f6f6;border:1px solid #eee;padding:10px;border-radius:4px;overflow-x:auto;font-size:12px">GET /article/001706/%EC%A0%9C1%EC%A1%B0
+
+{"ok":true,"command":"article","result":{"law_name":"민법","label":"제1조","content":"..."}}</pre>
+<p style="font-size:12px;color:#555;margin-top:12px">Python 예시:</p>
+<pre style="background:#f6f6f6;border:1px solid #eee;padding:10px;border-radius:4px;overflow-x:auto;font-size:12px">import requests
+r = requests.get("https://api.beopmang.org/find", params={"q": "민법"})
+law_id = r.json()["result"]["law_id"]
+detail = requests.get(f"https://api.beopmang.org/law/{law_id}?full=1").json()</pre>
 
 <hr>
 <p style="font-size:12px;color:#555;margin-bottom:8px">links</p>
