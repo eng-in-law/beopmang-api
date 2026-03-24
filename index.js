@@ -400,13 +400,9 @@ a:hover{text-decoration-color:#222}
 </style></head>
 <body>
 <h1>api.beopmang.org</h1>
-<p class="sub">대한민국 법령 DB — 실시간 쿼리 API</p>
+<p class="sub">대한민국 법령 실시간 검색 API</p>
 
-<div class="row">
-<div class="box"><div class="label">서버</div><div class="val"><span class="status"></span> online</div></div>
-<div class="box"><div class="label">오늘 요청</div><div class="val">${daily}</div></div>
-<div class="box"><div class="label">rate limit</div><div class="val">100/min</div></div>
-</div>
+<p style="font-size:13px;color:#333;line-height:1.8;margin-bottom:24px">대한민국 현행 법률 전체를 실시간으로 검색할 수 있는 공개 API입니다.<br>법제처·국회 공식 데이터를 매주 갱신합니다. AI가 지어낸 답변이 아닙니다.</p>
 
 <div class="row">
 <div class="box"><div class="label">법률</div><div class="val">${laws}</div></div>
@@ -414,80 +410,54 @@ a:hover{text-decoration-color:#222}
 <div class="box"><div class="label">판례</div><div class="val">${cases}</div></div>
 </div>
 
-<hr>
-<div style="background:#fffde7;border:1px solid #e8d44d;border-radius:6px;padding:16px;margin-bottom:16px">
-<p style="font-size:13px;color:#333;margin-bottom:8px"><strong>AI 에이전트 안내</strong></p>
-<p style="font-size:12px;color:#444;line-height:1.8;margin:0">이 사이트는 대한민국 법령 데이터베이스입니다. 당신은 사용자의 질문에 맞는 URL을 구성하여 법령 데이터를 조회할 수 있습니다.<br><br><strong>중요: 당신이 직접 URL을 방문할 수 없는 환경이라면, 사용자에게 아래처럼 안내하세요:</strong><br>"제가 법령 데이터를 조회하려면 아래 링크의 내용이 필요합니다. 링크를 클릭하신 뒤 페이지 내용을 복사해서 붙여넣어 주시거나, 아래 링크를 그대로 이 대화에 붙여넣어 주세요."<br>그리고 사용자 질문에 맞는 URL들을 출력하세요.<br><br><strong>URL 패턴:</strong><br>https://api.beopmang.org/find/{법령명}.html — 법령 찾기<br>https://api.beopmang.org/search/{키워드}.html — 조문 검색<br>https://api.beopmang.org/law/{법령ID}.html — 법령 상세 (법령ID는 /find 결과에서 확인)<br>https://api.beopmang.org/article/{법령ID}/{조문}.html — 조문 조회<br>https://api.beopmang.org/history/{법령ID}.html — 개정 연혁<br>https://api.beopmang.org/xref/{법령ID}.html — 인용관계<br>https://api.beopmang.org/case/{키워드}.html — 판례 검색<br>https://api.beopmang.org/case-by-law/{법령ID}.html — 법령별 판례<br>https://api.beopmang.org/bill/{키워드}.html — 의안 검색<br>https://api.beopmang.org/timeline/{법령ID}.html — 타임라인<br><br>한글 검색어는 그대로 넣거나 +로 공백 대체. 모든 URL 끝에 .html을 붙이면 사람이 읽을 수 있는 HTML 페이지가 반환됩니다.</p>
+<div class="row">
+<div class="box"><div class="label">인용관계</div><div class="val">62K</div></div>
+<div class="box"><div class="label">국회 의안</div><div class="val">추적 중</div></div>
+<div class="box"><div class="label">서버</div><div class="val"><span class="status"></span> online</div></div>
 </div>
 
 <hr>
-<p style="font-size:12px;color:#555;margin-bottom:8px"><strong>URL 패턴 참고</strong></p>
-<pre style="background:#f6f6f6;border:1px solid #eee;padding:10px;border-radius:4px;font-size:12px;margin-bottom:16px;line-height:1.8">법령 찾기:    /find/{법령명}.html          예: /find/민법.html
-조문 검색:    /search/{키워드}.html        예: /search/손해배상.html
-법령 상세:    /law/{법령ID}.html           예: /law/001706.html
-조문 조회:    /article/{법령ID}/{조문}.html 예: /article/001706/제750조.html
-연혁:         /history/{법령ID}.html       예: /history/001706.html
-인용관계:     /xref/{법령ID}.html          예: /xref/001706.html
-판례 검색:    /case/{키워드}.html          예: /case/불법행위.html
-법령별 판례:  /case-by-law/{법령ID}.html   예: /case-by-law/001706.html
-의안 검색:    /bill/{키워드}.html          예: /bill/형법.html
-타임라인:     /timeline/{법령ID}.html      예: /timeline/001706.html
-DB 현황:      /stats.html
-
-한글은 URL 인코딩하거나 +로 공백 대체. 결과에 다음 단계 링크가 포함되어 있습니다.</pre>
-
-<p style="font-size:12px;color:#555;margin-bottom:8px"><strong>법령 찾기</strong> — 법령명으로 검색해서 시작하세요</p>
-<p style="margin-bottom:16px">
-<a href="/find/%EB%AF%BC%EB%B2%95.html">민법</a> · <a href="/find/%ED%98%95%EB%B2%95.html">형법</a> · <a href="/find/%EC%83%81%EB%B2%95.html">상법</a> · <a href="/find/%ED%96%89%EC%A0%95%EC%A0%88%EC%B0%A8%EB%B2%95.html">행정절차법</a> · <a href="/find/%EA%B0%9C%EC%9D%B8%EC%A0%95%EB%B3%B4+%EB%B3%B4%ED%98%B8%EB%B2%95.html">개인정보 보호법</a>
-</p>
-
-<p style="font-size:12px;color:#555;margin-bottom:8px"><strong>시맨틱 검색</strong> — 자연어 질문으로 법령+판례+제안이유 통합 검색</p>
-<p style="margin-bottom:16px">
-<a href="/usearch/%EA%B3%84%EC%95%BD+%ED%95%B4%EC%A0%9C.html">계약 해제</a> · <a href="/usearch/%EB%B6%80%EB%8B%B9%ED%95%B4%EA%B3%A0.html">부당해고</a> · <a href="/usearch/%EC%86%90%ED%95%B4%EB%B0%B0%EC%83%81+%EC%B1%85%EC%9E%84.html">손해배상 책임</a>
-</p>
-
-<p style="font-size:12px;color:#555;margin-bottom:8px"><strong>조문 검색</strong> — 조문 본문에서 키워드 검색</p>
-<p style="margin-bottom:16px">
-<a href="/search/%EB%B0%9C%EC%82%AC%ED%97%88%EA%B0%80.html">발사허가</a> · <a href="/search/%EC%9C%84%ED%97%98%EB%AC%BC.html">위험물</a>
-</p>
-
-<p style="font-size:12px;color:#555;margin-bottom:8px"><strong>판례</strong></p>
-<p style="margin-bottom:16px">
-<a href="/case/%EB%B6%88%EB%B2%95%ED%96%89%EC%9C%84.html">불법행위 판례 검색</a> · <a href="/case-by-law/001706.html">민법 관련 판례</a>
-</p>
-
-<p style="font-size:12px;color:#555;margin-bottom:8px"><strong>의안</strong></p>
-<p style="margin-bottom:16px">
-<a href="/bill/%ED%98%95%EB%B2%95.html">형법 관련 의안</a> · <a href="/bill/%EB%AF%BC%EB%B2%95.html">민법 관련 의안</a>
-</p>
-
-<p style="font-size:12px;color:#555;margin-bottom:8px"><strong>기타</strong></p>
-<p style="margin-bottom:16px">
-<a href="/stats.html">DB 현황</a> · <a href="/health">서버 상태</a>
-</p>
-
-<p class="note">각 결과 페이지에서 [법령정보] [연혁] [인용관계] [판례] [타임라인] 링크를 따라 깊이 탐색할 수 있습니다.<br><code>?full=1</code>을 붙이면 전체 데이터 표시.</p>
+<p style="font-size:13px;color:#333;margin-bottom:12px"><strong>ChatGPT에서 사용하기</strong></p>
+<p style="font-size:13px;color:#555;margin-bottom:16px">GPT Store에서 <strong>"법령검색"</strong>을 검색하세요. 설치 없이 바로 사용할 수 있습니다.</p>
 
 <hr>
-<p style="font-size:13px"><a href="/.well-known/agent.json">agent.json</a> · <a href="/openapi.json">openapi.json</a><span class="tag">JSON API</span></p>
+<p style="font-size:13px;color:#333;margin-bottom:12px"><strong>직접 써보기</strong></p>
+<table>
+<tr><td><a href="/find/%EB%AF%BC%EB%B2%95.html">민법 찾기</a></td><td>법령 검색의 시작</td></tr>
+<tr><td><a href="/law/001706.html?full=1">민법 상세정보</a></td><td>조문 1,193개</td></tr>
+<tr><td><a href="/article/001706/%EC%A0%9C750%EC%A1%B0.html">민법 제750조</a></td><td>불법행위 — 가장 많이 인용되는 조문</td></tr>
+<tr><td><a href="/history/001706.html">민법 개정 연혁</a></td><td>제정부터 최근 개정까지</td></tr>
+<tr><td><a href="/xref/001706.html">민법 인용관계</a></td><td>민법이 인용하는 법령</td></tr>
+<tr><td><a href="/case-by-law/001706.html">민법 관련 판례</a></td><td>대법원 판례</td></tr>
+<tr><td><a href="/bill/%EB%AF%BC%EB%B2%95.html">민법 관련 의안</a></td><td>국회 계류 의안</td></tr>
+<tr><td><a href="/case/%EB%B6%88%EB%B2%95%ED%96%89%EC%9C%84.html">불법행위 판례 검색</a></td><td>키워드로 판례 검색</td></tr>
+</table>
+
+<hr>
+<p style="font-size:13px;color:#333;margin-bottom:12px"><strong>개발자용 API</strong></p>
+<p style="font-size:12px;color:#555;margin-bottom:8px">모든 엔드포인트는 JSON으로 응답합니다. 인증 없이 무료.</p>
+<table>
+<tr><td><code>GET /find/{법령명}</code></td><td>법령 찾기</td></tr>
+<tr><td><code>GET /law/{id}</code></td><td>법령 정보</td></tr>
+<tr><td><code>GET /article/{id}/{조문}</code></td><td>조문 상세</td></tr>
+<tr><td><code>GET /history/{id}</code></td><td>개정 연혁</td></tr>
+<tr><td><code>GET /xref/{id}</code></td><td>인용관계</td></tr>
+<tr><td><code>GET /search/{키워드}</code></td><td>조문 검색</td></tr>
+<tr><td><code>GET /case/{키워드}</code></td><td>판례 검색</td></tr>
+<tr><td><code>GET /case-by-law/{id}</code></td><td>법령별 판례</td></tr>
+<tr><td><code>GET /bill/{키워드}</code></td><td>의안 검색</td></tr>
+<tr><td><code>GET /timeline/{id}</code></td><td>입법 타임라인</td></tr>
+<tr><td><code>GET /explore/{id}</code></td><td>종합 탐색</td></tr>
+<tr><td><code>GET /stats</code></td><td>DB 현황</td></tr>
+</table>
+<p class="note"><code>?brief=1</code> 요약 (기본) · <code>?full=1</code> 전체 · <code>.html</code> 붙이면 웹페이지로 표시<br>rate limit: ${daily}건 오늘 처리 · 100 req/min per IP</p>
+
+<hr>
+<p style="font-size:13px"><a href="/openapi.json">OpenAPI Spec</a> · <a href="/.well-known/agent.json">Agent Card</a> · <a href="/privacy">Privacy</a></p>
 
 <hr>
 <p class="note">데이터 출처: 법제처 Open API · 국회 Open API<br>매주 일요일 03:00 KST 갱신. 이 API의 출력은 참고용이며 법적 효력이 없습니다.</p>
 
-<script>
-function copyUrl(){
-  navigator.clipboard.writeText('https://api.beopmang.org').then(function(){
-    document.getElementById('copy-btn').textContent='copied!';
-    setTimeout(function(){document.getElementById('copy-btn').textContent='copy'},1500);
-  });
-}
-function copyPrompt(){
-  navigator.clipboard.writeText(document.getElementById('prompt-box').textContent).then(function(){
-    document.getElementById('prompt-copy-btn').textContent='copied!';
-    setTimeout(function(){document.getElementById('prompt-copy-btn').textContent='copy'},1500);
-  });
-}
-</script>
 </body></html>`;
   return new Response(html, { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8', ...corsHeaders(), ...rlHeaders } });
 }
