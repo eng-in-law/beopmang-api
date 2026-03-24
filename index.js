@@ -409,7 +409,21 @@ a:hover{text-decoration-color:#222}
 </div>
 
 <hr>
-<p style="font-size:13px;color:#333;margin-bottom:12px"><strong>이 API는 모든 페이지를 HTML로 볼 수 있습니다.</strong> 아래 링크를 클릭하면 결과가 웹페이지로 표시되고, 각 결과에서 다음 단계로 이동할 수 있는 링크가 제공됩니다.</p>
+<p style="font-size:13px;color:#333;margin-bottom:4px"><strong>이 사이트는 대한민국 법령 데이터베이스입니다.</strong></p><p style="font-size:13px;color:#333;margin-bottom:12px">아래 URL 패턴에 검색어를 넣어 직접 방문하면 결과가 HTML 페이지로 표시됩니다. 사용자의 질문에 맞는 URL을 구성해서 방문하세요.</p>
+<pre style="background:#f6f6f6;border:1px solid #eee;padding:10px;border-radius:4px;font-size:12px;margin-bottom:16px;line-height:1.8">법령 찾기:    /find/{법령명}.html          예: /find/민법.html
+시맨틱 검색:  /usearch/{질문}.html         예: /usearch/임대차+해지.html
+조문 검색:    /search/{키워드}.html        예: /search/손해배상.html
+법령 상세:    /law/{법령ID}.html           예: /law/001706.html  (법령ID는 /find 결과에서 확인)
+조문 조회:    /article/{법령ID}/{조문}.html 예: /article/001706/제750조.html
+연혁:         /history/{법령ID}.html       예: /history/001706.html
+인용관계:     /xref/{법령ID}.html          예: /xref/001706.html
+판례 검색:    /case/{키워드}.html          예: /case/불법행위.html
+법령별 판례:  /case-by-law/{법령ID}.html   예: /case-by-law/001706.html
+의안 검색:    /bill/{키워드}.html          예: /bill/형법.html
+타임라인:     /timeline/{법령ID}.html      예: /timeline/001706.html
+DB 현황:      /stats.html
+
+한글은 URL 인코딩하거나 +로 공백 대체. 결과에 다음 단계 링크가 포함되어 있습니다.</pre>
 
 <p style="font-size:12px;color:#555;margin-bottom:8px"><strong>법령 찾기</strong> — 법령명으로 검색해서 시작하세요</p>
 <p style="margin-bottom:16px">
