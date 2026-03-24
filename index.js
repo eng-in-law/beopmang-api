@@ -274,7 +274,7 @@ a:hover{text-decoration-color:#222}
 <p style="font-size:13px"><a href="/.well-known/agent.json">agent.json</a> · <a href="/openapi.json">openapi.json</a><span class="tag">21 endpoints</span></p>
 
 <hr>
-<p class="note">데이터 출처: 법제처 Open API · 국회 Open API · Semantic Scholar<br>매주 일요일 03:00 KST 갱신. 이 API의 출력은 참고용이며 법적 효력이 없습니다.</p>
+<p class="note">데이터 출처: 법제처 Open API · 국회 Open API<br>매주 일요일 03:00 KST 갱신. 이 API의 출력은 참고용이며 법적 효력이 없습니다.</p>
 
 <script>
 function copyUrl(){
