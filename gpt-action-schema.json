@@ -5,17 +5,45 @@
     "description": "대한민국 법령 DB 실시간 쿼리. 법률 1,707개, 조문 499K, 판례 171K.",
     "version": "1.0.0"
   },
-  "servers": [{"url": "https://api.beopmang.org"}],
+  "servers": [
+    {
+      "url": "https://api.beopmang.org"
+    }
+  ],
   "paths": {
     "/find/{name}": {
       "get": {
         "operationId": "findLaw",
-        "summary": "법령명으로 법령 찾기 (law_id 확인용). 다른 조회 전에 먼저 사용.",
+        "summary": "법령명으로 법령 찾기 (law_id 확인용). law_id를 확인한 뒤 exploreLaw로 종합 탐색하세요.",
         "parameters": [
-          {"name": "name", "in": "path", "required": true, "schema": {"type": "string"}, "description": "법령명 또는 약칭 (예: 민법, 형법)"},
-          {"name": "full", "in": "query", "schema": {"type": "integer", "enum": [0,1], "default": 0}, "description": "1이면 전체 데이터"}
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "법령명 또는 약칭 (예: 민법, 형법)"
+          },
+          {
+            "name": "full",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "enum": [
+                0,
+                1
+              ],
+              "default": 0
+            },
+            "description": "1이면 전체 데이터"
+          }
         ],
-        "responses": {"200": {"description": "법령 목록"}}
+        "responses": {
+          "200": {
+            "description": "법령 목록"
+          }
+        }
       }
     },
     "/law/{id}": {
@@ -23,10 +51,34 @@
         "operationId": "getLaw",
         "summary": "법령 기본정보 조회 (소관부처, 시행일, 조문 수)",
         "parameters": [
-          {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}, "description": "법령 ID (6자리, findLaw로 확인)"},
-          {"name": "full", "in": "query", "schema": {"type": "integer", "enum": [0,1], "default": 0}, "description": "1이면 조문 목록 포함"}
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "법령 ID (6자리, findLaw로 확인)"
+          },
+          {
+            "name": "full",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "enum": [
+                0,
+                1
+              ],
+              "default": 0
+            },
+            "description": "1이면 조문 목록 포함"
+          }
         ],
-        "responses": {"200": {"description": "법령 정보"}}
+        "responses": {
+          "200": {
+            "description": "법령 정보"
+          }
+        }
       }
     },
     "/history/{id}": {
@@ -34,9 +86,21 @@
         "operationId": "getHistory",
         "summary": "법령 개정 연혁 (제정→최근, 개정별 변경 조문 수)",
         "parameters": [
-          {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}, "description": "법령 ID"}
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "법령 ID"
+          }
         ],
-        "responses": {"200": {"description": "연혁 목록"}}
+        "responses": {
+          "200": {
+            "description": "연혁 목록"
+          }
+        }
       }
     },
     "/article/{id}/{label}": {
@@ -44,10 +108,30 @@
         "operationId": "getArticle",
         "summary": "조문 상세 조회 (항/호/목 구조 포함)",
         "parameters": [
-          {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}, "description": "법령 ID"},
-          {"name": "label", "in": "path", "required": true, "schema": {"type": "string"}, "description": "조문 번호 (예: 제1조, 제750조)"}
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "법령 ID"
+          },
+          {
+            "name": "label",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "조문 번호 (예: 제1조, 제750조)"
+          }
         ],
-        "responses": {"200": {"description": "조문 상세"}}
+        "responses": {
+          "200": {
+            "description": "조문 상세"
+          }
+        }
       }
     },
     "/xref/{id}": {
@@ -55,10 +139,34 @@
         "operationId": "getXref",
         "summary": "법령 간 인용관계 (이 법이 인용하는 법령)",
         "parameters": [
-          {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}, "description": "법령 ID"},
-          {"name": "cited-by", "in": "query", "schema": {"type": "integer", "enum": [0,1], "default": 0}, "description": "1이면 피인용 (이 법을 인용하는 법령)"}
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "법령 ID"
+          },
+          {
+            "name": "cited-by",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "enum": [
+                0,
+                1
+              ],
+              "default": 0
+            },
+            "description": "1이면 피인용 (이 법을 인용하는 법령)"
+          }
         ],
-        "responses": {"200": {"description": "인용관계 목록"}}
+        "responses": {
+          "200": {
+            "description": "인용관계 목록"
+          }
+        }
       }
     },
     "/search/{keyword}": {
@@ -66,9 +174,21 @@
         "operationId": "searchArticles",
         "summary": "조문 본문에서 키워드 검색",
         "parameters": [
-          {"name": "keyword", "in": "path", "required": true, "schema": {"type": "string"}, "description": "검색 키워드"}
+          {
+            "name": "keyword",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "검색 키워드"
+          }
         ],
-        "responses": {"200": {"description": "조문 검색 결과"}}
+        "responses": {
+          "200": {
+            "description": "조문 검색 결과"
+          }
+        }
       }
     },
     "/case/{keyword}": {
@@ -76,9 +196,21 @@
         "operationId": "searchCases",
         "summary": "판례 키워드 검색",
         "parameters": [
-          {"name": "keyword", "in": "path", "required": true, "schema": {"type": "string"}, "description": "검색 키워드"}
+          {
+            "name": "keyword",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "검색 키워드"
+          }
         ],
-        "responses": {"200": {"description": "판례 목록"}}
+        "responses": {
+          "200": {
+            "description": "판례 목록"
+          }
+        }
       }
     },
     "/case-by-law/{id}": {
@@ -86,9 +218,21 @@
         "operationId": "getCasesByLaw",
         "summary": "특정 법령 관련 판례 조회",
         "parameters": [
-          {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}, "description": "법령 ID"}
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "법령 ID"
+          }
         ],
-        "responses": {"200": {"description": "관련 판례 목록"}}
+        "responses": {
+          "200": {
+            "description": "관련 판례 목록"
+          }
+        }
       }
     },
     "/case-view/{case_id}": {
@@ -96,9 +240,21 @@
         "operationId": "getCaseDetail",
         "summary": "판례 상세 조회 (판결요지, 참조조문, 전문)",
         "parameters": [
-          {"name": "case_id", "in": "path", "required": true, "schema": {"type": "string"}, "description": "판례 ID"}
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "판례 ID"
+          }
         ],
-        "responses": {"200": {"description": "판례 상세"}}
+        "responses": {
+          "200": {
+            "description": "판례 상세"
+          }
+        }
       }
     },
     "/bill/{keyword}": {
@@ -106,9 +262,21 @@
         "operationId": "searchBills",
         "summary": "국회 의안 검색",
         "parameters": [
-          {"name": "keyword", "in": "path", "required": true, "schema": {"type": "string"}, "description": "법률안명 키워드"}
+          {
+            "name": "keyword",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "법률안명 키워드"
+          }
         ],
-        "responses": {"200": {"description": "의안 목록"}}
+        "responses": {
+          "200": {
+            "description": "의안 목록"
+          }
+        }
       }
     },
     "/timeline/{id}": {
@@ -116,26 +284,54 @@
         "operationId": "getTimeline",
         "summary": "법령 입법 타임라인 (의안+개정+판례 통합 시계열)",
         "parameters": [
-          {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}, "description": "법령 ID"}
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "법령 ID"
+          }
         ],
-        "responses": {"200": {"description": "타임라인"}}
+        "responses": {
+          "200": {
+            "description": "타임라인"
+          }
+        }
       }
     },
     "/explore/{id}": {
       "get": {
         "operationId": "exploreLaw",
-        "summary": "법령 종합 탐색 — 조문, 판례, 의안, 인용을 링크 코드로 제공",
+        "summary": "법령 종합 탐색. 개별 호출 전에 먼저 사용. 조문, 판례, 의안, 인용을 한 번에 반환.",
         "parameters": [
-          {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}, "description": "법령 ID"}
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "법령 ID"
+          }
         ],
-        "responses": {"200": {"description": "종합 탐색 결과"}}
+        "responses": {
+          "200": {
+            "description": "종합 탐색 결과"
+          }
+        }
       }
     },
     "/stats": {
       "get": {
         "operationId": "getStats",
         "summary": "DB 전체 현황 (법령, 판례, 의안 건수)",
-        "responses": {"200": {"description": "DB 통계"}}
+        "responses": {
+          "200": {
+            "description": "DB 통계"
+          }
+        }
       }
     }
   }
