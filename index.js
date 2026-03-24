@@ -419,9 +419,9 @@ a:hover{text-decoration-color:#222}
 <hr>
 <p style="font-size:13px;color:#333;margin-bottom:12px"><strong>사용하기</strong></p>
 <table>
-<tr><td><strong>Claude</strong></td><td>대화에 <code>https://api.beopmang.org</code> 붙여넣기 — 알아서 호출</td></tr>
-<tr><td><strong><a href="https://chatgpt.com/g/g-69c28676709c8191a3e95b5d28b9a432-beobmangapi">ChatGPT</a></strong></td><td>GPT Store에서 "법령검색" 사용</td></tr>
-<tr><td><strong>Gemini</strong></td><td>미지원 — 외부 API 호출 기능 없음</td></tr>
+<tr><td><strong>Claude Web</strong></td><td>대화에 <code>https://api.beopmang.org</code> 붙여넣기 — 알아서 호출</td></tr>
+<tr><td><strong>Claude Code</strong></td><td>터미널에서 <code>curl https://api.beopmang.org/find/민법</code></td></tr>
+<tr><td><strong><a href="https://chatgpt.com/g/g-69c28676709c8191a3e95b5d28b9a432-beobmangapi">ChatGPT Codex</a></strong></td><td>Codex 앱에서 API URL 전달 — curl로 직접 호출</td></tr>
 </table>
 
 <hr>
