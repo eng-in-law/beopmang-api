@@ -256,7 +256,7 @@ async function statusPage(env, rlHeaders) {
   const laws = dbStats?.laws || '1,707';
   const articles = dbStats?.articles || '499K';
   const cases = dbStats?.cases || '171K';
-  const html = `<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>api.beopmang.org — 법령 검색 API</title><meta name="description" content="대한민국 법령 DB 실시간 쿼리 API. 법률 1,707개, 조문 499K, 판례 171K."><meta property="og:title" content="api.beopmang.org"><meta property="og:description" content="프롬프트 한 줄로 법률AI 에이전트 흉내내기"><meta property="og:type" content="website"><meta property="og:url" content="https://api.beopmang.org">
+  const html = `<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>api.beopmang.org — 법령 검색 API</title><meta name="description" content="대한민국 법령 DB 실시간 쿼리 API. 법률 1,707개, 조문 499K, 판례 171K."><meta property="og:title" content="api.beopmang.org"><meta property="og:description" content="프롬프트 한 줄로 법률AI 에이전트 흉내내기"><meta property="og:type" content="website"><meta property="og:url" content="https://api.beopmang.org"><link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦒</text></svg>"><meta property="og:image" content="https://raw.githubusercontent.com/eng-in-law/beopmang-api/main/og.svg">
 <style>
 *{box-sizing:border-box;margin:0}
 body{font-family:'SF Mono',Menlo,'Courier New',monospace;background:#fdfdfd;color:#222;max-width:680px;margin:0 auto;padding:40px 24px;font-size:14px;line-height:1.7}

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#fdfdfd"/>
+  <text x="120" y="260" font-family="system-ui,sans-serif" font-size="96" fill="#111">🦒</text>
+  <text x="240" y="255" font-family="'SF Mono',Menlo,monospace" font-size="48" font-weight="600" fill="#111">api.beopmang.org</text>
+  <text x="120" y="340" font-family="system-ui,sans-serif" font-size="28" fill="#888">프롬프트 한 줄로 법률AI 에이전트 흉내내기</text>
+  <text x="120" y="420" font-family="'SF Mono',Menlo,monospace" font-size="20" fill="#bbb">법률 1,707 · 조문 499K · 판례 171K · 실시간 쿼리</text>
+</svg>
