@@ -402,7 +402,7 @@ a:hover{text-decoration-color:#222}
 <h1>api.beopmang.org</h1>
 <p class="sub">대한민국 법령 실시간 검색 API</p>
 
-<p style="font-size:13px;color:#333;line-height:1.8;margin-bottom:24px">대한민국 현행 법률 전체를 실시간으로 검색할 수 있는 공개 API입니다.<br>법제처·국회 공식 데이터를 매주 갱신합니다. AI가 지어낸 답변이 아닙니다.</p>
+<p style="font-size:13px;color:#333;line-height:1.8;margin-bottom:24px">AI가 법령에 근거한 답변을 만들도록 돕습니다.<br>법제처·국회 공식 데이터를 매주 갱신합니다.</p>
 
 <div class="row">
 <div class="box"><div class="label">법률</div><div class="val">${laws}</div></div>
