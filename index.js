@@ -419,9 +419,8 @@ a:hover{text-decoration-color:#222}
 <hr>
 <p style="font-size:13px;color:#333;margin-bottom:12px"><strong>사용하기</strong></p>
 <table>
-<tr><td><strong><a href="https://chatgpt.com/g/g-69c28676709c8191a3e95b5d28b9a432-beobmangapi">ChatGPT</a></strong></td><td>GPT Store에서 바로 사용</td></tr>
-<tr><td><strong>Claude</strong></td><td>Projects에 <a href="/openapi.json">OpenAPI Spec</a> 첨부</td></tr>
-<tr><td><strong>Gemini</strong></td><td>Gems에서 API 연동 (개발자)</td></tr>
+<tr><td><strong>Claude</strong></td><td>대화에 <code>https://api.beopmang.org</code> 붙여넣기 — 알아서 호출</td></tr>
+<tr><td><strong><a href="https://chatgpt.com/g/g-69c28676709c8191a3e95b5d28b9a432-beobmangapi">ChatGPT</a></strong></td><td>GPT Store에서 "법령검색" 사용</td></tr>
 </table>
 
 <hr>
