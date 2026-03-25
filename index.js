@@ -453,7 +453,7 @@ a{color:var(--text0);text-decoration:underline;text-decoration-color:var(--strok
 <div class="page"><div class="page-inner">
 
 <h1 class="h1">🦒 법망 API</h1>
-<p class="sub">AI가 법령에 근거한 답변을 만들도록 돕습니다.<br>법제처·국회 Open API에서 수집한 법령·판례·의안 데이터를 조문 단위로 파싱하고, 인용관계 그래프 구축 및 벡터 임베딩을 거쳐 PostgreSQL + pgvector에 저장하여 키워드·시맨틱·하이브리드 검색을 제공합니다.</p>
+<p class="sub">프롬프트 한 줄로 법률AI 에이전트 흉내내기</p>
 
 <div class="stats">
 <div class="stat"><div class="stat-value">1,707</div><div class="stat-label">법률</div></div>
