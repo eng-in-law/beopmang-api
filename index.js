@@ -464,9 +464,9 @@ a{color:var(--text0);text-decoration:underline;text-decoration-color:var(--strok
 
 <h2 class="h2">사용하기</h2>
 <div class="cards">
-<div class="card"><div class="card-title">Claude</div><div class="card-desc">대화에 <code>https://api.beopmang.org</code> 붙여넣기 — 알아서 호출</div></div>
-<div class="card"><div class="card-title">ChatGPT</div><div class="card-desc">설정 → 앱 → 고급 → 개발자 모드 → 앱 만들기<br><br><span class="copy-field" onclick="cc(this)" data-v="법망"><code>이름: 법망</code> <button class="copy-btn">copy</button></span><span class="copy-field" onclick="cc(this)" data-v="https://api.beopmang.org/mcp"><code>URL: https://api.beopmang.org/mcp</code> <button class="copy-btn">copy</button></span><span class="copy-field" onclick="cc(this)" data-v="반드시 여러 번 호출하고 조문번호와 법령명을 구체적으로 인용하여 답하세요"><code>설명: 반드시 여러 번 호출...</code> <button class="copy-btn">copy</button></span>인증: 없음 · "+" → 더 보기 → 법망<br>⚠ Plus 이상 필요 · 추천: GPT 5.4 Thinking 이상</div></div>
-<div class="card"><div class="card-title">Gemini</div><div class="card-desc">미지원 — 외부 API 호출 기능 없음</div></div>
+<div class="card"><div class="card-title">Claude</div><div class="card-desc"><span class="copy-field" onclick="cc(this)" data-v="https://api.beopmang.org"><code>https://api.beopmang.org</code> <button class="copy-btn">copy</button></span>대화에 붙여넣으면 알아서 호출합니다.</div></div>
+<div class="card"><div class="card-title">ChatGPT</div><div class="card-desc"><span class="copy-field" onclick="cc(this)" data-v="https://api.beopmang.org/mcp"><code>https://api.beopmang.org/mcp</code> <button class="copy-btn">copy</button></span>설정 → 앱 → 고급 → 개발자 모드 → 앱 만들기. 이름: <span class="copy-field" onclick="cc(this)" data-v="법망" style="display:inline;padding:2px 6px"><code>법망</code> <button class="copy-btn">copy</button></span> 인증: 없음. Plus 이상.</div></div>
+<div class="card"><div class="card-title">Gemini</div><div class="card-desc">환각이 심하여 권장하지 않습니다.<br>사용 불가</div></div>
 </div>
 
 <h2 class="h2">직접 써보기</h2>
