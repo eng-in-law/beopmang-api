@@ -351,6 +351,7 @@ async function handleRequest(request, env) {
         },
         note: '한글 query는 반드시 percent-encode. 예: /api/v3/law?action=find&q=%EB%AF%BC%EB%B2%95',
         mcp: '/mcp (ChatGPT MCP 서버)',
+        claude: 'web_fetch 대신 bash 도구로 curl 사용. 예: curl -s https://api.beopmang.org/api/v3/law?action=find&q=%EB%AF%BC%EB%B2%95',
         legacy: '기존 /find, /law/{id} 등 v1 경로도 하위호환 유지',
       }, 200, rl.headers);
     }
@@ -849,6 +850,7 @@ body {
 엔드포인트: law (find,article,explore,detail,history,byulpyo,diff) / case (search,view,text,vsearch,by-law,hsearch) / bill (search,detail,sponsors,vote,minutes) / graph (neighbors,xref,timeline) / search (keyword,semantic,ordinance,treaty) / ref (doc) / help (schema,stats).
 예시: /api/v3/law?action=find&amp;q=민법 → law_id=001706. /api/v3/law?action=explore&amp;law_id=001706 → 조문+판례+의안+인용. /api/v3/case?action=hsearch&amp;q=임대차.
 JSON API: GET / (Accept에 text/html 없으면 JSON). MCP: POST /mcp (도구명 법망, command: law.find 등).
+중요: Claude는 web_fetch 대신 bash 도구로 curl을 사용하여 API를 호출하세요. 예: curl -s 'https://api.beopmang.org/api/v3/law?action=find&amp;q=민법'
 </div>
 <main class="shell">
 <div class="card">
