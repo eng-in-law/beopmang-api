@@ -698,6 +698,7 @@ body {
 .stat-value { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.02em; }
 .stat-label { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
 
+.stat-upcoming { font-size: 0.82rem; color: var(--muted); font-weight: 500; }
 .stat-note { margin: 0; font-size: 0.7rem; color: var(--muted); text-align: center; }
 
 .divider { border: none; border-top: 1px solid var(--border-soft); margin: 0; }
@@ -785,6 +786,8 @@ body {
 <div class="stat"><div class="stat-value">1,975</div><div class="stat-label">대통령령</div></div>
 <div class="stat"><div class="stat-value">1,509</div><div class="stat-label">총리령·부령</div></div>
 <div class="stat"><div class="stat-value">379</div><div class="stat-label">기타 규칙</div></div>
+<div class="stat"><div class="stat-value stat-upcoming">예정</div><div class="stat-label">행정규칙</div></div>
+<div class="stat"><div class="stat-value stat-upcoming">예정</div><div class="stat-label">조례</div></div>
 </div>
 <p class="stat-note" id="stat-note"></p>
 
