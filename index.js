@@ -646,7 +646,7 @@ async function statusPage(env, rlHeaders) {
 :root {
   --bg: #f2ead3;
   --bg-soft: #ede4cb;
-  --surface: #fffdf7;
+  --surface: #f7ecd2;
   --border: #c2a676;
   --border-soft: rgba(194,166,118,0.25);
   --ink: #3b2f20;
