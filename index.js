@@ -204,8 +204,11 @@ export default {
 
     if (originData.exit_code !== 0) {
       const rawDetail = originData.output || '';
-      const cleanDetail = rawDetail.replace(/lawcli\.py/g, 'lawcli').replace(/\/home\/[^\s]+/g, '').replace(/Traceback[\s\S]*$/m, '').trim();
-      return json({ ok: false, error: { code: 'COMMAND_FAILED', message: cleanDetail || 'command returned an error', command: parsed.cmd } }, 422, rl.headers);
+      const clean = rawDetail.replace(/lawcli\.py/g, 'lawcli').replace(/\/home\/[^\s]+/g, '').replace(/Traceback[\s\S]*$/m, '').trim();
+      let errObj; try { errObj = JSON.parse(clean); } catch { errObj = null; }
+      const errPayload = errObj?.error ? errObj : { ok: false, error: { code: 'COMMAND_FAILED', message: clean || 'command returned an error', command: parsed.cmd } };
+      if (!errPayload.ok) errPayload.ok = false;
+      return json(errPayload, 422, rl.headers);
     }
 
     let result;
@@ -590,8 +593,11 @@ async function handleMcp(request, env) {
       const resp = await fetch(env.ORIGIN_BASE + '/api/lawcli?' + qs, { headers: { 'User-Agent': 'beopmang-mcp/1.0' } });
       const data = await resp.json();
       if (data.exit_code !== 0) {
-        const msg = (data.output || 'command failed').replace(/lawcli\.py/g, 'lawcli').replace(/\/home\/[^\s]+/g, '').trim();
-        return mcpOk(id, { content: [{ type: 'text', text: JSON.stringify({ error: { code: 'COMMAND_FAILED', message: msg, command: command } }) }], isError: true });
+        const raw = (data.output || 'command failed').replace(/lawcli\.py/g, 'lawcli').replace(/\/home\/[^\s]+/g, '').trim();
+        let errObj;
+        try { errObj = JSON.parse(raw); } catch { errObj = null; }
+        const errorPayload = errObj?.error ? errObj : { error: { code: 'COMMAND_FAILED', message: raw, command } };
+        return mcpOk(id, { content: [{ type: 'text', text: JSON.stringify(errorPayload) }], isError: true });
       }
       let mainResult = data.output || '{}';
       // Handle include parameter
