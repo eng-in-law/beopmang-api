@@ -962,11 +962,12 @@ JSON API: GET / (Accept에 text/html 없으면 JSON). MCP: POST /mcp (도구명 
 </main>
 <script>
 function cc(el,v){navigator.clipboard.writeText(v).then(function(){el.textContent='copied!';setTimeout(function(){el.textContent='복사'},1500)})}
-fetch('/health').then(function(r){return r.json()}).then(function(d){
+function hc(){fetch('/health').then(function(r){return r.json()}).then(function(d){
 var el=document.getElementById('hc');
 if(d.status==='ok')el.innerHTML='<span class="dot" style="background:#2f6b4e"></span><span>서버 정상</span><strong>'+d.origin_ms+'ms</strong>';
-else el.innerHTML='<span class="dot" style="background:#dc2626"></span><span>오프라인</span><strong>점검 중</strong>';
-}).catch(function(){document.getElementById('hc').innerHTML='<span class="dot" style="background:#d97706"></span><span>확인 불가</span><strong>—</strong>'});
+else{el.innerHTML='<span class="dot" style="background:#dc2626"></span><span>오프라인</span><strong>점검 중</strong>';setTimeout(hc,10000);}
+}).catch(function(){document.getElementById('hc').innerHTML='<span class="dot" style="background:#d97706"></span><span>확인 불가</span><strong>—</strong>';setTimeout(hc,10000);});}
+hc();setInterval(hc,60000);
 fetch('/stats').then(function(r){return r.json()}).then(function(d){
 var r=d.result||d;var n=document.getElementById('stat-note');if(n&&r.last_synced&&r.sync_complete){var p=r.last_synced.split('-');n.textContent=p[0]+'. '+parseInt(p[1])+'. '+parseInt(p[2])+'. 기준 법제처 API 제공 법령 등 100% 수록';}
 }).catch(function(){});
