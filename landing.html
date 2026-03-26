@@ -64,7 +64,7 @@ body {
 .stats { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; }
 .stat { text-align: center; }
 .stat-value { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.02em; }
-.stat-label { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+.stat-label { font-size: 0.76rem; color: var(--muted); margin-top: 3px; letter-spacing: 0.02em; }
 
 .stat-upcoming { font-size: 0.82rem; color: var(--muted); font-weight: 500; }
 .stat-note { margin: 0; font-size: 0.7rem; color: var(--muted); text-align: center; }
@@ -72,13 +72,13 @@ body {
 .divider { border: none; border-top: 1px solid var(--border-soft); margin: 0; }
 
 .section { display: flex; flex-direction: column; gap: 6px; }
-.section-title { margin: 0; font-size: 0.85rem; font-weight: 700; }
-.section-title small { font-weight: 400; color: var(--muted); }
+.section-title { margin: 0 0 4px 0; font-size: 1.05rem; font-weight: 800; letter-spacing: -0.03em; }
+.section-title small { font-weight: 500; color: var(--muted); font-size: 0.75rem; }
 .section-desc { margin: 0; font-size: 0.82rem; color: var(--ink); line-height: 1.5; }
 
 .copy-row {
   display: flex; align-items: center; gap: 8px;
-  padding: 10px 12px; border-radius: 0;
+  padding: 14px 14px; border-radius: 0;
   border: 2px solid #3b2f20; background: var(--bg);
   box-shadow: 4px 4px 0 #3b2f20;
 }
@@ -97,10 +97,10 @@ body {
   display: grid; grid-template-columns: 6.5rem 1fr auto;
   gap: 6px 8px; align-items: center; font-size: 0.82rem;
 }
-.field-grid span { color: #a08d6f; white-space: nowrap; text-align: right; font-weight: 500; font-size: 0.75rem; }
+.field-grid span { color: #a08d6f; white-space: nowrap; text-align: right; font-weight: 500; font-size: 0.7rem; }
 .field-grid code {
-  font-family: "JetBrains Mono",ui-monospace,monospace; font-size: 0.78rem; font-weight: 500; color: #1a1207;
-  padding: 6px 10px; background: var(--bg); border: 2px solid #3b2f20;
+  font-family: "JetBrains Mono",ui-monospace,monospace; font-size: 0.85rem; font-weight: 500; color: #1a1207;
+  padding: 10px 12px; background: var(--bg); border: 2px solid #3b2f20;
   border-radius: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 
