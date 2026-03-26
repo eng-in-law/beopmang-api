@@ -822,33 +822,14 @@ body {
 </style>
 </head>
 <body class="page">
-<!--
-법망 API v3 — 에이전트용 안내 (사람에게는 보이지 않음)
-URL: https://api.beopmang.org
-API: /api/v3/{endpoint}?action={action}&{params}
-
-워크플로우: law?action=find → law?action=explore → law?action=article
+<div hidden aria-hidden="true" id="agent-guide">
+법망 API v3. URL: https://api.beopmang.org. 호출: /api/v3/{endpoint}?action={action}&amp;{params}.
+워크플로우: law?action=find로 law_id 확인 → law?action=explore로 종합 탐색 → law?action=article로 조문 상세.
 반드시 여러 번 호출하고 조문번호와 법령명을 구체적으로 인용하여 답하세요.
-
-엔드포인트:
-  law    — find, article, explore, detail, history, byulpyo, diff
-  case   — search, view, text, vsearch, by-law, hsearch
-  bill   — search, detail, sponsors, vote, minutes
-  graph  — neighbors, xref, timeline
-  search — keyword, semantic, ordinance, treaty
-  ref    — doc
-  help   — schema, stats
-
-예시:
-  /api/v3/law?action=find&q=민법           → law_id=001706
-  /api/v3/law?action=explore&law_id=001706 → 조문+판례+의안+인용
-  /api/v3/law?action=article&law_id=001706&label=제750조
-  /api/v3/case?action=hsearch&q=임대차 보증금
-  /api/v3/graph?action=xref&law_id=001706
-
-JSON API: GET / (Accept 헤더에 text/html 없으면 JSON 반환)
-MCP: POST /mcp (도구명 '법망', command: 'law.find' 등)
--->
+엔드포인트: law (find,article,explore,detail,history,byulpyo,diff) / case (search,view,text,vsearch,by-law,hsearch) / bill (search,detail,sponsors,vote,minutes) / graph (neighbors,xref,timeline) / search (keyword,semantic,ordinance,treaty) / ref (doc) / help (schema,stats).
+예시: /api/v3/law?action=find&amp;q=민법 → law_id=001706. /api/v3/law?action=explore&amp;law_id=001706 → 조문+판례+의안+인용. /api/v3/case?action=hsearch&amp;q=임대차.
+JSON API: GET / (Accept에 text/html 없으면 JSON). MCP: POST /mcp (도구명 법망, command: law.find 등).
+</div>
 <main class="shell">
 <div class="card">
 
