@@ -646,29 +646,37 @@ async function statusPage(env, rlHeaders) {
   --pico-muted-border-color: #c2a67650;
   --pico-code-background-color: #c2a67620;
   --pico-code-color: #3b2f20;
-  --pico-code-font-family: 'JetBrains Mono', monospace;
-  --pico-line-height: 1.4;
+  --pico-line-height: 1.5;
   --pico-typography-spacing-vertical: 0.8rem;
 }
-body > main { max-width: 640px; margin: 0 auto; padding: 4rem 1.5rem; }
+body > main { max-width: 580px; margin: 0 auto; padding: 3rem 1.5rem; }
+h1 { font-size: 1.8rem; margin-bottom: 0.3rem; }
+h2 { font-size: 1.1rem; margin-top: 2.5rem; margin-bottom: 1rem; border-bottom: 1px solid #c2a67640; padding-bottom: 0.5rem; }
+h3 { font-size: 0.95rem; margin-top: 1.8rem; margin-bottom: 0.5rem; }
+p { margin-bottom: 0.5rem; }
+small { color: #6d593f; }
+.health { text-align: center; margin-bottom: 2rem; font-size: 0.8rem; color: #897457; }
+.health strong { font-size: 1.5rem; display: block; color: #3b2f20; }
 .stats { display: flex; gap: 2rem; flex-wrap: wrap; margin: 2rem 0; }
-.stats div { text-align: center; }
-.stats strong { display: block; font-size: 1.5rem; color: #3b2f20; }
-.stats small { font-size: 0.75rem; color: #897457; }
-.copy-row { display: flex; align-items: center; gap: 0.5rem; }
-.copy-row code { flex: 1; font-size: 0.85rem; }
-.copy-row button { font-size: 0.7rem; padding: 0.25rem 0.5rem; }
-h1 { margin-bottom: 0.5rem; }
-h2 { margin-top: 2.5rem; margin-bottom: 1rem; }
-h3 { margin-top: 1.5rem; margin-bottom: 0.3rem; font-size: 1rem; }
-p { margin-bottom: 0.4rem; }
-small { line-height: 1.4; }
-section { margin-top: 2.5rem; }
-footer { margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #c2a67640; font-size: 0.75rem; color: #897457; }
+.stats > div { text-align: center; min-width: 70px; }
+.stats strong { display: block; font-size: 1.3rem; color: #3b2f20; }
+.stats small { font-size: 0.75rem; color: #6d593f; }
+.copy-row { display: flex; align-items: center; gap: 0.5rem; margin: 0.4rem 0; }
+.copy-row code { flex: 1; font-size: 0.82rem; padding: 0.4rem 0.6rem; }
+.copy-row button { font-size: 0.7rem; padding: 0.3rem 0.6rem; white-space: nowrap; }
+.steps { margin: 0.8rem 0; padding: 0; }
+.steps li { margin-bottom: 0.4rem; font-size: 0.85rem; color: #4f3f2b; }
+.field-row { display: flex; align-items: center; gap: 0.4rem; margin: 0.3rem 0 0.3rem 1.2rem; font-size: 0.82rem; }
+.field-row span { color: #897457; min-width: 2.5rem; }
+.field-row code { flex: 1; font-size: 0.8rem; padding: 0.3rem 0.5rem; }
+.field-row button { font-size: 0.65rem; padding: 0.2rem 0.5rem; }
+footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid #c2a67640; font-size: 0.75rem; color: #897457; }
 </style>
 </head>
 <body>
 <main>
+
+<div class="health" id="hc">서버 확인 중...</div>
 
 <h1>🦒 법망 API</h1>
 <p>프롬프트 한 줄로 법률AI 에이전트 흉내내기</p>
@@ -680,26 +688,31 @@ footer { margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #c2a67640; f
 <div><strong>61,755</strong><small>인용관계</small></div>
 </div>
 
-<section>
 <h2>사용하기</h2>
 
-<h3>Claude</h3>
+<h3>Claude / Codex</h3>
 <div class="copy-row">
 <code>https://api.beopmang.org</code>
 <button onclick="cc(this,'https://api.beopmang.org')">copy</button>
 </div>
 <p><small>대화에 붙여넣으면 알아서 호출합니다.</small></p>
 
-<h3>ChatGPT</h3>
-<div class="copy-row">
-<code>https://api.beopmang.org/mcp</code>
-<button onclick="cc(this,'https://api.beopmang.org/mcp')">copy</button>
-</div>
-<p><small>설정 → 앱 → 고급 설정 → 개발자 모드 → 앱 만들기. 이름: <button onclick="cc(this,'법망')">법망</button> · 인증: 없음. Plus 이상. 추천: GPT 5.4 Thinking 이상.</small></p>
+<h3>ChatGPT <small>(Plus 이상)</small></h3>
+<ol class="steps">
+<li>설정 → 앱 → 고급 설정 → 개발자 모드 켜기</li>
+<li>앱 만들기 클릭</li>
+<li>아래 값 입력:
+<div class="field-row"><span>이름</span><code>법망</code><button onclick="cc(this,'법망')">copy</button></div>
+<div class="field-row"><span>URL</span><code>https://api.beopmang.org/mcp</code><button onclick="cc(this,'https://api.beopmang.org/mcp')">copy</button></div>
+<div class="field-row"><span>설명</span><code>반드시 여러 번 호출하고 조문번호와 법령명을 구체적으로 인용하여 답하세요</code><button onclick="cc(this,'반드시 여러 번 호출하고 조문번호와 법령명을 구체적으로 인용하여 답하세요')">copy</button></div>
+<div class="field-row"><span>인증</span><code>없음</code></div>
+</li>
+<li>채팅에서 + → 더 보기 → 법망 선택</li>
+</ol>
+<p><small>추천 모델: GPT 5.4 Thinking 이상</small></p>
 
 <h3>Gemini</h3>
-<p><small>환각이 심하여 권장하지 않습니다.<br>사용 불가</small></p>
-</section>
+<p><small>환각이 심하여 권장하지 않습니다. 사용 불가.</small></p>
 
 <footer>
 <p><a href="/openapi.json">OpenAPI</a> · <a href="/.well-known/agent.json">Agent Card</a> · <a href="/privacy">Privacy</a> · <a href="/health">Health</a></p>
@@ -707,7 +720,14 @@ footer { margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #c2a67640; f
 </footer>
 
 </main>
-<script>function cc(el,v){navigator.clipboard.writeText(v).then(function(){el.textContent='copied!';setTimeout(function(){el.textContent='copy'},1500)})}</script>
+<script>
+function cc(el,v){navigator.clipboard.writeText(v).then(function(){el.textContent='copied!';setTimeout(function(){el.textContent='copy'},1500)})}
+fetch('/health').then(function(r){return r.json()}).then(function(d){
+var el=document.getElementById('hc');
+if(d.status==='ok')el.innerHTML='<strong>'+d.origin_ms+'ms</strong>응답 시간 · 서버 정상';
+else el.innerHTML='<strong>오프라인</strong>서버 점검 중';
+}).catch(function(){document.getElementById('hc').innerHTML='<strong>—</strong>확인 불가'});
+</script>
 </body>
 </html>
 `;
