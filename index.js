@@ -793,8 +793,7 @@ body {
 <div class="section">
 <p class="section-title">ChatGPT <small>Plus 이상</small></p>
 <ol class="steps">
-<li>설정 → 앱 → 고급 설정 → 개발자 모드 켜기</li>
-<li>앱 만들기 클릭</li>
+<li>설정 → 앱 → 앱 만들기</li>
 <li>아래 값 입력:</li>
 </ol>
 <div class="field-grid">
@@ -803,7 +802,7 @@ body {
 <span>설명</span><code>반드시 여러 번 호출하고 조문번호와 법령명을 구체적으로 인용하여 답하세요</code><button class="copy-btn" onclick="cc(this,'반드시 여러 번 호출하고 조문번호와 법령명을 구체적으로 인용하여 답하세요')">복사</button>
 <span>인증</span><code>없음</code><span></span>
 </div>
-<ol class="steps" start="4">
+<ol class="steps" start="3">
 <li>채팅에서 + → 더 보기 → 법망 선택</li>
 </ol>
 <p class="muted-note">추천 모델: GPT 5.4 Thinking 이상</p>
