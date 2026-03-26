@@ -45,11 +45,32 @@ const INCLUDE_COMMAND_MAP = {
   explore: 'exploreLaw',
 };
 
-const TOOL_COMMANDS = [
+const V3_COMMANDS = Object.freeze({
+  'law.find': { endpoint: 'law', action: 'find' },
+  'law.detail': { endpoint: 'law', action: 'detail' },
+  'law.history': { endpoint: 'law', action: 'history' },
+  'law.article': { endpoint: 'law', action: 'article' },
+  'case.hsearch': { endpoint: 'case', action: 'hsearch' },
+  'case.detail': { endpoint: 'case', action: 'detail' },
+  'case.by_law': { endpoint: 'case', action: 'by_law' },
+  'bill.search': { endpoint: 'bill', action: 'search' },
+  'bill.detail': { endpoint: 'bill', action: 'detail' },
+  'graph.xref': { endpoint: 'graph', action: 'xref' },
+  'graph.timeline': { endpoint: 'graph', action: 'timeline' },
+  'graph.explore': { endpoint: 'graph', action: 'explore' },
+  'search.keyword': { endpoint: 'search', action: 'keyword' },
+  'ref.doc': { endpoint: 'ref', action: 'doc' },
+  'help.schema': { endpoint: 'help', action: 'schema' },
+  'help.stats': { endpoint: 'help', action: 'stats' },
+});
+
+const LEGACY_TOOL_COMMANDS = [
   'findLaw', 'getLaw', 'getHistory', 'getArticle', 'getXref', 'searchArticles',
   'searchCases', 'getCasesByLaw', 'getCaseDetail', 'searchBills', 'getTimeline',
-  'exploreLaw', 'getStats', 'sendFeedback'
+  'exploreLaw', 'getStats'
 ];
+
+const TOOL_COMMANDS = [...Object.keys(V3_COMMANDS), ...LEGACY_TOOL_COMMANDS, 'sendFeedback'];
 
 function buildOriginUrl(base, command, p = {}) {
   const lawId = p.law_id || p.id || '';
@@ -92,6 +113,26 @@ function buildOriginUrl(base, command, p = {}) {
     + '&args=' + encodeURIComponent(args)
     + (flags ? '&flags=' + encodeURIComponent(flags) : '')
     + '&json=1';
+}
+
+function buildV3Url(base, command, p = {}) {
+  const route = V3_COMMANDS[command];
+  if (!route) return null;
+
+  const qs = new URLSearchParams();
+  qs.set('action', route.action);
+  for (const [key, value] of Object.entries(p || {})) {
+    if (value === undefined || value === null || value === '') continue;
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        if (item === undefined || item === null || item === '') continue;
+        qs.append(key, String(item));
+      }
+      continue;
+    }
+    qs.set(key, String(value));
+  }
+  return base + '/api/v3/' + route.endpoint + '?' + qs.toString();
 }
 
 function parseOriginOutput(output) {
@@ -327,6 +368,20 @@ async function handleRequest(request, env) {
         return json({ status: 'degraded', origin_status: r.status }, 200, rl.headers);
       } catch (e) {
         return json({ status: 'down', error: e.message }, 200, rl.headers);
+      }
+    }
+
+    if (path.startsWith('/api/v3/')) {
+      try {
+        const originResp = await fetch(env.ORIGIN_BASE + path + url.search, {
+          headers: { 'User-Agent': 'beopmang-api/1.0' },
+          cf: { cacheTtl: 0 },
+        });
+        const headers = new Headers(originResp.headers);
+        for (const [key, value] of Object.entries(corsHeaders())) headers.set(key, value);
+        return new Response(originResp.body, { status: originResp.status, headers });
+      } catch {
+        return json({ ok: false, error: 'service_unavailable', retry_after: 30 }, 503, rl.headers);
       }
     }
 
@@ -875,28 +930,32 @@ const MCP_TOOLS = [{
   name: '법망',
   description: `대한민국 법령 DB 실시간 쿼리. 반드시 여러 번 호출하고 조문번호와 법령명을 구체적으로 인용하여 답하세요.
 
-명령어 (command 필드에 입력):
-- findLaw: 법령 찾기. params: {query: "민법"}. 결과의 law_id로 다른 명령 호출.
-- exploreLaw: 종합 탐색. 개별 호출 전에 먼저 사용. params: {law_id: "001706"}
-- getLaw: 법령 정보. params: {law_id, full?: true, include?: "history,cases,xref"}
-- getArticle: 조문 상세. params: {law_id, article_label: "제750조"}
-- getHistory: 개정 연혁. params: {law_id}
-- getXref: 인용관계. params: {law_id, cited_by?: true}
-- searchArticles: 조문 검색. params: {query}
-- searchCases: 판례 검색. params: {query}
-- getCasesByLaw: 법령별 판례. params: {law_id}
-- getCaseDetail: 판례 상세. params: {case_id}
-- searchBills: 의안 검색. params: {query}
-- getTimeline: 타임라인. params: {law_id}
-- getStats: DB 현황. params: {}
+명령어 (command 필드에 입력, 우선 권장: v3 endpoint.action 형식):
+- law.find: 법령 찾기. params: {q: "민법"}
+- law.detail: 법령 상세. params: {law_id: "001706"}
+- law.history: 개정 연혁. params: {law_id: "001706"}
+- law.article: 조문 상세. params: {law_id: "001706", article_label: "제750조"}
+- case.hsearch: 판례 검색. params: {q: "임대차"}
+- case.detail: 판례 상세. params: {case_id}
+- case.by_law: 법령별 판례. params: {law_id: "001706"}
+- bill.search: 의안 검색. params: {q: "민법"}
+- bill.detail: 의안 상세. params: {bill_id: "PRC_..."}
+- graph.xref: 인용관계. params: {law_id: "001706"}
+- graph.timeline: 타임라인. params: {law_id: "001706"}
+- graph.explore: 종합 탐색. params: {law_id: "001706"}
+- search.keyword: 키워드 검색. params: {q: "화학물질"}
+- ref.doc: 문서 참조. params: {q: "..."}
+- help.schema: 스키마 안내. params: {}
+- help.stats: DB 현황. params: {}
 - sendFeedback: 피드백. params: {message, type?: "bug|feature|quality"}
 
+레거시 camelCase 명령(findLaw, getLaw 등)도 당분간 호환됩니다.
 unit_level: JO=조, HANG=항, HO=호, MOK=목
 law_id는 6자리 숫자 (예: 001706=민법, 001692=형법)`,
   inputSchema: {
     type: 'object',
     properties: {
-      command: { type: 'string', description: '명령어 (findLaw, exploreLaw, getLaw 등)' },
+      command: { type: 'string', description: '명령어 (권장: law.find, case.hsearch, help.schema 등)' },
       params: { type: 'object', description: '명령어별 파라미터' },
     },
     required: ['command'],
@@ -950,7 +1009,7 @@ async function handleMcp(request, env) {
       retryable: true,
       message: 'Missing "command" field',
       available_commands: TOOL_COMMANDS,
-      example: { command: 'findLaw', params: { query: '민법' } }
+      example: { command: 'law.find', params: { q: '민법' } }
     }) }], isError: true });
     if (!TOOL_COMMANDS.includes(command)) return mcpOk(id, { content: [{ type: 'text', text: JSON.stringify({
       error_type: 'unknown_command',
@@ -971,7 +1030,8 @@ async function handleMcp(request, env) {
     }
 
     try {
-      const originUrl = buildOriginUrl(env.ORIGIN_BASE, command, p);
+      const isV3Command = Object.prototype.hasOwnProperty.call(V3_COMMANDS, command);
+      const originUrl = isV3Command ? buildV3Url(env.ORIGIN_BASE, command, p) : buildOriginUrl(env.ORIGIN_BASE, command, p);
       if (!originUrl) {
         const errMsg = command === 'getArticle'
           ? {error_type:'invalid_argument',retryable:true,message:'getArticle requires law_id and (article_label or article_path)',example:{command:'getArticle',params:{law_id:'001706',article_label:'제750조'}}}

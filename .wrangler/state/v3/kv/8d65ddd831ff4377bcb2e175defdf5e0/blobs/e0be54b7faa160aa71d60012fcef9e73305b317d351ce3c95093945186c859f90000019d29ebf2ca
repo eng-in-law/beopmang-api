@@ -1,0 +1,127 @@
+{
+  "name": "법망 API",
+  "description": "대한민국 현행 법령 5,573건 + 판례 171K + 의안 114K. 법제처 API 100% 수록. 반드시 여러 번 호출하고 조문번호와 법령명을 구체적으로 인용하여 답하세요.",
+  "skills": [
+    {
+      "id": "find",
+      "name": "법령 찾기",
+      "path": "/find?q={name}",
+      "description": "법령명/약칭으로 찾기. law_id를 확인한 뒤 exploreLaw로 종합 탐색하세요."
+    },
+    {
+      "id": "law",
+      "name": "법령 조회",
+      "path": "/law/{id}",
+      "description": "법령 기본정보 (소관부처, 시행일, 조문 수). ID는 /find로 확인"
+    },
+    {
+      "id": "search",
+      "name": "조문 검색",
+      "path": "/search?q={keyword}",
+      "description": "조문 본문 내 키워드 검색"
+    },
+    {
+      "id": "usearch",
+      "name": "시맨틱 검색",
+      "path": "/usearch?q={query}",
+      "description": "자연어로 법령+판례+제안이유 통합 검색"
+    },
+    {
+      "id": "history",
+      "name": "연혁 조회",
+      "path": "/history/{id}",
+      "description": "법령 연혁 (제정→최근, 개정별 변경 조문 수)"
+    },
+    {
+      "id": "article",
+      "name": "조문 조회",
+      "path": "/article/{id}/{label}",
+      "description": "특정 조문 상세 (항/호/목 포함)"
+    },
+    {
+      "id": "xref",
+      "name": "인용관계",
+      "path": "/xref/{id}",
+      "description": "이 법이 인용하는/인용되는 법령"
+    },
+    {
+      "id": "timeline",
+      "name": "입법 타임라인",
+      "path": "/timeline/{id}",
+      "description": "의안+개정+판례 통합 타임라인"
+    },
+    {
+      "id": "case-by-law",
+      "name": "관련 판례",
+      "path": "/case-by-law/{id}",
+      "description": "특정 법령 관련 판례"
+    },
+    {
+      "id": "bill",
+      "name": "의안 검색",
+      "path": "/bill?q={query}",
+      "description": "국회 의안 검색"
+    },
+    {
+      "id": "stats",
+      "name": "DB 통계",
+      "path": "/stats",
+      "description": "DB 전체 통계"
+    }
+  ],
+  "url": "https://api.beopmang.org",
+  "openapi": "https://api.beopmang.org/openapi.json",
+  "source": "live_database",
+  "rate_limit": "100/min per IP",
+  "brief_mode": "?brief=1 (default) for minimal fields, ?full=1 for complete data",
+  "note": "URL path/query에 한글이나 공백이 포함되면 반드시 percent-encode 하세요. 예: /search?q=%EB%AF%BC%EB%B2%95, /case-vsearch/%EB%B0%9C%EC%82%AC%EC%B2%B4%20%EC%86%90%ED%95%B4%EB%B0%B0%EC%83%81",
+  "examples": [
+    {
+      "description": "법령 찾기",
+      "tool": "findLaw",
+      "input": {
+        "query": "민법"
+      },
+      "output_hint": "law_id=001706"
+    },
+    {
+      "description": "법령 상세",
+      "tool": "getLaw",
+      "input": {
+        "law_id": "001706"
+      },
+      "output_hint": "민법, 조문 1193개"
+    },
+    {
+      "description": "조문 조회",
+      "tool": "getArticle",
+      "input": {
+        "law_id": "001706",
+        "article_label": "제750조"
+      },
+      "output_hint": "불법행위 조문"
+    },
+    {
+      "description": "인용관계",
+      "tool": "getXref",
+      "input": {
+        "law_id": "001706"
+      },
+      "output_hint": "민법이 인용하는 법령"
+    },
+    {
+      "description": "종합 탐색",
+      "tool": "exploreLaw",
+      "input": {
+        "law_id": "001706"
+      },
+      "output_hint": "조문+판례+의안+인용 한 번에"
+    }
+  ],
+  "unit_level_enum": {
+    "JO": "조",
+    "HANG": "항",
+    "HO": "호",
+    "MOK": "목"
+  }
+}
