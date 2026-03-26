@@ -507,20 +507,12 @@ async function statusPage(env, rlHeaders) {
                 >
                 <span class="text-parchment-text/65">대한민국 법률 데이터 API</span>
               </div>
-              <div
-                class="inline-flex items-center rounded-full border border-parchment-border/80 bg-parchment-bg/90 px-3 py-1 font-mono text-xs text-parchment-text/70"
-              >
-                live database / paper mode
-              </div>
             </div>
           </div>
 
           <div class="relative px-6 pb-10 pt-10 sm:px-8 lg:px-12 lg:pb-14 lg:pt-14">
             <section class="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
               <div class="max-w-3xl">
-                <p class="mb-4 font-mono text-sm uppercase tracking-[0.26em] text-parchment-amber">
-                  Legal Agent Playground
-                </p>
                 <h1 class="max-w-3xl text-4xl font-black leading-tight tracking-[-0.04em] sm:text-5xl lg:text-6xl">
                   🦒 법망 API
                 </h1>
@@ -533,20 +525,6 @@ async function statusPage(env, rlHeaders) {
                 </p>
               </div>
 
-              <div class="rounded-[24px] border border-parchment-border bg-parchment-bg/90 p-5">
-                <p class="font-mono text-xs uppercase tracking-[0.24em] text-parchment-amber">
-                  Quick Prompt
-                </p>
-                <div
-                  class="mt-3 rounded-2xl border border-parchment-border/80 bg-parchment-card px-4 py-4 font-mono text-sm leading-7 text-parchment-text"
-                >
-                  &gt; 민법 제750조 보여주고 관련 판례까지 간단히 정리해줘
-                </div>
-                <p class="mt-3 text-sm leading-6 text-parchment-text/68">
-                  검색, 조문, 판례, 인용관계까지 한 번에 연결되는 사용감을 전제로
-                  만든 페이지입니다.
-                </p>
-              </div>
             </section>
 
             <section class="mt-10 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -557,17 +535,17 @@ async function statusPage(env, rlHeaders) {
               </article>
               <article class="rounded-[22px] border border-parchment-border bg-parchment-card p-5">
                 <p class="font-mono text-xs uppercase tracking-[0.22em] text-parchment-amber">조문</p>
-                <p class="mt-3 text-4xl font-black tracking-[-0.04em]">499K</p>
+                <p class="mt-3 text-4xl font-black tracking-[-0.04em]">499,310</p>
                 <p class="mt-2 text-sm text-parchment-text/65">조·항·호·목 구조 포함</p>
               </article>
               <article class="rounded-[22px] border border-parchment-border bg-parchment-card p-5">
                 <p class="font-mono text-xs uppercase tracking-[0.22em] text-parchment-amber">판례</p>
-                <p class="mt-3 text-4xl font-black tracking-[-0.04em]">171K</p>
+                <p class="mt-3 text-4xl font-black tracking-[-0.04em]">171,257</p>
                 <p class="mt-2 text-sm text-parchment-text/65">법령 연계 판례 탐색 가능</p>
               </article>
               <article class="rounded-[22px] border border-parchment-border bg-parchment-card p-5">
                 <p class="font-mono text-xs uppercase tracking-[0.22em] text-parchment-amber">인용관계</p>
-                <p class="mt-3 text-4xl font-black tracking-[-0.04em]">62K</p>
+                <p class="mt-3 text-4xl font-black tracking-[-0.04em]">61,755</p>
                 <p class="mt-2 text-sm text-parchment-text/65">법령 간 참조 흐름 추적</p>
               </article>
             </section>
@@ -776,12 +754,12 @@ async function statusPage(env, rlHeaders) {
                     <tr class="transition hover:bg-parchment-bg/55">
                       <td class="px-5 py-4 font-mono text-[13px]">GET /xref/{id}</td>
                       <td class="px-5 py-4">법령 간 인용관계 조회</td>
-                      <td class="px-5 py-4 text-parchment-text/72">62K 인용관계 기반</td>
+                      <td class="px-5 py-4 text-parchment-text/72">61,755 인용관계 기반</td>
                     </tr>
                     <tr class="transition hover:bg-parchment-bg/55">
                       <td class="px-5 py-4 font-mono text-[13px]">GET /case-by-law/{id}</td>
                       <td class="px-5 py-4">법령별 관련 판례 조회</td>
-                      <td class="px-5 py-4 text-parchment-text/72">판례 171K 연결</td>
+                      <td class="px-5 py-4 text-parchment-text/72">판례 171,257 연결</td>
                     </tr>
                     <tr class="transition hover:bg-parchment-bg/55">
                       <td class="px-5 py-4 font-mono text-[13px]">GET /bill/{키워드}</td>
