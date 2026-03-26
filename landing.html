@@ -70,7 +70,7 @@ footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid #c2a67640;
 <h3>Claude / Codex</h3>
 <div class="copy-row">
 <code>https://api.beopmang.org</code>
-<button onclick="cc(this,'https://api.beopmang.org')">copy</button>
+<button onclick="cc(this,'https://api.beopmang.org')">복사</button>
 </div>
 <p><small>대화에 붙여넣으면 알아서 호출합니다.</small></p>
 
@@ -79,9 +79,9 @@ footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid #c2a67640;
 <li>설정 → 앱 → 고급 설정 → 개발자 모드 켜기</li>
 <li>앱 만들기 클릭</li>
 <li>아래 값 입력:
-<div class="field-row"><span>이름</span><code>법망</code><button onclick="cc(this,'법망')">copy</button></div>
-<div class="field-row"><span>URL</span><code>https://api.beopmang.org/mcp</code><button onclick="cc(this,'https://api.beopmang.org/mcp')">copy</button></div>
-<div class="field-row"><span>설명</span><code>반드시 여러 번 호출하고 조문번호와 법령명을 구체적으로 인용하여 답하세요</code><button onclick="cc(this,'반드시 여러 번 호출하고 조문번호와 법령명을 구체적으로 인용하여 답하세요')">copy</button></div>
+<div class="field-row"><span>이름</span><code>법망</code><button onclick="cc(this,'법망')">복사</button></div>
+<div class="field-row"><span>URL</span><code>https://api.beopmang.org/mcp</code><button onclick="cc(this,'https://api.beopmang.org/mcp')">복사</button></div>
+<div class="field-row"><span>설명</span><code>반드시 여러 번 호출하고 조문번호와 법령명을 구체적으로 인용하여 답하세요</code><button onclick="cc(this,'반드시 여러 번 호출하고 조문번호와 법령명을 구체적으로 인용하여 답하세요')">복사</button></div>
 <div class="field-row"><span>인증</span><code>없음</code></div>
 </li>
 <li>채팅에서 + → 더 보기 → 법망 선택</li>
@@ -98,7 +98,7 @@ footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid #c2a67640;
 
 </main>
 <script>
-function cc(el,v){navigator.clipboard.writeText(v).then(function(){el.textContent='copied!';setTimeout(function(){el.textContent='copy'},1500)})}
+function cc(el,v){navigator.clipboard.writeText(v).then(function(){el.textContent='copied!';setTimeout(function(){el.textContent='복사'},1500)})}
 fetch('/health').then(function(r){return r.json()}).then(function(d){
 var el=document.getElementById('hc');
 if(d.status==='ok')el.innerHTML='<strong>'+d.origin_ms+'ms</strong>응답 시간 · 서버 정상';
