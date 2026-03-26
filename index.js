@@ -684,7 +684,7 @@ body {
 }
 .card-header { padding: 24px 24px 20px; border-bottom: 1px solid var(--border-soft); }
 .card-header h1 { margin: 0; font-size: 1.15rem; font-weight: 600; letter-spacing: -0.01em; }
-.card-desc { margin: 6px 0 0; font-size: 0.88rem; color: var(--ink-soft); }
+.card-desc { margin: 6px 0 0; font-size: 0.88rem; color: var(--ink); }
 .card-body { padding: 24px; display: flex; flex-direction: column; gap: 20px; }
 
 .status-bar { display: flex; align-items: center; gap: 8px; font-size: 0.82rem; color: var(--muted); }
@@ -701,7 +701,7 @@ body {
 .section { display: flex; flex-direction: column; gap: 6px; }
 .section-title { margin: 0; font-size: 0.85rem; font-weight: 600; }
 .section-title small { font-weight: 400; color: var(--muted); }
-.section-desc { margin: 0; font-size: 0.82rem; color: var(--ink-soft); line-height: 1.5; }
+.section-desc { margin: 0; font-size: 0.82rem; color: var(--ink); line-height: 1.5; }
 
 .copy-row {
   display: flex; align-items: center; gap: 8px;
@@ -711,7 +711,7 @@ body {
 .copy-row code { flex: 1; font-size: 0.82rem; font-family: ui-monospace,monospace; }
 .copy-btn {
   padding: 4px 10px; border: 1.5px solid var(--border); border-radius: 4px;
-  background: none; font-size: 0.72rem; font-weight: 600; color: var(--muted);
+  background: none; font-size: 0.72rem; font-weight: 600; color: var(--ink-soft);
   cursor: pointer; transition: background var(--motion-fast), color var(--motion-fast);
   font-family: inherit;
 }
@@ -729,8 +729,8 @@ body {
 }
 
 .steps { margin: 4px 0; padding-left: 1.2rem; }
-.steps li { font-size: 0.82rem; color: var(--ink-soft); margin-bottom: 2px; }
-.muted-note { font-size: 0.78rem; color: var(--muted); margin: 0; }
+.steps li { font-size: 0.82rem; color: var(--ink); margin-bottom: 2px; }
+.muted-note { font-size: 0.78rem; color: var(--ink-soft); margin: 0; }
 
 .card-footer {
   padding: 20px 24px; border-top: 1px solid var(--border-soft);
