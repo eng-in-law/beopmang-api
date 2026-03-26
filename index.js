@@ -849,22 +849,43 @@ async function statusPage(env, rlHeaders) {
 // MCP Server (JSON-RPC 2.0 / Streamable HTTP)
 // ──────────────────────────────────────
 
-const MCP_TOOLS = [
-  { name: 'findLaw', description: '법령명/약칭으로 법령 찾기. law_id를 확인한 뒤 exploreLaw로 종합 탐색하세요.', inputSchema: { type: 'object', properties: { query: { type: 'string', description: '법령명 또는 약칭 (예: 민법, 형법)' }, include: { type: 'string', description: '추가 데이터 병렬 반환. 쉼표 구분: history,cases,xref,bills,timeline' } }, required: ['query'] }, cmd: 'law' },
-  { name: 'getLaw', description: '법령 기본정보 (소관부처, 시행일, 조문 수)', inputSchema: { type: 'object', properties: { law_id: { type: 'string', description: '법령 ID 6자리 (findLaw 결과에서 확인)' }, full: { type: 'boolean', description: '조문 목록 포함 여부' }, include: { type: 'string', description: '추가 데이터: history,cases,xref,bills,timeline' } }, required: ['law_id'] }, cmd: 'law' },
-  { name: 'getHistory', description: '법령 개정 연혁 (제정→최근, 개정별 변경 조문 수)', inputSchema: { type: 'object', properties: { law_id: { type: 'string', description: '법령 ID 6자리' } }, required: ['law_id'] }, cmd: 'history' },
-  { name: 'getArticle', description: '조문 상세 조회 (항/호/목 구조). unit_level: JO=조, HANG=항, HO=호, MOK=목', inputSchema: { type: 'object', properties: { law_id: { type: 'string', description: '법령 ID 6자리' }, article_label: { type: 'string', description: '조문 번호 (예: 제1조, 제750조)' } }, required: ['law_id', 'article_label'] }, cmd: 'article' },
-  { name: 'getXref', description: '법령 간 인용관계 (이 법이 인용하는/인용되는 법령)', inputSchema: { type: 'object', properties: { law_id: { type: 'string', description: '법령 ID 6자리' }, cited_by: { type: 'boolean', description: 'true면 피인용 (이 법을 인용하는 법령)' } }, required: ['law_id'] }, cmd: 'xref' },
-  { name: 'searchArticles', description: '조문 본문에서 키워드 검색', inputSchema: { type: 'object', properties: { query: { type: 'string', description: '검색 키워드' } }, required: ['query'] }, cmd: 'search' },
-  { name: 'searchCases', description: '판례 키워드 검색', inputSchema: { type: 'object', properties: { query: { type: 'string', description: '검색 키워드' } }, required: ['query'] }, cmd: 'case' },
-  { name: 'getCasesByLaw', description: '특정 법령 관련 판례 조회', inputSchema: { type: 'object', properties: { law_id: { type: 'string', description: '법령 ID 6자리' } }, required: ['law_id'] }, cmd: 'case-by-law' },
-  { name: 'getCaseDetail', description: '판례 상세 (판결요지, 참조조문, 전문)', inputSchema: { type: 'object', properties: { case_id: { type: 'string', description: '판례 ID' } }, required: ['case_id'] }, cmd: 'case-view' },
-  { name: 'searchBills', description: '국회 의안 검색', inputSchema: { type: 'object', properties: { query: { type: 'string', description: '법률안명 키워드' } }, required: ['query'] }, cmd: 'bill' },
-  { name: 'getTimeline', description: '법령 입법 타임라인 (의안+개정+판례 시계열)', inputSchema: { type: 'object', properties: { law_id: { type: 'string', description: '법령 ID 6자리' } }, required: ['law_id'] }, cmd: 'timeline' },
-  { name: 'exploreLaw', description: '법령 종합 탐색. 개별 호출 전에 먼저 사용. 조문, 판례, 의안, 인용관계를 한 번에 반환.', inputSchema: { type: 'object', properties: { law_id: { type: 'string', description: '법령 ID 6자리' } }, required: ['law_id'] }, cmd: 'explore' },
-  { name: 'getStats', description: 'DB 전체 현황 (법령, 판례, 의안 건수)', inputSchema: { type: 'object', properties: {} }, cmd: 'stats' },
-  { name: 'sendFeedback', description: 'API 피드백 전송', inputSchema: { type: 'object', properties: { message: { type: 'string', description: '피드백 내용' }, type: { type: 'string', description: 'bug, feature, quality' }, context: { type: 'string', description: '관련 도구/쿼리' } }, required: ['message'] }, cmd: '_feedback' },
-];
+// Command routing table (internal)
+const CMD_MAP = {
+  findLaw: 'law', getLaw: 'law', getHistory: 'history', getArticle: 'article',
+  getXref: 'xref', searchArticles: 'search', searchCases: 'case',
+  getCasesByLaw: 'case-by-law', getCaseDetail: 'case-view', searchBills: 'bill',
+  getTimeline: 'timeline', exploreLaw: 'explore', getStats: 'stats', sendFeedback: '_feedback',
+};
+
+// Single MCP tool
+const MCP_TOOLS = [{
+  name: '법망',
+  description: `대한민국 법령 DB 실시간 쿼리. 반드시 여러 번 호출하고 조문번호와 법령명을 구체적으로 인용하여 답하세요.
+
+명령어 (command 필드에 입력):
+- findLaw: 법령 찾기. params: {query: "민법"}. 결과의 law_id로 다른 명령 호출.
+- exploreLaw: 종합 탐색. 개별 호출 전에 먼저 사용. params: {law_id: "001706"}
+- getLaw: 법령 정보. params: {law_id, full?: true, include?: "history,cases,xref"}
+- getArticle: 조문 상세. params: {law_id, article_label: "제750조"}
+- getHistory: 개정 연혁. params: {law_id}
+- getXref: 인용관계. params: {law_id, cited_by?: true}
+- searchArticles: 조문 검색. params: {query}
+- searchCases: 판례 검색. params: {query}
+- getCasesByLaw: 법령별 판례. params: {law_id}
+- getCaseDetail: 판례 상세. params: {case_id}
+- searchBills: 의안 검색. params: {query}
+- getTimeline: 타임라인. params: {law_id}
+- getStats: DB 현황. params: {}
+- sendFeedback: 피드백. params: {message, type?: "bug|feature|quality"}`,
+  inputSchema: {
+    type: 'object',
+    properties: {
+      command: { type: 'string', description: '명령어 (findLaw, exploreLaw, getLaw 등)' },
+      params: { type: 'object', description: '명령어별 파라미터' },
+    },
+    required: ['command'],
+  },
+}];
 
 function mcpOk(id, result) {
   return new Response(JSON.stringify({ jsonrpc: '2.0', id, result }), {
@@ -892,30 +913,33 @@ async function handleMcp(request, env) {
     return mcpOk(id, { tools: MCP_TOOLS.map(t => ({ name: t.name, description: t.description, inputSchema: t.inputSchema })) });
   }
   if (method === 'tools/call') {
-    const toolName = params?.name;
+    // Single tool: extract command + params from arguments
     const args = params?.arguments || {};
-    const tool = MCP_TOOLS.find(t => t.name === toolName);
-    if (!tool) return mcpErr(id, -32602, 'Unknown tool: ' + toolName);
+    const command = args.command;
+    const p = args.params || {};
+    if (!command) return mcpErr(id, -32602, 'Missing command. Available: ' + Object.keys(CMD_MAP).join(', '));
+    const cmd = CMD_MAP[command];
+    if (!cmd) return mcpErr(id, -32602, 'Unknown command: ' + command + '. Available: ' + Object.keys(CMD_MAP).join(', '));
 
     // Handle sendFeedback locally
-    if (toolName === 'sendFeedback') {
-      const msg = (args.message || '').slice(0, 1000);
+    if (command === 'sendFeedback') {
+      const msg = (p.message || '').slice(0, 1000);
       if (!msg) return mcpOk(id, { content: [{ type: 'text', text: 'Error: message required' }], isError: true });
-      const entry = { message: msg, type: args.type || 'general', context: args.context || '', ts: new Date().toISOString() };
+      const entry = { message: msg, type: p.type || 'general', context: p.context || '', ts: new Date().toISOString() };
       await env.API_KV.put('fb:' + Date.now() + ':' + Math.random().toString(36).slice(2, 6), JSON.stringify(entry), { expirationTtl: 86400 * 90 });
       return mcpOk(id, { content: [{ type: 'text', text: 'Feedback received. Thank you.' }] });
     }
 
-    // Normalize params (law_id ?? id, article_label ?? label for backward compat)
-    const lawId = args.law_id ?? args.id ?? '';
-    const articleLabel = args.article_label ?? args.label ?? '';
-    let cmdArgs = args.query || lawId || args.case_id || '';
-    if (tool.cmd === 'article' && lawId && articleLabel) cmdArgs = lawId + ' ' + articleLabel;
+    // Normalize params
+    const lawId = p.law_id ?? p.id ?? '';
+    const articleLabel = p.article_label ?? p.label ?? '';
+    let cmdArgs = p.query || lawId || p.case_id || '';
+    if (cmd === 'article' && lawId && articleLabel) cmdArgs = lawId + ' ' + articleLabel;
     let flags = '';
-    if (args.full) flags += '--json';
-    if (args.cited_by) flags += (flags ? ' ' : '') + '--cited-by';
+    if (p.full) flags += '--json';
+    if (p.cited_by) flags += (flags ? ' ' : '') + '--cited-by';
 
-    const qs = 'cmd=' + encodeURIComponent(tool.cmd) + '&args=' + encodeURIComponent(cmdArgs) + (flags ? '&flags=' + encodeURIComponent(flags) : '') + '&json=1';
+    const qs = 'cmd=' + encodeURIComponent(cmd) + '&args=' + encodeURIComponent(cmdArgs) + (flags ? '&flags=' + encodeURIComponent(flags) : '') + '&json=1';
 
     try {
       const resp = await fetch(env.ORIGIN_BASE + '/api/lawcli?' + qs, { headers: { 'User-Agent': 'beopmang-mcp/1.0' } });
@@ -925,12 +949,12 @@ async function handleMcp(request, env) {
       }
       let mainResult = data.output || '{}';
       // Handle include parameter
-      if (args.include) {
+      if (p.include) {
         let parsed; try { parsed = JSON.parse(mainResult); } catch { parsed = null; }
         const lawId = parsed?.law_id || (Array.isArray(parsed) && parsed[0]?.law_id) || null;
         if (lawId) {
           const incMap = { history: 'history', xref: 'xref', cases: 'case-by-law', bills: 'bill', timeline: 'timeline', explore: 'explore' };
-          const fields = args.include.split(',').map(s => s.trim()).filter(f => incMap[f]);
+          const fields = p.include.split(',').map(s => s.trim()).filter(f => incMap[f]);
           const inc = {};
           for (const f of fields) {
             const a = f === 'bills' ? (parsed?.law_name || lawId) : lawId;
