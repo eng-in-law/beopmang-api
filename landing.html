@@ -1,102 +1,163 @@
 <!DOCTYPE html>
-<html lang="ko" data-theme="light">
+<html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>법망 API</title>
 <meta name="description" content="프롬프트 한 줄로 법률AI 에이전트 흉내내기">
 <meta property="og:title" content="법망 API">
 <meta property="og:description" content="프롬프트 한 줄로 법률AI 에이전트 흉내내기">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦒</text></svg>">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard/dist/web/static/pretendard.css">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
 <style>
 :root {
-  --pico-font-family: 'Pretendard', system-ui, sans-serif;
-  --pico-background-color: #f2ead3;
-  --pico-card-background-color: #fffdf7;
-  --pico-card-border-color: #c2a676;
-  --pico-primary: #9b7c4d;
-  --pico-primary-hover: #7d6340;
-  --pico-color: #3b2f20;
-  --pico-muted-color: #6d593f;
-  --pico-muted-border-color: #c2a67650;
-  --pico-code-background-color: #c2a67615;
-  --pico-code-color: #3b2f20;
-  --pico-line-height: 1.5;
-  --pico-typography-spacing-vertical: 0.6rem;
+  --bg: #f2ead3;
+  --bg-soft: #ede4cb;
+  --surface: #f7ecd2;
+  --border: #c2a676;
+  --border-soft: rgba(194,166,118,0.25);
+  --ink: #3b2f20;
+  --ink-soft: #4f3f2b;
+  --muted: #897457;
+  --accent: #9b7c4d;
+  --accent-soft: rgba(194,166,118,0.15);
+  --green: #2f6b4e;
+  --shadow: 0 12px 24px rgba(59,47,32,0.08);
+  --motion-fast: 0.15s;
+  --ease: cubic-bezier(0.2,0,0,1);
 }
-body > main { max-width: 580px; margin: 0 auto; padding: 3rem 1.5rem; }
-h1 { font-size: 1.8rem; margin-bottom: 0.3rem; }
-h2 { font-size: 1rem; margin-top: 2.5rem; margin-bottom: 1.2rem; text-transform: uppercase; letter-spacing: 0.05em; color: #897457; border-bottom: none; }
-p { margin-bottom: 0.5rem; font-size: 0.9rem; }
+* { box-sizing: border-box; }
+body {
+  margin: 0; min-height: 100vh;
+  font-family: "Pretendard Variable","Pretendard",system-ui,sans-serif;
+  background: var(--bg); color: var(--ink); line-height: 1.5;
+  -webkit-tap-highlight-color: transparent;
+}
+.page { display: flex; justify-content: center; padding: 16px 12px 28px; }
+.shell {
+  max-width: 560px; width: 100%;
+  padding-top: 24px; padding-bottom: 32px;
+  animation: fadeUp 0.5s ease both;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 20px; box-shadow: var(--shadow); overflow: hidden;
+}
+.card-header { padding: 24px 24px 20px; border-bottom: 1px solid var(--border-soft); }
+.card-header h1 { margin: 0; font-size: 1.15rem; font-weight: 600; letter-spacing: -0.01em; }
+.card-desc { margin: 6px 0 0; font-size: 0.88rem; color: var(--ink-soft); }
+.card-body { padding: 24px; display: flex; flex-direction: column; gap: 20px; }
 
-/* Status bar */
-.status-bar { display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0.8rem; margin-bottom: 1.5rem; background: #fffdf7; border: 1px solid #c2a67640; border-radius: 6px; font-size: 0.78rem; color: #897457; }
-.status-bar .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #22c55e; margin-right: 6px; vertical-align: middle; }
-.status-bar strong { color: #3b2f20; font-size: 0.85rem; }
+.status-bar { display: flex; align-items: center; gap: 8px; font-size: 0.82rem; color: var(--muted); }
+.dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--green); }
+.status-bar strong { color: var(--ink); margin-left: auto; }
 
-/* Stats grid */
-.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.8rem; margin: 1.5rem 0 2.5rem; }
-.stat-card { background: #fffdf7; border: 1px solid #c2a67630; border-radius: 6px; padding: 0.8rem 0.6rem; text-align: left; }
-.stat-card strong { display: block; font-size: 1.15rem; color: #3b2f20; letter-spacing: -0.02em; }
-.stat-card small { font-size: 0.7rem; color: #897457; }
+.stats { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; }
+.stat { text-align: center; }
+.stat-value { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.02em; }
+.stat-label { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
 
-/* Sections */
-.platform { margin-bottom: 1.8rem; }
-.platform h3 { font-size: 0.9rem; margin: 0 0 0.5rem 0; color: #3b2f20; }
-.platform h3 small { font-weight: 400; color: #897457; }
-.platform > p { font-size: 0.82rem; color: #6d593f; margin: 0.2rem 0; }
+.divider { border: none; border-top: 1px solid var(--border-soft); margin: 0; }
 
-/* Copy row */
-.copy-row { display: flex; align-items: center; gap: 0.4rem; margin: 0.3rem 0; }
-.copy-row code { flex: 1; font-size: 0.8rem; padding: 0.35rem 0.5rem; background: #fffdf7; border: 1px solid #c2a67630; border-radius: 4px; }
-.copy-btn { font-size: 0.65rem; padding: 0.25rem 0.5rem; background: none; border: 1px solid #c2a67660; border-radius: 4px; color: #897457; cursor: pointer; white-space: nowrap; }
-.copy-btn:hover { background: #c2a67620; color: #3b2f20; }
+.section { display: flex; flex-direction: column; gap: 6px; }
+.section-title { margin: 0; font-size: 0.85rem; font-weight: 600; }
+.section-title small { font-weight: 400; color: var(--muted); }
+.section-desc { margin: 0; font-size: 0.82rem; color: var(--ink-soft); line-height: 1.5; }
 
-/* Steps */
-.steps { margin: 0.5rem 0; padding-left: 1.2rem; }
-.steps li { margin-bottom: 0.3rem; font-size: 0.82rem; color: #4f3f2b; }
-.field-grid { display: grid; grid-template-columns: 2.8rem 1fr auto; gap: 0.3rem 0.4rem; align-items: center; margin: 0.4rem 0 0.4rem 0; font-size: 0.8rem; }
-.field-grid span { color: #897457; }
-.field-grid code { font-size: 0.78rem; padding: 0.3rem 0.5rem; background: #fffdf7; border: 1px solid #c2a67630; border-radius: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.copy-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 12px; border-radius: 10px;
+  border: 1px solid var(--border-soft); background: var(--bg);
+}
+.copy-row code { flex: 1; font-size: 0.82rem; font-family: ui-monospace,monospace; }
+.copy-btn {
+  padding: 4px 10px; border: 1px solid var(--border-soft); border-radius: 6px;
+  background: none; font-size: 0.72rem; font-weight: 600; color: var(--muted);
+  cursor: pointer; transition: background var(--motion-fast), color var(--motion-fast);
+  font-family: inherit;
+}
+.copy-btn:hover { background: var(--accent-soft); color: var(--ink); }
 
-footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid #c2a67630; font-size: 0.72rem; color: #897457; }
-footer a { color: #9b7c4d; }
-@media (max-width: 480px) { .stats { grid-template-columns: repeat(2, 1fr); } .field-grid { grid-template-columns: 2.5rem 1fr auto; } }
+.field-grid {
+  display: grid; grid-template-columns: 2.5rem 1fr auto;
+  gap: 6px 8px; align-items: center; font-size: 0.82rem;
+}
+.field-grid span { color: var(--muted); }
+.field-grid code {
+  font-family: ui-monospace,monospace; font-size: 0.78rem;
+  padding: 6px 10px; background: var(--bg); border: 1px solid var(--border-soft);
+  border-radius: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+.steps { margin: 4px 0; padding-left: 1.2rem; }
+.steps li { font-size: 0.82rem; color: var(--ink-soft); margin-bottom: 2px; }
+.muted-note { font-size: 0.78rem; color: var(--muted); margin: 0; }
+
+.card-footer {
+  padding: 20px 24px; border-top: 1px solid var(--border-soft);
+  font-size: 0.72rem; color: var(--muted);
+}
+.card-footer a { color: var(--accent); text-decoration: none; }
+.card-footer a:hover { text-decoration: underline; }
+.card-footer p { margin: 0; }
+.card-footer p + p { margin-top: 6px; opacity: 0.7; }
+.footer-update { margin-top: 8px; opacity: 0.5; font-size: 0.68rem; }
+
+@media (max-width: 640px) {
+  .page { padding: 10px 8px 20px; }
+  .shell { padding-top: 12px; padding-bottom: 20px; }
+  .card { border-radius: 16px; }
+  .card-header { padding: 20px 18px 16px; }
+  .card-body { padding: 18px; gap: 16px; }
+  .card-footer { padding: 16px 18px; }
+  .stats { gap: 16px; }
+  .stat-value { font-size: 1.1rem; }
+  .field-grid { grid-template-columns: 2.2rem 1fr auto; }
+}
 </style>
 </head>
-<body>
-<main>
+<body class="page">
+<main class="shell">
+<div class="card">
 
+<div class="card-header">
 <h1>🦒 법망 API</h1>
-<p>프롬프트 한 줄로 법률AI 에이전트 흉내내기</p>
+<p class="card-desc">프롬프트 한 줄로 법률AI 에이전트 흉내내기</p>
+</div>
+
+<div class="card-body">
 
 <div class="status-bar" id="hc">
-<div><span class="dot"></span>확인 중...</div>
-<div>—</div>
+<span class="dot"></span>
+<span>확인 중...</span>
+<strong>—</strong>
 </div>
 
 <div class="stats">
-<div class="stat-card"><strong>1,707</strong><small>법률</small></div>
-<div class="stat-card"><strong>499,310</strong><small>조문</small></div>
-<div class="stat-card"><strong>171,257</strong><small>판례</small></div>
-<div class="stat-card"><strong>61,755</strong><small>인용관계</small></div>
+<div class="stat"><div class="stat-value">1,707</div><div class="stat-label">법률</div></div>
+<div class="stat"><div class="stat-value">499,310</div><div class="stat-label">조문</div></div>
+<div class="stat"><div class="stat-value">171,257</div><div class="stat-label">판례</div></div>
+<div class="stat"><div class="stat-value">61,755</div><div class="stat-label">인용관계</div></div>
 </div>
 
-<h2>사용하기</h2>
+<hr class="divider">
 
-<div class="platform">
-<h3>Claude / Codex</h3>
+<div class="section">
+<p class="section-title">Claude / Codex</p>
 <div class="copy-row">
 <code>https://api.beopmang.org</code>
 <button class="copy-btn" onclick="cc(this,'https://api.beopmang.org')">복사</button>
 </div>
-<p>대화에 붙여넣으면 알아서 호출합니다.</p>
+<p class="section-desc">대화에 붙여넣으면 알아서 호출합니다.</p>
 </div>
 
-<div class="platform">
-<h3>ChatGPT <small>Plus 이상</small></h3>
+<div class="section">
+<p class="section-title">ChatGPT <small>Plus 이상</small></p>
 <ol class="steps">
 <li>설정 → 앱 → 고급 설정 → 개발자 모드 켜기</li>
 <li>앱 만들기 클릭</li>
@@ -111,27 +172,31 @@ footer a { color: #9b7c4d; }
 <ol class="steps" start="4">
 <li>채팅에서 + → 더 보기 → 법망 선택</li>
 </ol>
-<p>추천 모델: GPT 5.4 Thinking 이상</p>
+<p class="muted-note">추천 모델: GPT 5.4 Thinking 이상</p>
 </div>
 
-<div class="platform">
-<h3>Gemini</h3>
-<p>환각이 심하여 권장하지 않습니다. 사용 불가.</p>
+<div class="section">
+<p class="section-title">Gemini</p>
+<p class="section-desc">환각이 심하여 권장하지 않습니다. 사용 불가.</p>
 </div>
 
-<footer>
+</div>
+
+<div class="card-footer">
 <p><a href="/openapi.json">OpenAPI</a> · <a href="/.well-known/agent.json">Agent Card</a> · <a href="/privacy">Privacy</a> · <a href="/health">Health</a></p>
-<p>데이터 출처: 법제처 Open API · 국회 Open API. 매주 일요일 갱신. 참고용이며 법적 효력 없음.</p>
-</footer>
+<p>데이터 출처: 법제처 Open API · 국회 Open API. 참고용이며 법적 효력 없음.</p>
+<p class="footer-update">최근 업데이트: __BUILD_DATE__</p>
+</div>
 
+</div>
 </main>
 <script>
 function cc(el,v){navigator.clipboard.writeText(v).then(function(){el.textContent='copied!';setTimeout(function(){el.textContent='복사'},1500)})}
 fetch('/health').then(function(r){return r.json()}).then(function(d){
 var el=document.getElementById('hc');
-if(d.status==='ok')el.innerHTML='<div><span class="dot" style="background:#22c55e"></span>서버 정상</div><div><strong>'+d.origin_ms+'ms</strong> 응답</div>';
-else el.innerHTML='<div><span class="dot" style="background:#ef4444"></span>오프라인</div><div>점검 중</div>';
-}).catch(function(){document.getElementById('hc').innerHTML='<div><span class="dot" style="background:#f59e0b"></span>확인 불가</div><div>—</div>'});
+if(d.status==='ok')el.innerHTML='<span class="dot" style="background:#2f6b4e"></span><span>서버 정상</span><strong>'+d.origin_ms+'ms</strong>';
+else el.innerHTML='<span class="dot" style="background:#dc2626"></span><span>오프라인</span><strong>점검 중</strong>';
+}).catch(function(){document.getElementById('hc').innerHTML='<span class="dot" style="background:#d97706"></span><span>확인 불가</span><strong>—</strong>'});
 </script>
 </body>
 </html>
