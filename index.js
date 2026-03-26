@@ -418,406 +418,70 @@ async function statusPage(env, rlHeaders) {
   const daily = await env.API_KV.get('stats:daily') || '0';
   const html = `<!DOCTYPE html>
 <html lang="ko">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>법망 API 랜딩</title>
-    <meta
-      name="description"
-      content="프롬프트 한 줄로 법률AI 에이전트 흉내내기. 법망 API 랜딩페이지."
-    />
-    <script src='https://cdn.tailwindcss.com'></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              parchment: {
-                bg: "#f2ead3",
-                card: "#fffdf7",
-                border: "#c2a676",
-                text: "#3b2f20",
-                amber: "#9b7c4d",
-              },
-            },
-            fontFamily: {
-              sans: ["Pretendard", "system-ui", "sans-serif"],
-              mono: ["JetBrains Mono", "monospace"],
-            },
-            boxShadow: {
-              parchment:
-                "0 18px 60px rgba(59, 47, 32, 0.10), inset 0 1px 0 rgba(255,255,255,0.8)",
-            },
-          },
-        },
-      };
-    </script>
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/pretendard/dist/web/static/pretendard.css"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap"
-    />
-    <style>
-      ::selection {
-        background: rgba(155, 124, 77, 0.18);
-      }
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>법망 API</title>
+<meta name="description" content="프롬프트 한 줄로 법률AI 에이전트 흉내내기">
+<meta property="og:title" content="법망 API">
+<meta property="og:description" content="프롬프트 한 줄로 법률AI 에이전트 흉내내기">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦒</text></svg>">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard/dist/web/static/pretendard.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap">
+<script>
+tailwind.config={theme:{extend:{colors:{p:{bg:'#f2ead3',card:'#fffdf7',border:'#c2a676',text:'#3b2f20',dim:'#6d593f',muted:'#897457',amber:'#9b7c4d'}},fontFamily:{sans:['Pretendard','system-ui','sans-serif'],mono:['JetBrains Mono','monospace']}}}}
+</script>
+</head>
+<body class="bg-p-bg min-h-screen font-sans">
+<div class="max-w-2xl mx-auto px-6 py-16">
 
-      body {
-        background:
-          radial-gradient(circle at top left, rgba(255, 253, 247, 0.95), transparent 34%),
-          linear-gradient(180deg, #f8f1df 0%, #f2ead3 48%, #eee3c7 100%);
-      }
+<h1 class="text-4xl font-extrabold text-p-text tracking-tight">🦒 법망 API</h1>
+<p class="mt-3 text-lg text-p-dim">프롬프트 한 줄로 법률AI 에이전트 흉내내기</p>
 
-      .paper-grid {
-        background-image:
-          linear-gradient(rgba(194, 166, 118, 0.12) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(194, 166, 118, 0.12) 1px, transparent 1px);
-        background-size: 24px 24px;
-        background-position: -1px -1px;
-      }
+<div class="mt-10 flex gap-8 flex-wrap">
+<div class="text-center"><div class="text-2xl font-bold text-p-text">1,707</div><div class="text-xs text-p-muted mt-1">법률</div></div>
+<div class="text-center"><div class="text-2xl font-bold text-p-text">499,310</div><div class="text-xs text-p-muted mt-1">조문</div></div>
+<div class="text-center"><div class="text-2xl font-bold text-p-text">171,257</div><div class="text-xs text-p-muted mt-1">판례</div></div>
+<div class="text-center"><div class="text-2xl font-bold text-p-text">61,755</div><div class="text-xs text-p-muted mt-1">인용관계</div></div>
+</div>
 
-      .paper-noise::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        pointer-events: none;
-        opacity: 0.15;
-        background:
-          radial-gradient(circle at 20% 20%, rgba(194, 166, 118, 0.18), transparent 20%),
-          radial-gradient(circle at 80% 10%, rgba(155, 124, 77, 0.12), transparent 18%),
-          radial-gradient(circle at 70% 80%, rgba(194, 166, 118, 0.12), transparent 18%);
-      }
-    </style>
-  </head>
-  <body class="min-h-screen font-sans text-parchment-text antialiased">
-    <main class="relative overflow-hidden px-4 py-8 sm:px-6 lg:px-8">
-      <div class="mx-auto max-w-7xl">
-        <section
-          class="paper-noise paper-grid relative overflow-hidden rounded-[32px] border border-parchment-border/80 bg-parchment-card shadow-parchment"
-        >
-          <div class="relative border-b border-parchment-border/70 px-6 py-5 sm:px-8">
-            <div class="flex flex-wrap items-center justify-between gap-4 text-sm">
-              <div class="flex items-center gap-3">
-                <span
-                  class="inline-flex items-center rounded-full border border-parchment-border bg-parchment-bg px-3 py-1 font-mono text-[12px] font-medium uppercase tracking-[0.18em] text-parchment-amber"
-                  >Beopmang API</span
-                >
-                <span class="text-parchment-text/65">대한민국 법률 데이터 API</span>
-              </div>
-            </div>
-          </div>
+<div class="mt-14 space-y-8">
 
-          <div class="relative px-6 pb-10 pt-10 sm:px-8 lg:px-12 lg:pb-14 lg:pt-14">
-            <section class="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
-              <div class="max-w-3xl">
-                <h1 class="max-w-3xl text-4xl font-black leading-tight tracking-[-0.04em] sm:text-5xl lg:text-6xl">
-                  🦒 법망 API
-                </h1>
-                <p class="mt-4 max-w-2xl text-lg leading-8 text-parchment-text/80 sm:text-xl">
-                  프롬프트 한 줄로 법률AI 에이전트 흉내내기
-                </p>
-                <p class="mt-6 max-w-2xl text-base leading-8 text-parchment-text/72">
-                  민법을 찾고, 조문을 펼치고, 판례와 인용관계를 끌어오는 흐름을
-                  브라우저와 에이전트에서 바로 시험할 수 있는 얇은 인터페이스입니다.
-                </p>
-              </div>
+<div>
+<p class="text-sm font-semibold text-p-text">Claude</p>
+<div class="mt-2 flex items-center gap-2 bg-p-card border border-p-border rounded-lg px-4 py-3">
+<code class="text-sm font-mono text-p-text flex-1">https://api.beopmang.org</code>
+<button onclick="cc(this,'https://api.beopmang.org')" class="text-xs text-p-amber border border-p-border rounded px-2 py-1 hover:bg-p-bg">copy</button>
+</div>
+<p class="mt-1 text-sm text-p-dim">대화에 붙여넣으면 알아서 호출합니다.</p>
+</div>
 
-            </section>
+<div>
+<p class="text-sm font-semibold text-p-text">ChatGPT</p>
+<div class="mt-2 flex items-center gap-2 bg-p-card border border-p-border rounded-lg px-4 py-3">
+<code class="text-sm font-mono text-p-text flex-1">https://api.beopmang.org/mcp</code>
+<button onclick="cc(this,'https://api.beopmang.org/mcp')" class="text-xs text-p-amber border border-p-border rounded px-2 py-1 hover:bg-p-bg">copy</button>
+</div>
+<p class="mt-1 text-sm text-p-dim">설정 → 앱 → 고급 설정 → 개발자 모드 → 앱 만들기. 이름: <button onclick="cc(this,'법망')" class="font-mono text-p-text underline">법망</button> · 인증: 없음. Plus 이상. 추천: GPT 5.4 Thinking 이상.</p>
+</div>
 
-            <section class="mt-10 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-              <article class="rounded-[22px] border border-parchment-border bg-parchment-card p-5">
-                <p class="font-mono text-xs uppercase tracking-[0.22em] text-parchment-amber">법률</p>
-                <p class="mt-3 text-4xl font-black tracking-[-0.04em]">1,707</p>
-                <p class="mt-2 text-sm text-parchment-text/65">대한민국 법률 단위 수록</p>
-              </article>
-              <article class="rounded-[22px] border border-parchment-border bg-parchment-card p-5">
-                <p class="font-mono text-xs uppercase tracking-[0.22em] text-parchment-amber">조문</p>
-                <p class="mt-3 text-4xl font-black tracking-[-0.04em]">499,310</p>
-                <p class="mt-2 text-sm text-parchment-text/65">조·항·호·목 구조 포함</p>
-              </article>
-              <article class="rounded-[22px] border border-parchment-border bg-parchment-card p-5">
-                <p class="font-mono text-xs uppercase tracking-[0.22em] text-parchment-amber">판례</p>
-                <p class="mt-3 text-4xl font-black tracking-[-0.04em]">171,257</p>
-                <p class="mt-2 text-sm text-parchment-text/65">법령 연계 판례 탐색 가능</p>
-              </article>
-              <article class="rounded-[22px] border border-parchment-border bg-parchment-card p-5">
-                <p class="font-mono text-xs uppercase tracking-[0.22em] text-parchment-amber">인용관계</p>
-                <p class="mt-3 text-4xl font-black tracking-[-0.04em]">61,755</p>
-                <p class="mt-2 text-sm text-parchment-text/65">법령 간 참조 흐름 추적</p>
-              </article>
-            </section>
+<div>
+<p class="text-sm font-semibold text-p-text">Gemini</p>
+<p class="mt-1 text-sm text-p-dim">환각이 심하여 권장하지 않습니다.</p>
+<p class="text-sm text-p-muted">사용 불가</p>
+</div>
 
-            <section class="mt-14">
-              <div class="flex items-end justify-between gap-4">
-                <div>
-                  <p class="font-mono text-xs uppercase tracking-[0.24em] text-parchment-amber">Use With</p>
-                  <h2 class="mt-2 text-2xl font-black tracking-[-0.03em] sm:text-3xl">사용하기</h2>
-                </div>
-                <p class="hidden text-sm text-parchment-text/65 sm:block">
-                  복사해서 바로 붙여넣는 용도에 맞춘 카드
-                </p>
-              </div>
+</div>
 
-              <div class="mt-6 grid gap-4 lg:grid-cols-3">
-                <article class="rounded-[24px] border border-parchment-border bg-parchment-bg/88 p-6">
-                  <div class="flex items-center justify-between gap-3">
-                    <h3 class="text-xl font-bold">Claude</h3>
-                    <span class="rounded-full border border-parchment-border px-2.5 py-1 font-mono text-xs text-parchment-amber">copy url</span>
-                  </div>
-                  <p class="mt-4 text-sm leading-7 text-parchment-text/75">
-                    URL만 복사해 대화에 붙여넣고, “이 API를 써서 민법 제750조를 정리해줘”처럼 설명을 덧붙이면 됩니다.
-                  </p>
-                  <button
-                    type="button"
-                    data-copy="https://api.beopmang.org"
-                    class="copy-trigger mt-5 flex w-full items-center justify-between rounded-2xl border border-parchment-border bg-parchment-card px-4 py-3 text-left transition hover:-translate-y-0.5 hover:border-parchment-amber hover:shadow-sm"
-                  >
-                    <span class="font-mono text-sm">https://api.beopmang.org</span>
-                    <span class="rounded-full bg-parchment-bg px-3 py-1 font-mono text-xs uppercase tracking-[0.18em] text-parchment-amber">copy</span>
-                  </button>
-                </article>
+<div class="mt-16 pt-8 border-t border-p-border/50">
+<p class="text-xs text-p-muted"><a href="/openapi.json" class="underline">OpenAPI</a> · <a href="/.well-known/agent.json" class="underline">Agent Card</a> · <a href="/privacy" class="underline">Privacy</a> · <a href="/health" class="underline">Health</a></p>
+<p class="mt-2 text-xs text-p-muted/70">데이터 출처: 법제처 Open API · 국회 Open API. 매주 일요일 갱신. 참고용이며 법적 효력 없음.</p>
+</div>
 
-                <article class="rounded-[24px] border border-parchment-border bg-parchment-bg/88 p-6">
-                  <div class="flex items-center justify-between gap-3">
-                    <h3 class="text-xl font-bold">ChatGPT</h3>
-                    <span class="rounded-full border border-parchment-border px-2.5 py-1 font-mono text-xs text-parchment-amber">mcp</span>
-                  </div>
-                  <p class="mt-4 text-sm leading-7 text-parchment-text/75">
-                    MCP URL을 복사한 뒤 ChatGPT의 개발자 설정에서 커넥터 또는 MCP 서버를 추가할 때 붙여넣으면 됩니다.
-                  </p>
-                  <button
-                    type="button"
-                    data-copy="https://api.beopmang.org/mcp"
-                    class="copy-trigger mt-5 flex w-full items-center justify-between rounded-2xl border border-parchment-border bg-parchment-card px-4 py-3 text-left transition hover:-translate-y-0.5 hover:border-parchment-amber hover:shadow-sm"
-                  >
-                    <span class="font-mono text-sm">https://api.beopmang.org/mcp</span>
-                    <span class="rounded-full bg-parchment-bg px-3 py-1 font-mono text-xs uppercase tracking-[0.18em] text-parchment-amber">copy</span>
-                  </button>
-                  <p class="mt-4 text-sm leading-7 text-parchment-text/68">
-                    인증은 없음. 이름은 <span class="font-mono">법망</span> 정도로 두면 구분이 쉽습니다.
-                  </p>
-                </article>
-
-                <article class="rounded-[24px] border border-parchment-border bg-parchment-bg/88 p-6">
-                  <div class="flex items-center justify-between gap-3">
-                    <h3 class="text-xl font-bold">Gemini</h3>
-                    <span class="rounded-full border border-parchment-border px-2.5 py-1 font-mono text-xs text-parchment-amber">warning</span>
-                  </div>
-                  <p class="mt-4 text-sm leading-7 text-parchment-text/75">
-                    환각 경향이 커서 이 페이지 기준 사용을 권장하지 않습니다.
-                  </p>
-                  <div
-                    class="mt-5 rounded-2xl border border-dashed border-parchment-border bg-parchment-card px-4 py-4 text-sm font-semibold text-parchment-text"
-                  >
-                    사용불가
-                  </div>
-                </article>
-              </div>
-            </section>
-
-            <section class="mt-14">
-              <div class="flex items-end justify-between gap-4">
-                <div>
-                  <p class="font-mono text-xs uppercase tracking-[0.24em] text-parchment-amber">Try In Browser</p>
-                  <h2 class="mt-2 text-2xl font-black tracking-[-0.03em] sm:text-3xl">직접 써보기</h2>
-                </div>
-                <p class="hidden text-sm text-parchment-text/65 sm:block">\`.html\` 뷰 링크</p>
-              </div>
-
-              <div class="mt-6 overflow-hidden rounded-[24px] border border-parchment-border bg-parchment-card">
-                <table class="min-w-full text-left text-sm">
-                  <thead class="bg-parchment-bg/85">
-                    <tr class="border-b border-parchment-border">
-                      <th class="px-5 py-4 font-mono text-xs uppercase tracking-[0.18em] text-parchment-amber">Link</th>
-                      <th class="px-5 py-4 font-mono text-xs uppercase tracking-[0.18em] text-parchment-amber">Description</th>
-                    </tr>
-                  </thead>
-                  <tbody class="divide-y divide-parchment-border/70">
-                    <tr class="transition hover:bg-parchment-bg/55">
-                      <td class="px-5 py-4 font-medium">
-                        <a class="underline decoration-parchment-border underline-offset-4" href="https://api.beopmang.org/find/%EB%AF%BC%EB%B2%95.html">민법 찾기</a>
-                      </td>
-                      <td class="px-5 py-4 text-parchment-text/72">법령 검색의 시작점</td>
-                    </tr>
-                    <tr class="transition hover:bg-parchment-bg/55">
-                      <td class="px-5 py-4 font-medium">
-                        <a class="underline decoration-parchment-border underline-offset-4" href="https://api.beopmang.org/law/001706.html?full=1">민법 상세정보</a>
-                      </td>
-                      <td class="px-5 py-4 text-parchment-text/72">법령 메타데이터와 전체 구조 보기</td>
-                    </tr>
-                    <tr class="transition hover:bg-parchment-bg/55">
-                      <td class="px-5 py-4 font-medium">
-                        <a class="underline decoration-parchment-border underline-offset-4" href="https://api.beopmang.org/article/001706/%EC%A0%9C750%EC%A1%B0.html">민법 제750조</a>
-                      </td>
-                      <td class="px-5 py-4 text-parchment-text/72">불법행위 조문 바로 열기</td>
-                    </tr>
-                    <tr class="transition hover:bg-parchment-bg/55">
-                      <td class="px-5 py-4 font-medium">
-                        <a class="underline decoration-parchment-border underline-offset-4" href="https://api.beopmang.org/history/001706.html">민법 개정 연혁</a>
-                      </td>
-                      <td class="px-5 py-4 text-parchment-text/72">제정부터 최근까지 개정 흐름</td>
-                    </tr>
-                    <tr class="transition hover:bg-parchment-bg/55">
-                      <td class="px-5 py-4 font-medium">
-                        <a class="underline decoration-parchment-border underline-offset-4" href="https://api.beopmang.org/xref/001706.html">민법 인용관계</a>
-                      </td>
-                      <td class="px-5 py-4 text-parchment-text/72">인용하는 법과 인용되는 법 추적</td>
-                    </tr>
-                    <tr class="transition hover:bg-parchment-bg/55">
-                      <td class="px-5 py-4 font-medium">
-                        <a class="underline decoration-parchment-border underline-offset-4" href="https://api.beopmang.org/case-by-law/001706.html">민법 관련 판례</a>
-                      </td>
-                      <td class="px-5 py-4 text-parchment-text/72">법령 기반 판례 묶음 보기</td>
-                    </tr>
-                    <tr class="transition hover:bg-parchment-bg/55">
-                      <td class="px-5 py-4 font-medium">
-                        <a class="underline decoration-parchment-border underline-offset-4" href="https://api.beopmang.org/bill/%EB%AF%BC%EB%B2%95.html">민법 관련 의안</a>
-                      </td>
-                      <td class="px-5 py-4 text-parchment-text/72">국회 의안과 개정 흐름 이어보기</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </section>
-
-            <section class="mt-14">
-              <div class="flex flex-wrap items-end justify-between gap-4">
-                <div>
-                  <p class="font-mono text-xs uppercase tracking-[0.24em] text-parchment-amber">Developer API</p>
-                  <h2 class="mt-2 text-2xl font-black tracking-[-0.03em] sm:text-3xl">개발자 API</h2>
-                </div>
-                <p class="max-w-xl text-sm leading-7 text-parchment-text/68">
-                  기본 응답은 <span class="font-mono">brief</span> 모드에 맞춰 가볍게 반환하고,
-                  필요할 때만 <span class="font-mono">full</span> 또는 <span class="font-mono">include</span>를 얹는 방식입니다.
-                </p>
-              </div>
-
-              <div class="mt-6 grid gap-4 lg:grid-cols-3">
-                <article class="rounded-[22px] border border-parchment-border bg-parchment-bg/88 p-5">
-                  <p class="font-mono text-xs uppercase tracking-[0.18em] text-parchment-amber">brief</p>
-                  <p class="mt-2 text-sm leading-7 text-parchment-text/76">
-                    <span class="font-mono">?brief=1</span> 기본값. 핵심 필드만 반환해서 에이전트와 프롬프트 비용을 줄입니다.
-                  </p>
-                </article>
-                <article class="rounded-[22px] border border-parchment-border bg-parchment-bg/88 p-5">
-                  <p class="font-mono text-xs uppercase tracking-[0.18em] text-parchment-amber">full</p>
-                  <p class="mt-2 text-sm leading-7 text-parchment-text/76">
-                    <span class="font-mono">?full=1</span> 또는 <span class="font-mono">?brief=0</span>. 원본에 가까운 상세 필드를 펼칩니다.
-                  </p>
-                </article>
-                <article class="rounded-[22px] border border-parchment-border bg-parchment-bg/88 p-5">
-                  <p class="font-mono text-xs uppercase tracking-[0.18em] text-parchment-amber">include</p>
-                  <p class="mt-2 text-sm leading-7 text-parchment-text/76">
-                    <span class="font-mono">?include=history,cases,xref,bills,timeline,explore</span> 로 주변 데이터를 병렬 포함합니다.
-                  </p>
-                </article>
-              </div>
-
-              <div class="mt-6 overflow-hidden rounded-[24px] border border-parchment-border bg-parchment-card">
-                <table class="min-w-full text-left text-sm">
-                  <thead class="bg-parchment-bg/85">
-                    <tr class="border-b border-parchment-border">
-                      <th class="px-5 py-4 font-mono text-xs uppercase tracking-[0.18em] text-parchment-amber">Endpoint</th>
-                      <th class="px-5 py-4 font-mono text-xs uppercase tracking-[0.18em] text-parchment-amber">Purpose</th>
-                      <th class="px-5 py-4 font-mono text-xs uppercase tracking-[0.18em] text-parchment-amber">Notes</th>
-                    </tr>
-                  </thead>
-                  <tbody class="divide-y divide-parchment-border/70">
-                    <tr class="transition hover:bg-parchment-bg/55">
-                      <td class="px-5 py-4 font-mono text-[13px]">GET /find/{법령명}</td>
-                      <td class="px-5 py-4">법령명 또는 약칭으로 시작점 찾기</td>
-                      <td class="px-5 py-4 text-parchment-text/72">law_id 확보용</td>
-                    </tr>
-                    <tr class="transition hover:bg-parchment-bg/55">
-                      <td class="px-5 py-4 font-mono text-[13px]">GET /law/{id}</td>
-                      <td class="px-5 py-4">법령 기본 정보 조회</td>
-                      <td class="px-5 py-4 text-parchment-text/72">brief/full/include 대응</td>
-                    </tr>
-                    <tr class="transition hover:bg-parchment-bg/55">
-                      <td class="px-5 py-4 font-mono text-[13px]">GET /article/{id}/{조문}</td>
-                      <td class="px-5 py-4">특정 조문 상세 조회</td>
-                      <td class="px-5 py-4 text-parchment-text/72">조·항·호·목 포함</td>
-                    </tr>
-                    <tr class="transition hover:bg-parchment-bg/55">
-                      <td class="px-5 py-4 font-mono text-[13px]">GET /search/{키워드}</td>
-                      <td class="px-5 py-4">조문 본문 키워드 검색</td>
-                      <td class="px-5 py-4 text-parchment-text/72">brief 모드 기본</td>
-                    </tr>
-                    <tr class="transition hover:bg-parchment-bg/55">
-                      <td class="px-5 py-4 font-mono text-[13px]">GET /history/{id}</td>
-                      <td class="px-5 py-4">개정 연혁 조회</td>
-                      <td class="px-5 py-4 text-parchment-text/72">revision 흐름 확인</td>
-                    </tr>
-                    <tr class="transition hover:bg-parchment-bg/55">
-                      <td class="px-5 py-4 font-mono text-[13px]">GET /xref/{id}</td>
-                      <td class="px-5 py-4">법령 간 인용관계 조회</td>
-                      <td class="px-5 py-4 text-parchment-text/72">61,755 인용관계 기반</td>
-                    </tr>
-                    <tr class="transition hover:bg-parchment-bg/55">
-                      <td class="px-5 py-4 font-mono text-[13px]">GET /case-by-law/{id}</td>
-                      <td class="px-5 py-4">법령별 관련 판례 조회</td>
-                      <td class="px-5 py-4 text-parchment-text/72">판례 171,257 연결</td>
-                    </tr>
-                    <tr class="transition hover:bg-parchment-bg/55">
-                      <td class="px-5 py-4 font-mono text-[13px]">GET /bill/{키워드}</td>
-                      <td class="px-5 py-4">국회 의안 검색</td>
-                      <td class="px-5 py-4 text-parchment-text/72">입법 흐름 보조</td>
-                    </tr>
-                    <tr class="transition hover:bg-parchment-bg/55">
-                      <td class="px-5 py-4 font-mono text-[13px]">GET /timeline/{id}</td>
-                      <td class="px-5 py-4">의안·개정·판례 타임라인</td>
-                      <td class="px-5 py-4 text-parchment-text/72">법령 중심 흐름 정리</td>
-                    </tr>
-                    <tr class="transition hover:bg-parchment-bg/55">
-                      <td class="px-5 py-4 font-mono text-[13px]">POST /mcp</td>
-                      <td class="px-5 py-4">MCP 서버 엔드포인트</td>
-                      <td class="px-5 py-4 text-parchment-text/72">ChatGPT 연결용</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </section>
-
-            <footer class="mt-14 border-t border-parchment-border/75 pt-6">
-              <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
-                <a class="underline decoration-parchment-border underline-offset-4" href="https://api.beopmang.org/openapi.json">OpenAPI</a>
-                <a class="underline decoration-parchment-border underline-offset-4" href="https://api.beopmang.org/.well-known/agent.json">AgentCard</a>
-                <a class="underline decoration-parchment-border underline-offset-4" href="https://api.beopmang.org/privacy">Privacy</a>
-              </div>
-              <p class="mt-4 max-w-3xl text-sm leading-7 text-parchment-text/68">
-                데이터 출처는 공개 법령·의안 데이터이며, 본 페이지와 API 출력은 참고용입니다.
-                법률 자문이나 공식 해석을 대체하지 않으며 법적 효력을 보장하지 않습니다.
-              </p>
-            </footer>
-          </div>
-        </section>
-      </div>
-    </main>
-
-    <script>
-      document.querySelectorAll(".copy-trigger").forEach(function (button) {
-        button.addEventListener("click", async function () {
-          var value = button.getAttribute("data-copy");
-          var badge = button.querySelector("span:last-child");
-          try {
-            await navigator.clipboard.writeText(value);
-            if (badge) {
-              var original = badge.textContent;
-              badge.textContent = "copied";
-              setTimeout(function () {
-                badge.textContent = original;
-              }, 1400);
-            }
-          } catch (error) {
-            window.prompt("복사할 값을 수동으로 복사하세요.", value);
-          }
-        });
-      });
-    </script>
-  </body>
+</div>
+<script>function cc(el,v){navigator.clipboard.writeText(v).then(function(){el.textContent='copied!';setTimeout(function(){el.textContent='copy'},1500)})}</script>
+</body>
 </html>
 `;
   return new Response(html, { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8', ...corsHeaders(), ...rlHeaders } });
