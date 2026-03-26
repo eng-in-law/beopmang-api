@@ -217,7 +217,7 @@ async function handleRequest(request, env) {
         const body = await request.json();
         const msg = (body.message || '').slice(0, 1000);
         if (!msg) return json({ ok: false, error: 'message required' }, 400);
-        const entry = { message: msg, type: body.type || 'general', context: body.context || '', ip, ts: new Date().toISOString() };
+        const entry = { message: msg, type: body.type || 'general', context: body.context || '', ip, ts: new Date().toISOString(), source: 'rest' };
         await env.API_KV.put('fb:' + Date.now() + ':' + Math.random().toString(36).slice(2, 6), JSON.stringify(entry), { expirationTtl: 86400 * 90 });
         return json({ ok: true, message: 'feedback received' });
       } catch { return json({ ok: false, error: 'invalid request' }, 400); }
@@ -835,7 +835,7 @@ body {
 
 <div class="section">
 <p class="section-title">피드백</p>
-<p class="section-desc">AI에게 "법망에 피드백 보내줘"라고 말하면 됩니다.<br>MCP: <code>sendFeedback</code> · REST: <code>POST /feedback</code></p>
+<p class="section-desc">AI에게 "법망에 피드백 보내줘"라고 말하면 됩니다.</p>
 </div>
 
 </div>
@@ -964,7 +964,8 @@ async function handleMcp(request, env) {
     if (command === 'sendFeedback') {
       const msg = (p.message || '').slice(0, 1000);
       if (!msg) return mcpOk(id, { content: [{ type: 'text', text: 'Error: message required' }], isError: true });
-      const entry = { message: msg, type: p.type || 'general', context: p.context || '', ts: new Date().toISOString() };
+      const mcpIp = request.headers.get('CF-Connecting-IP') || '';
+      const entry = { message: msg, type: p.type || 'general', context: p.context || '', ip: mcpIp, ts: new Date().toISOString(), source: 'mcp' };
       await env.API_KV.put('fb:' + Date.now() + ':' + Math.random().toString(36).slice(2, 6), JSON.stringify(entry), { expirationTtl: 86400 * 90 });
       return mcpOk(id, { content: [{ type: 'text', text: 'Feedback received. Thank you.' }] });
     }
