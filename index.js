@@ -940,7 +940,7 @@ JSON API: GET / (Accept에 text/html 없으면 JSON). MCP: POST /mcp (도구명 
 <p class="muted-note">추천 모델: <strong>GPT 5.4 Thinking</strong> 이상</p>
 </div>
 
-<div class="section section-disabled">
+<div class="section">
 <p class="section-title">Gemini</p>
 <p class="section-desc">환각이 심하여 권장하지 않습니다. 사용 불가.</p>
 </div>
