@@ -62,6 +62,7 @@ body {
   border-radius: 0; box-shadow: 12px 12px 0 #3b2f20; overflow: hidden;
 }
 .card-header { padding: 24px 24px 20px; border-bottom: 2px solid #3b2f20; }
+.header-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .card-header h1 { margin: 0; font-size: 1.15rem; font-weight: 800; letter-spacing: -0.03em; }
 .card-desc { margin: 6px 0 0; font-size: 0.88rem; color: var(--ink); }
 .card-body { padding: 28px 24px; display: flex; flex-direction: column; gap: 24px; }
@@ -114,7 +115,7 @@ body {
 }
 
 .steps { margin: 4px 0; padding-left: 1.2rem; }
-.steps li { font-size: 0.82rem; color: var(--ink); margin-bottom: 2px; }
+.steps li { font-size: 0.82rem; color: var(--ink); margin-bottom: 6px; line-height: 1.6; }
 .muted-note { font-size: 0.78rem; color: var(--ink-soft); margin: 0; }
 
 .card-footer {
@@ -157,17 +158,14 @@ JSON API: GET / (Accept에 text/html 없으면 JSON). MCP: POST /mcp (도구명 
 <div class="card">
 
 <div class="card-header">
+<div class="header-row">
 <h1>🦒 법망 API</h1>
+<div class="status-bar" id="hc"><span class="dot"></span> 확인 중...</div>
+</div>
 <p class="card-desc">프롬프트 한 줄로 법률AI 에이전트 흉내내기</p>
 </div>
 
 <div class="card-body">
-
-<div class="status-bar" id="hc">
-<span class="dot"></span>
-<span>확인 중...</span>
-<strong>—</strong>
-</div>
 
 <div class="stats">
 <div class="stat"><div class="stat-value">1</div><div class="stat-label">헌법</div></div>
@@ -242,7 +240,7 @@ JSON API: GET / (Accept에 text/html 없으면 JSON). MCP: POST /mcp (도구명 
 function cc(el,v){navigator.clipboard.writeText(v).then(function(){el.textContent='copied!';setTimeout(function(){el.textContent='복사'},1500)})}
 function hc(){fetch('/health').then(function(r){return r.json()}).then(function(d){
 var el=document.getElementById('hc');
-if(d.status==='ok')el.innerHTML='<span class="dot" style="background:#2f6b4e"></span> 서버 정상 · '+d.origin_ms+'ms';
+if(d.status==='ok')el.innerHTML='<span class="dot" style="background:#2f6b4e"></span> 서버 원활 · '+d.origin_ms+'ms';
 else{el.innerHTML='<span class="dot" style="background:#dc2626"></span> 오프라인 · 점검 중';setTimeout(hc,10000);}
 }).catch(function(){document.getElementById('hc').innerHTML='<span class="dot" style="background:#d97706"></span> 확인 불가';setTimeout(hc,10000);});}
 hc();setInterval(hc,60000);
