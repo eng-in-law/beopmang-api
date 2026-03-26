@@ -696,6 +696,9 @@ body {
 .stat-value { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.02em; }
 .stat-label { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
 
+.stat-hero { margin: 0; font-size: 0.88rem; color: var(--ink); text-align: center; }
+.stat-hero-value { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.03em; }
+
 .divider { border: none; border-top: 1px solid var(--border-soft); margin: 0; }
 
 .section { display: flex; flex-direction: column; gap: 6px; }
@@ -775,11 +778,13 @@ body {
 <strong>—</strong>
 </div>
 
+<p class="stat-hero"><span class="stat-hero-value">5,573</span> 현행 법령 수록</p>
 <div class="stats">
-<div class="stat"><div class="stat-value">1,707</div><div class="stat-label">법률</div></div>
-<div class="stat"><div class="stat-value">499,310</div><div class="stat-label">조문</div></div>
-<div class="stat"><div class="stat-value">171,257</div><div class="stat-label">판례</div></div>
-<div class="stat"><div class="stat-value">61,755</div><div class="stat-label">인용관계</div></div>
+<div class="stat"><div class="stat-value">1</div><div class="stat-label">헌법</div></div>
+<div class="stat"><div class="stat-value">1,709</div><div class="stat-label">법률</div></div>
+<div class="stat"><div class="stat-value">1,975</div><div class="stat-label">대통령령</div></div>
+<div class="stat"><div class="stat-value">1,509</div><div class="stat-label">총리령·부령</div></div>
+<div class="stat"><div class="stat-value">379</div><div class="stat-label">기타 규칙</div></div>
 </div>
 
 <hr class="divider">
