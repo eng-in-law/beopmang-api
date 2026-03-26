@@ -10,6 +10,7 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦒</text></svg>">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&display=swap">
 <style>
 :root {
   --bg: #f2ead3;
@@ -31,6 +32,7 @@
 body {
   margin: 0; min-height: 100vh;
   font-family: "Pretendard Variable","Pretendard",system-ui,sans-serif;
+  font-weight: 500; letter-spacing: -0.02em;
   background: var(--bg); color: var(--ink); line-height: 1.5;
   background-image: linear-gradient(rgba(59,47,32,0.035) 1px,transparent 1px),linear-gradient(90deg,rgba(59,47,32,0.035) 1px,transparent 1px);
   background-size: 30px 30px;
@@ -51,7 +53,7 @@ body {
   border-radius: 0; box-shadow: 12px 12px 0 #3b2f20; overflow: hidden;
 }
 .card-header { padding: 24px 24px 20px; border-bottom: 1px solid var(--border-soft); }
-.card-header h1 { margin: 0; font-size: 1.15rem; font-weight: 600; letter-spacing: -0.01em; }
+.card-header h1 { margin: 0; font-size: 1.15rem; font-weight: 800; letter-spacing: -0.03em; }
 .card-desc { margin: 6px 0 0; font-size: 0.88rem; color: var(--ink); }
 .card-body { padding: 24px; display: flex; flex-direction: column; gap: 20px; }
 
@@ -70,7 +72,7 @@ body {
 .divider { border: none; border-top: 1px solid var(--border-soft); margin: 0; }
 
 .section { display: flex; flex-direction: column; gap: 6px; }
-.section-title { margin: 0; font-size: 0.85rem; font-weight: 600; }
+.section-title { margin: 0; font-size: 0.85rem; font-weight: 700; }
 .section-title small { font-weight: 400; color: var(--muted); }
 .section-desc { margin: 0; font-size: 0.82rem; color: var(--ink); line-height: 1.5; }
 
@@ -80,11 +82,11 @@ body {
   border: 2px solid #3b2f20; background: var(--bg);
   box-shadow: 4px 4px 0 #3b2f20;
 }
-.copy-row code { flex: 1; font-size: 0.82rem; font-family: ui-monospace,monospace; }
+.copy-row code { flex: 1; font-size: 0.82rem; font-family: "JetBrains Mono",ui-monospace,monospace; font-weight: 500; color: #1a1207; }
 .copy-btn {
   padding: 4px 10px; border: 2px solid #3b2f20; border-radius: 0;
   box-shadow: 2px 2px 0 #3b2f20; transition: transform 80ms, box-shadow 80ms, background var(--motion-fast);
-  background: none; font-size: 0.72rem; font-weight: 600; color: var(--ink-soft);
+  background: none; font-size: 0.72rem; font-weight: 700; color: var(--ink);
   cursor: pointer; transition: background var(--motion-fast), color var(--motion-fast);
   font-family: inherit;
 }
@@ -95,9 +97,9 @@ body {
   display: grid; grid-template-columns: 6.5rem 1fr auto;
   gap: 6px 8px; align-items: center; font-size: 0.82rem;
 }
-.field-grid span { color: var(--muted); white-space: nowrap; text-align: right; }
+.field-grid span { color: #a08d6f; white-space: nowrap; text-align: right; font-weight: 500; font-size: 0.75rem; }
 .field-grid code {
-  font-family: ui-monospace,monospace; font-size: 0.78rem;
+  font-family: "JetBrains Mono",ui-monospace,monospace; font-size: 0.78rem; font-weight: 500; color: #1a1207;
   padding: 6px 10px; background: var(--bg); border: 2px solid #3b2f20;
   border-radius: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
