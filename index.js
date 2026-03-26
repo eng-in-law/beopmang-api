@@ -901,13 +901,36 @@ async function handleMcp(request, env) {
     return mcpOk(id, { tools: MCP_TOOLS.map(t => ({ name: t.name, description: t.description, inputSchema: t.inputSchema })) });
   }
   if (method === 'tools/call') {
-    // Single tool: extract command + params from arguments
+    // Validate tool name — canonical name is '법망'
+    const toolName = params?.name;
+    if (toolName && toolName !== '법망') {
+      return mcpOk(id, { content: [{ type: 'text', text: JSON.stringify({
+        error_type: 'invalid_tool_name',
+        retryable: true,
+        message: 'Tool not found: ' + toolName,
+        canonical_name: '법망',
+        hint: 'Retry with tool name "법망"'
+      }) }], isError: true });
+    }
+    // Extract command + params from arguments
     const args = params?.arguments || {};
     const command = args.command;
     const p = args.params || {};
     const availableCommands = TOOL_COMMANDS.join(', ');
-    if (!command) return mcpErr(id, -32602, 'Missing command. Available: ' + availableCommands);
-    if (!TOOL_COMMANDS.includes(command)) return mcpErr(id, -32602, 'Unknown command: ' + command + '. Available: ' + availableCommands);
+    if (!command) return mcpOk(id, { content: [{ type: 'text', text: JSON.stringify({
+      error_type: 'missing_command',
+      retryable: true,
+      message: 'Missing "command" field',
+      available_commands: TOOL_COMMANDS,
+      example: { command: 'findLaw', params: { query: '민법' } }
+    }) }], isError: true });
+    if (!TOOL_COMMANDS.includes(command)) return mcpOk(id, { content: [{ type: 'text', text: JSON.stringify({
+      error_type: 'unknown_command',
+      retryable: true,
+      message: 'Unknown command: ' + command,
+      available_commands: TOOL_COMMANDS,
+      hint: 'Use one of the available commands'
+    }) }], isError: true });
 
     // Handle sendFeedback locally
     if (command === 'sendFeedback') {
@@ -922,13 +945,14 @@ async function handleMcp(request, env) {
       const originUrl = buildOriginUrl(env.ORIGIN_BASE, command, p);
       if (!originUrl) {
         const errMsg = command === 'getArticle'
-          ? {error:{code:'INVALID_ARGUMENT',message:'getArticle requires law_id and (article_label or article_path)',example:{law_id:'001706',article_label:'제750조'}}}
-          : {error:{code:'INVALID_ARGUMENT',message:'Missing required parameters for ' + command}};
+          ? {error_type:'invalid_argument',retryable:true,message:'getArticle requires law_id and (article_label or article_path)',example:{command:'getArticle',params:{law_id:'001706',article_label:'제750조'}}}
+          : {error_type:'invalid_argument',retryable:true,message:'Missing required parameters for ' + command,command};
         return mcpOk(id, { content: [{ type: 'text', text: JSON.stringify(errMsg) }], isError: true });
       }
       const originData = await fetchOriginNormalized(originUrl, 'beopmang-mcp/1.0', command);
       if (!originData.ok) {
-        return mcpOk(id, { content: [{ type: 'text', text: JSON.stringify(originData.errorPayload) }], isError: true });
+        const enriched = { error_type: 'origin_error', retryable: true, command, ...originData.errorPayload };
+        return mcpOk(id, { content: [{ type: 'text', text: JSON.stringify(enriched) }], isError: true });
       }
 
       let mainPayload = originData.result;
@@ -952,7 +976,7 @@ async function handleMcp(request, env) {
       }
       return mcpOk(id, { content: [{ type: 'text', text: JSON.stringify(mainPayload, null, 2) }] });
     } catch (e) {
-      return mcpOk(id, { content: [{ type: 'text', text: 'Error: ' + e.message }], isError: true });
+      return mcpOk(id, { content: [{ type: 'text', text: JSON.stringify({ error_type: 'internal_error', retryable: true, message: e.message, command }) }], isError: true });
     }
   }
 
