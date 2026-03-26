@@ -86,7 +86,7 @@ body {
 .copy-btn:hover { background: var(--accent-soft); color: var(--ink); }
 
 .field-grid {
-  display: grid; grid-template-columns: 3.5rem 1fr auto;
+  display: grid; grid-template-columns: 5rem 1fr auto;
   gap: 6px 8px; align-items: center; font-size: 0.82rem;
 }
 .field-grid span { color: var(--muted); }
@@ -119,7 +119,7 @@ body {
   .card-footer { padding: 16px 18px; }
   .stats { gap: 16px; }
   .stat-value { font-size: 1.1rem; }
-  .field-grid { grid-template-columns: 3.2rem 1fr auto; }
+  .field-grid { grid-template-columns: 4.8rem 1fr auto; }
 }
 </style>
 </head>
@@ -166,8 +166,8 @@ body {
 </ol>
 <div class="field-grid">
 <span>이름</span><code>법망</code><button class="copy-btn" onclick="cc(this,'법망')">복사</button>
-<span>설명<br>(선택)</span><code>반드시 여러 번 호출하고 조문번호와 법령명을 구체적으로 인용하여 답하세요</code><button class="copy-btn" onclick="cc(this,'반드시 여러 번 호출하고 조문번호와 법령명을 구체적으로 인용하여 답하세요')">복사</button>
-<span>MCP<br>서버 URL</span><code>https://api.beopmang.org/mcp</code><button class="copy-btn" onclick="cc(this,'https://api.beopmang.org/mcp')">복사</button>
+<span>설명 (선택)</span><code>반드시 여러 번 호출하고 조문번호와 법령명을 구체적으로 인용하여 답하세요</code><button class="copy-btn" onclick="cc(this,'반드시 여러 번 호출하고 조문번호와 법령명을 구체적으로 인용하여 답하세요')">복사</button>
+<span>MCP 서버 URL</span><code>https://api.beopmang.org/mcp</code><button class="copy-btn" onclick="cc(this,'https://api.beopmang.org/mcp')">복사</button>
 <span>인증</span><code>없음</code><span></span>
 </div>
 <ol class="steps" start="3">
