@@ -786,7 +786,7 @@ body {
 .header-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .card-header h1 { margin: 0; font-size: 1.15rem; font-weight: 800; letter-spacing: -0.03em; }
 .card-desc { margin: 6px 0 0; font-size: 0.88rem; color: var(--ink); }
-.card-body { padding: 28px 24px 40px; display: flex; flex-direction: column; gap: 24px; }
+.card-body { padding: 28px 24px 56px; display: flex; flex-direction: column; gap: 24px; }
 
 .status-bar { display: inline-flex; align-items: center; gap: 6px; font-size: 0.78rem; color: var(--ink); padding: 6px 12px; border: 2px solid #3b2f20; box-shadow: 3px 3px 0 #3b2f20; font-weight: 600; }
 .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--green); }
@@ -806,7 +806,7 @@ body {
 .section-title { margin: 0 0 4px 0; font-size: 1.05rem; font-weight: 800; letter-spacing: -0.03em; }
 .section-title small { font-weight: 600; color: #6d593f; font-size: 0.75rem; }
 .section-desc { margin: 0; font-size: 0.82rem; color: var(--ink); line-height: 1.5; }
-.section-desc code { font-family: "JetBrains Mono",ui-monospace,monospace; background: #fffdf7; padding: 6px 10px; border: 2px solid #3b2f20; font-size: 0.78rem; }
+.section-desc code { font-family: "JetBrains Mono",ui-monospace,monospace; background: #ffffff; padding: 14px 16px; border: 2px solid #3b2f20; font-size: 0.82rem; display: inline-block; margin-top: 4px; }
 
 .copy-row {
   display: flex; align-items: center; gap: 8px;
@@ -845,8 +845,8 @@ body {
 .section-disabled .section-title { text-decoration: line-through; }
 
 .statusline {
-  margin: 40px 0 0; padding: 0; text-align: left;
-  font-size: 0.68rem; color: #6d593f; font-weight: 500; letter-spacing: 0;
+  margin: 60px 0 0; padding: 0; text-align: left;
+  font-size: 0.68rem; color: #3b2f20; font-weight: 600; letter-spacing: 0;
 }
 
 @media (max-width: 640px) {
