@@ -154,7 +154,7 @@ body {
 <div class="stat"><div class="stat-value">1,509</div><div class="stat-label">총리령·부령</div></div>
 <div class="stat"><div class="stat-value">379</div><div class="stat-label">기타 규칙</div></div>
 </div>
-<p class="stat-note">2026년 3월 기준 법제처 API 제공 법령 등 100% 수록</p>
+<p class="stat-note" id="stat-note"></p>
 
 <hr class="divider">
 
@@ -208,6 +208,9 @@ var el=document.getElementById('hc');
 if(d.status==='ok')el.innerHTML='<span class="dot" style="background:#2f6b4e"></span><span>서버 정상</span><strong>'+d.origin_ms+'ms</strong>';
 else el.innerHTML='<span class="dot" style="background:#dc2626"></span><span>오프라인</span><strong>점검 중</strong>';
 }).catch(function(){document.getElementById('hc').innerHTML='<span class="dot" style="background:#d97706"></span><span>확인 불가</span><strong>—</strong>'});
+fetch('/stats').then(function(r){return r.json()}).then(function(d){
+var r=d.result||d;var n=document.getElementById('stat-note');if(n&&r.last_synced&&r.sync_complete){var p=r.last_synced.split('-');n.textContent=p[0]+'년 '+parseInt(p[1])+'월 '+parseInt(p[2])+'일 기준 법제처 API 제공 법령 등 100% 수록';}
+}).catch(function(){});
 </script>
 </body>
 </html>
