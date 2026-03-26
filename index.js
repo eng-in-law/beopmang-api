@@ -679,8 +679,8 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 .card {
-  background: var(--surface); border: 3px solid var(--border);
-  border-radius: 8px; box-shadow: var(--shadow); overflow: hidden;
+  background: var(--surface); border: 3px solid #3b2f20;
+  border-radius: 0; box-shadow: 12px 12px 0 #3b2f20; overflow: hidden;
 }
 .card-header { padding: 24px 24px 20px; border-bottom: 1px solid var(--border-soft); }
 .card-header h1 { margin: 0; font-size: 1.15rem; font-weight: 600; letter-spacing: -0.01em; }
@@ -705,20 +705,20 @@ body {
 
 .copy-row {
   display: flex; align-items: center; gap: 8px;
-  padding: 10px 12px; border-radius: 6px;
-  border: 2px solid var(--border); background: var(--bg);
-  box-shadow: 4px 4px 0 rgba(59,47,32,0.1);
+  padding: 10px 12px; border-radius: 0;
+  border: 2px solid #3b2f20; background: var(--bg);
+  box-shadow: 4px 4px 0 #3b2f20;
 }
 .copy-row code { flex: 1; font-size: 0.82rem; font-family: ui-monospace,monospace; }
 .copy-btn {
-  padding: 4px 10px; border: 2px solid var(--border); border-radius: 4px;
-  box-shadow: 2px 2px 0 rgba(59,47,32,0.12); transition: transform 80ms, box-shadow 80ms, background var(--motion-fast);
+  padding: 4px 10px; border: 2px solid #3b2f20; border-radius: 0;
+  box-shadow: 2px 2px 0 #3b2f20; transition: transform 80ms, box-shadow 80ms, background var(--motion-fast);
   background: none; font-size: 0.72rem; font-weight: 600; color: var(--ink-soft);
   cursor: pointer;
   font-family: inherit;
 }
-.copy-btn:hover { background: var(--accent-soft); color: var(--ink); transform: translate(-1px,-1px); box-shadow: 3px 3px 0 rgba(59,47,32,0.15); }
-.copy-btn:active { transform: translate(1px,1px); box-shadow: 1px 1px 0 rgba(59,47,32,0.1); }
+.copy-btn:hover { background: var(--accent-soft); color: var(--ink); transform: translate(-1px,-1px); box-shadow: 3px 3px 0 #3b2f20; }
+.copy-btn:active { transform: translate(1px,1px); box-shadow: 1px 1px 0 #3b2f20; }
 
 .field-grid {
   display: grid; grid-template-columns: 6.5rem 1fr auto;
@@ -727,8 +727,8 @@ body {
 .field-grid span { color: var(--muted); white-space: nowrap; }
 .field-grid code {
   font-family: ui-monospace,monospace; font-size: 0.78rem;
-  padding: 6px 10px; background: var(--bg); border: 1px solid var(--border-soft);
-  border-radius: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  padding: 6px 10px; background: var(--bg); border: 2px solid #3b2f20;
+  border-radius: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 
 .steps { margin: 4px 0; padding-left: 1.2rem; }
@@ -748,7 +748,7 @@ body {
 @media (max-width: 640px) {
   .page { padding: 10px 8px 20px; }
   .shell { padding-top: 12px; padding-bottom: 20px; }
-  .card { border-radius: 8px; box-shadow: 6px 6px 0 rgba(59,47,32,0.15); }
+  .card { box-shadow: 8px 8px 0 #3b2f20; }
   .card-header { padding: 20px 18px 16px; }
   .card-body { padding: 18px; gap: 16px; }
   .card-footer { padding: 16px 18px; }
