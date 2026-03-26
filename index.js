@@ -806,6 +806,7 @@ body {
 .section-title { margin: 0 0 4px 0; font-size: 1.05rem; font-weight: 800; letter-spacing: -0.03em; }
 .section-title small { font-weight: 600; color: #6d593f; font-size: 0.75rem; }
 .section-desc { margin: 0; font-size: 0.82rem; color: var(--ink); line-height: 1.5; }
+.section-desc code { font-family: "JetBrains Mono",ui-monospace,monospace; background: var(--bg); padding: 2px 6px; border: 1px solid #3b2f20; font-size: 0.78rem; }
 
 .copy-row {
   display: flex; align-items: center; gap: 8px;
@@ -840,11 +841,14 @@ body {
 .steps { margin: 4px 0; padding-left: 1.2rem; }
 .steps li { font-size: 0.82rem; color: var(--ink); margin-bottom: 6px; line-height: 1.6; }
 .muted-note { font-size: 0.78rem; color: var(--ink-soft); margin: 0; }
+.section-disabled { opacity: 0.5; }
+.section-disabled .section-title { text-decoration: line-through; }
 
 .card-footer {
   padding: 20px 24px; border-top: 2px solid #3b2f20;
-  font-size: 0.72rem; color: var(--muted);
+  font-size: 0.72rem; color: #6d593f;
 }
+.card-footer p:first-child { font-weight: 600; color: var(--ink); }
 .card-footer a { color: var(--accent); text-decoration: none; }
 .card-footer a:hover { text-decoration: underline; }
 .card-footer p { margin: 0; }
@@ -933,10 +937,10 @@ JSON API: GET / (Accept에 text/html 없으면 JSON). MCP: POST /mcp (도구명 
 <ol class="steps" start="4">
 <li>채팅에서 + → 더 보기 → 법망 선택</li>
 </ol>
-<p class="muted-note">추천 모델: GPT 5.4 Thinking 이상</p>
+<p class="muted-note">추천 모델: <strong>GPT 5.4 Thinking</strong> 이상</p>
 </div>
 
-<div class="section">
+<div class="section section-disabled">
 <p class="section-title">Gemini</p>
 <p class="section-desc">환각이 심하여 권장하지 않습니다. 사용 불가.</p>
 </div>
@@ -945,7 +949,7 @@ JSON API: GET / (Accept에 text/html 없으면 JSON). MCP: POST /mcp (도구명 
 
 <div class="section">
 <p class="section-title">피드백</p>
-<p class="section-desc">AI에게 "법망에 피드백 보내줘"라고 말하면 됩니다.</p>
+<p class="section-desc">AI에게 <code>법망에 피드백 보내줘</code>라고 말하면 됩니다.</p>
 </div>
 
 </div>
