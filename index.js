@@ -698,8 +698,7 @@ body {
 .stat-value { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.02em; }
 .stat-label { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
 
-.stat-hero { margin: 0; font-size: 0.88rem; color: var(--ink); text-align: center; }
-.stat-hero-value { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.03em; }
+.stat-note { margin: 0; font-size: 0.7rem; color: var(--muted); text-align: center; }
 
 .divider { border: none; border-top: 1px solid var(--border-soft); margin: 0; }
 
@@ -780,7 +779,6 @@ body {
 <strong>—</strong>
 </div>
 
-<p class="stat-hero"><span class="stat-hero-value">5,573</span> 현행 법령 수록</p>
 <div class="stats">
 <div class="stat"><div class="stat-value">1</div><div class="stat-label">헌법</div></div>
 <div class="stat"><div class="stat-value">1,709</div><div class="stat-label">법률</div></div>
@@ -788,6 +786,7 @@ body {
 <div class="stat"><div class="stat-value">1,509</div><div class="stat-label">총리령·부령</div></div>
 <div class="stat"><div class="stat-value">379</div><div class="stat-label">기타 규칙</div></div>
 </div>
+<p class="stat-note">2026년 3월 기준 법제처 API 제공 법령 등 100% 수록</p>
 
 <hr class="divider">
 
