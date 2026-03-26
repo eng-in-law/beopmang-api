@@ -20,6 +20,156 @@ const BRIEF_FIELDS = {
 const RATE_LIMIT = 100;
 const RATE_WINDOW = 60;
 
+const REST_ROUTE_MAP = {
+  find: 'findLaw',
+  law: 'getLaw',
+  history: 'getHistory',
+  article: 'getArticle',
+  xref: 'getXref',
+  search: 'searchArticles',
+  case: 'searchCases',
+  'case-by-law': 'getCasesByLaw',
+  'case-view': 'getCaseDetail',
+  bill: 'searchBills',
+  timeline: 'getTimeline',
+  explore: 'exploreLaw',
+  stats: 'getStats',
+};
+
+const INCLUDE_COMMAND_MAP = {
+  history: 'getHistory',
+  xref: 'getXref',
+  cases: 'getCasesByLaw',
+  bills: 'searchBills',
+  timeline: 'getTimeline',
+  explore: 'exploreLaw',
+};
+
+const TOOL_COMMANDS = [
+  'findLaw', 'getLaw', 'getHistory', 'getArticle', 'getXref', 'searchArticles',
+  'searchCases', 'getCasesByLaw', 'getCaseDetail', 'searchBills', 'getTimeline',
+  'exploreLaw', 'getStats', 'sendFeedback'
+];
+
+function buildOriginUrl(base, command, p = {}) {
+  const lawId = p.law_id || p.id || '';
+  const articleLabel = p.article_label || p.label || '';
+  if (command === 'findLaw' || command === 'getLaw') {
+    return base + '/api/v2/law?q=' + encodeURIComponent(p.query || lawId || '')
+      + (p.exact ? '&exact=true' : '')
+      + (p.active_only ? '&active_only=true' : '')
+      + (p.law_type ? '&law_type=' + encodeURIComponent(p.law_type) : '')
+      + (p.limit ? '&limit=' + p.limit : '')
+      + (p.full || p.articles ? '&articles=true' : '');
+  }
+  if (command === 'getArticle') {
+    return base + '/api/v2/article?law=' + encodeURIComponent(lawId)
+      + (p.article_path ? '&path=' + encodeURIComponent(p.article_path) : '&label=' + encodeURIComponent(articleLabel || ''));
+  }
+  if (command === 'searchArticles') {
+    return base + '/api/v2/search?q=' + encodeURIComponent(p.query || '') + '&top_k=20';
+  }
+  if (command === 'exploreLaw') {
+    return base + '/api/v2/explore?law_id=' + encodeURIComponent(p.law_id || '');
+  }
+  const cmd = {
+    getHistory: 'history',
+    getXref: 'xref',
+    searchCases: 'case',
+    getCasesByLaw: 'case-by-law',
+    getCaseDetail: 'case-view',
+    searchBills: 'bill',
+    getTimeline: 'timeline',
+    getStats: 'stats',
+  }[command] || command;
+  let args = p.query || lawId || p.case_id || '';
+  if (command === 'getArticle') args = lawId + ' ' + articleLabel;
+  let flags = '';
+  if (p.cited_by) flags = '--cited-by';
+  return base + '/api/lawcli?cmd=' + encodeURIComponent(cmd)
+    + '&args=' + encodeURIComponent(args)
+    + (flags ? '&flags=' + encodeURIComponent(flags) : '')
+    + '&json=1';
+}
+
+function parseOriginOutput(output) {
+  try {
+    return JSON.parse(output);
+  } catch {
+    return output;
+  }
+}
+
+function buildV1ErrorPayload(body, command) {
+  const rawDetail = body?.output || '';
+  const clean = rawDetail
+    .replace(/lawcli\.py/g, 'lawcli')
+    .replace(/\/home\/[^\s]+/g, '')
+    .replace(/Traceback[\s\S]*$/m, '')
+    .trim();
+  let errObj;
+  try { errObj = JSON.parse(clean); } catch { errObj = null; }
+  const errPayload = errObj?.error ? errObj : {
+    ok: false,
+    error: { code: 'COMMAND_FAILED', message: clean || 'command returned an error', command },
+  };
+  if (!errPayload.ok) errPayload.ok = false;
+  return errPayload;
+}
+
+async function fetchOriginNormalized(originUrl, userAgent, command) {
+  const httpResp = await fetch(originUrl, {
+    headers: { 'User-Agent': userAgent },
+    cf: { cacheTtl: 0 },
+  });
+
+  let resp = null;
+  try { resp = await httpResp.json(); } catch {}
+
+  if (resp && Object.prototype.hasOwnProperty.call(resp, 'data')) {
+    return {
+      ok: true,
+      version: 'v2',
+      result: resp.data,
+      meta: resp.meta || {},
+      raw: resp,
+    };
+  }
+
+  if (resp && Object.prototype.hasOwnProperty.call(resp, 'exit_code')) {
+    if (resp.exit_code !== 0) {
+      return {
+        ok: false,
+        status: 422,
+        errorPayload: buildV1ErrorPayload(resp, command),
+      };
+    }
+    return {
+      ok: true,
+      version: 'v1',
+      result: parseOriginOutput(resp.output),
+      meta: resp.meta || {},
+      raw: resp,
+    };
+  }
+
+  if (resp?.error) {
+    return {
+      ok: false,
+      status: httpResp.ok ? 422 : httpResp.status,
+      errorPayload: resp,
+    };
+  }
+
+  if (!httpResp.ok) throw new Error('origin ' + httpResp.status);
+
+  return {
+    ok: false,
+    status: 502,
+    errorPayload: { ok: false, error: { code: 'ORIGIN_INVALID_RESPONSE', message: 'unexpected origin response', command } },
+  };
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -165,24 +315,17 @@ export default {
     const fullParam = url.searchParams.get('full');
     const mode = fullParam === '1' || briefParam === '0' ? 'full' : 'brief';
 
-    let originQs = 'cmd=' + encodeURIComponent(parsed.cmd);
-    if (parsed.args) originQs += '&args=' + encodeURIComponent(parsed.args);
-    if (parsed.flags) originQs += '&flags=' + encodeURIComponent(parsed.flags);
-    originQs += '&json=1';
-    const originUrl = env.ORIGIN_BASE + '/api/lawcli?' + originQs;
-
-    const cacheKey = `cache:${parsed.cmd}:${parsed.args||''}:${parsed.flags||''}`;
+    const originUrl = buildOriginUrl(env.ORIGIN_BASE, parsed.operation, parsed.request);
+    const cacheKey = `cache:${buildOriginUrl('', parsed.operation, parsed.request)}`;
     const t0 = Date.now();
     let originData;
     let fromCache = false;
 
     try {
-      const originResp = await fetch(originUrl, {
-        headers: { 'User-Agent': 'beopmang-api/1.0' },
-        cf: { cacheTtl: 0 },
-      });
-      if (!originResp.ok) throw new Error('origin ' + originResp.status);
-      originData = await originResp.json();
+      originData = await fetchOriginNormalized(originUrl, 'beopmang-api/1.0', parsed.operation);
+      if (!originData.ok) {
+        return json(originData.errorPayload, originData.status, rl.headers);
+      }
       // Cache successful responses (5 min TTL)
       env.API_KV.put(cacheKey, JSON.stringify(originData), { expirationTtl: 300 }).catch(() => {});
     } catch (e) {
@@ -202,21 +345,7 @@ export default {
 
     const elapsed = Date.now() - t0;
 
-    if (originData.exit_code !== 0) {
-      const rawDetail = originData.output || '';
-      const clean = rawDetail.replace(/lawcli\.py/g, 'lawcli').replace(/\/home\/[^\s]+/g, '').replace(/Traceback[\s\S]*$/m, '').trim();
-      let errObj; try { errObj = JSON.parse(clean); } catch { errObj = null; }
-      const errPayload = errObj?.error ? errObj : { ok: false, error: { code: 'COMMAND_FAILED', message: clean || 'command returned an error', command: parsed.cmd } };
-      if (!errPayload.ok) errPayload.ok = false;
-      return json(errPayload, 422, rl.headers);
-    }
-
-    let result;
-    try {
-      result = JSON.parse(originData.output);
-    } catch (e) {
-      result = originData.output;
-    }
+    let result = originData.result;
 
     if (mode === 'brief' && BRIEF_FIELDS[parsed.cmd]) {
       result = applyBrief(result, BRIEF_FIELDS[parsed.cmd]);
@@ -230,19 +359,18 @@ export default {
     if (includeParam) {
       const lawId = (typeof result === 'object' && !Array.isArray(result) && result?.law_id) ? result.law_id : (Array.isArray(result) && result[0]?.law_id) ? result[0].law_id : null;
       if (lawId) {
-        const VALID_INCLUDES = { history: 'history', xref: 'xref', cases: 'case-by-law', bills: 'bill', timeline: 'timeline', explore: 'explore' };
+        const VALID_INCLUDES = INCLUDE_COMMAND_MAP;
         const incFields = includeParam.split(',').map(s => s.trim()).filter(f => VALID_INCLUDES[f]);
-        const incMap = VALID_INCLUDES;
         included = {};
         for (const f of incFields) {
-          if (!incMap[f]) continue;
-          const cmd = incMap[f];
-          const a = f === 'bills' ? (typeof result === 'object' && !Array.isArray(result) ? result?.law_name : '') || lawId : lawId;
-          const qs = 'cmd=' + encodeURIComponent(cmd) + '&args=' + encodeURIComponent(a) + '&json=1';
+          const command = VALID_INCLUDES[f];
+          if (!command) continue;
+          const query = f === 'bills' ? ((typeof result === 'object' && !Array.isArray(result) ? result?.law_name : '') || lawId) : lawId;
+          const includeParams = f === 'bills' ? { query } : { law_id: lawId };
+          const includeUrl = buildOriginUrl(env.ORIGIN_BASE, command, includeParams);
           try {
-            const r = await fetch(env.ORIGIN_BASE + '/api/lawcli?' + qs, { headers: { 'User-Agent': 'beopmang-api/1.0' } });
-            const d = await r.json();
-            if (d.exit_code === 0) { try { included[f] = JSON.parse(d.output); } catch { included[f] = d.output; } }
+            const d = await fetchOriginNormalized(includeUrl, 'beopmang-api/1.0', command);
+            if (d.ok) included[f] = d.result;
           } catch {}
         }
       }
@@ -289,21 +417,72 @@ function parseCommand(path, params) {
   const decoded = decodeURIComponent(cleanPath.replace(/\+/g, ' '));
   const parts = decoded.split('/').filter(Boolean);
   if (!parts.length) return null;
-  let cmd = parts[0];
-  let args = parts.slice(1).join(' ');
-  // ?q= takes priority — agents should prefer this for Korean/spaces
+  const route = parts[0];
+  const operation = REST_ROUTE_MAP[route];
+  if (!operation) return null;
+
+  const pathArgs = parts.slice(1);
+  const joinedArgs = pathArgs.join(' ');
   const q = params.get('q');
-  if (q) args = q;
-  // /find → lawcli law (법령명 매칭)
-  // /search → lawcli search (조문 본문 검색)
-  if (cmd === 'find') cmd = 'law';
-  let flags = '';
-  if (params.get('cited-by') === '1') flags = '--cited-by';
-  for (const f of ['limit','top-k','date','type','age']) {
-    const v = params.get(f);
-    if (v) flags += (flags ? ' ' : '') + '--' + f + ' ' + v;
+  const cmd = route === 'find' ? 'law' : route;
+  let args = q || joinedArgs || undefined;
+  let request = {};
+
+  switch (operation) {
+    case 'findLaw':
+      request = {
+        query: q || joinedArgs,
+        exact: params.get('exact') === '1' || params.get('exact') === 'true',
+        active_only: params.get('active_only') === '1' || params.get('active_only') === 'true',
+        law_type: params.get('law_type'),
+        limit: params.get('limit'),
+        full: params.get('full') === '1' || params.get('full') === 'true',
+        articles: params.get('articles') === '1' || params.get('articles') === 'true',
+      };
+      break;
+    case 'getLaw':
+      request = {
+        law_id: q || joinedArgs,
+        full: params.get('full') === '1' || params.get('full') === 'true',
+        articles: params.get('articles') === '1' || params.get('articles') === 'true',
+      };
+      break;
+    case 'getHistory':
+    case 'getXref':
+    case 'getCasesByLaw':
+    case 'getTimeline':
+    case 'exploreLaw':
+      request = { law_id: q || joinedArgs };
+      break;
+    case 'getArticle':
+      args = pathArgs.filter(Boolean).join(' ') || undefined;
+      request = {
+        law_id: pathArgs[0] || '',
+        article_label: pathArgs[1] || '',
+        article_path: params.get('path'),
+      };
+      break;
+    case 'searchArticles':
+      request = { query: q || joinedArgs, top_k: params.get('top_k') || params.get('top-k') || 20 };
+      break;
+    case 'searchCases':
+    case 'searchBills':
+      request = { query: q || joinedArgs };
+      break;
+    case 'getCaseDetail':
+      request = { case_id: q || joinedArgs };
+      break;
+    case 'getStats':
+      args = undefined;
+      request = {};
+      break;
+    default:
+      request = {};
   }
-  return { cmd, args: args || undefined, flags: flags || undefined, forceHtml };
+
+  if (operation === 'getXref') request.cited_by = params.get('cited-by') === '1';
+
+  return { cmd, route, operation, args, request, forceHtml };
 }
 
 async function checkRateLimit(kv, ip) {
@@ -516,14 +695,6 @@ footer { margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #c2a67640; f
 // MCP Server (JSON-RPC 2.0 / Streamable HTTP)
 // ──────────────────────────────────────
 
-// Command routing table (internal)
-const CMD_MAP = {
-  findLaw: 'law', getLaw: 'law', getHistory: 'history', getArticle: 'article',
-  getXref: 'xref', searchArticles: 'search', searchCases: 'case',
-  getCasesByLaw: 'case-by-law', getCaseDetail: 'case-view', searchBills: 'bill',
-  getTimeline: 'timeline', exploreLaw: 'explore', getStats: 'stats', sendFeedback: '_feedback',
-};
-
 // Single MCP tool
 const MCP_TOOLS = [{
   name: '법망',
@@ -587,9 +758,9 @@ async function handleMcp(request, env) {
     const args = params?.arguments || {};
     const command = args.command;
     const p = args.params || {};
-    if (!command) return mcpErr(id, -32602, 'Missing command. Available: ' + Object.keys(CMD_MAP).join(', '));
-    const cmd = CMD_MAP[command];
-    if (!cmd) return mcpErr(id, -32602, 'Unknown command: ' + command + '. Available: ' + Object.keys(CMD_MAP).join(', '));
+    const availableCommands = TOOL_COMMANDS.join(', ');
+    if (!command) return mcpErr(id, -32602, 'Missing command. Available: ' + availableCommands);
+    if (!TOOL_COMMANDS.includes(command)) return mcpErr(id, -32602, 'Unknown command: ' + command + '. Available: ' + availableCommands);
 
     // Handle sendFeedback locally
     if (command === 'sendFeedback') {
@@ -600,48 +771,33 @@ async function handleMcp(request, env) {
       return mcpOk(id, { content: [{ type: 'text', text: 'Feedback received. Thank you.' }] });
     }
 
-    // Normalize params
-    const lawId = p.law_id ?? p.id ?? '';
-    const articleLabel = p.article_label ?? p.label ?? '';
-    let cmdArgs = p.query || lawId || p.case_id || '';
-    if (cmd === 'article' && lawId && articleLabel) cmdArgs = lawId + ' ' + articleLabel;
-    let flags = '';
-    if (p.full) flags += '--json';
-    if (p.cited_by) flags += (flags ? ' ' : '') + '--cited-by';
-
-    const qs = 'cmd=' + encodeURIComponent(cmd) + '&args=' + encodeURIComponent(cmdArgs) + (flags ? '&flags=' + encodeURIComponent(flags) : '') + '&json=1';
-
     try {
-      const resp = await fetch(env.ORIGIN_BASE + '/api/lawcli?' + qs, { headers: { 'User-Agent': 'beopmang-mcp/1.0' } });
-      const data = await resp.json();
-      if (data.exit_code !== 0) {
-        const raw = (data.output || 'command failed').replace(/lawcli\.py/g, 'lawcli').replace(/\/home\/[^\s]+/g, '').trim();
-        let errObj;
-        try { errObj = JSON.parse(raw); } catch { errObj = null; }
-        const errorPayload = errObj?.error ? errObj : { error: { code: 'COMMAND_FAILED', message: raw, command } };
-        return mcpOk(id, { content: [{ type: 'text', text: JSON.stringify(errorPayload) }], isError: true });
+      const originUrl = buildOriginUrl(env.ORIGIN_BASE, command, p);
+      const originData = await fetchOriginNormalized(originUrl, 'beopmang-mcp/1.0', command);
+      if (!originData.ok) {
+        return mcpOk(id, { content: [{ type: 'text', text: JSON.stringify(originData.errorPayload) }], isError: true });
       }
-      let mainResult = data.output || '{}';
+
+      let mainPayload = originData.result;
       // Handle include parameter
       if (p.include) {
-        let parsed; try { parsed = JSON.parse(mainResult); } catch { parsed = null; }
-        const lawId = parsed?.law_id || (Array.isArray(parsed) && parsed[0]?.law_id) || null;
+        const lawId = mainPayload?.law_id || (Array.isArray(mainPayload) && mainPayload[0]?.law_id) || null;
         if (lawId) {
-          const incMap = { history: 'history', xref: 'xref', cases: 'case-by-law', bills: 'bill', timeline: 'timeline', explore: 'explore' };
-          const fields = p.include.split(',').map(s => s.trim()).filter(f => incMap[f]);
+          const fields = p.include.split(',').map(s => s.trim()).filter(f => INCLUDE_COMMAND_MAP[f]);
           const inc = {};
           for (const f of fields) {
-            const a = f === 'bills' ? (parsed?.law_name || lawId) : lawId;
+            const includeCommand = INCLUDE_COMMAND_MAP[f];
+            const includeParams = f === 'bills' ? { query: mainPayload?.law_name || lawId } : { law_id: lawId };
             try {
-              const r = await fetch(env.ORIGIN_BASE + '/api/lawcli?cmd=' + encodeURIComponent(incMap[f]) + '&args=' + encodeURIComponent(a) + '&json=1', { headers: { 'User-Agent': 'beopmang-mcp/1.0' } });
-              const d = await r.json();
-              if (d.exit_code === 0) { try { inc[f] = JSON.parse(d.output); } catch { inc[f] = d.output; } }
+              const includeUrl = buildOriginUrl(env.ORIGIN_BASE, includeCommand, includeParams);
+              const includeData = await fetchOriginNormalized(includeUrl, 'beopmang-mcp/1.0', includeCommand);
+              if (includeData.ok) inc[f] = includeData.result;
             } catch {}
           }
-          mainResult = JSON.stringify({ main: parsed, included: inc }, null, 2);
+          mainPayload = { main: mainPayload, included: inc };
         }
       }
-      return mcpOk(id, { content: [{ type: 'text', text: mainResult }] });
+      return mcpOk(id, { content: [{ type: 'text', text: JSON.stringify(mainPayload, null, 2) }] });
     } catch (e) {
       return mcpOk(id, { content: [{ type: 'text', text: 'Error: ' + e.message }], isError: true });
     }
