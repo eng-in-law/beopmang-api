@@ -817,7 +817,7 @@ body {
 </div>
 
 <div class="card-footer">
-<p><a href="/openapi.json">OpenAPI</a> · <a href="/.well-known/agent.json">Agent Card</a> · <a href="/privacy">Privacy</a> · <a href="/health">Health</a></p>
+<p><a href="/privacy">Privacy</a></p>
 <p>데이터 출처: 법제처 Open API · 국회 Open API. 참고용이며 법적 효력 없음.</p>
 <p class="footer-update">최근 업데이트: ${buildDate}</p>
 </div>
