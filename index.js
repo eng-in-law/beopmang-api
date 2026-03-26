@@ -806,7 +806,7 @@ body {
 .section-title { margin: 0 0 4px 0; font-size: 1.05rem; font-weight: 800; letter-spacing: -0.03em; }
 .section-title small { font-weight: 600; color: #6d593f; font-size: 0.75rem; }
 .section-desc { margin: 0; font-size: 0.82rem; color: var(--ink); line-height: 1.5; }
-.section-desc code { font-family: "JetBrains Mono",ui-monospace,monospace; background: #ffffff; padding: 3px 8px; border: 1px solid #3b2f20; font-size: 0.78rem; vertical-align: baseline; }
+.section-desc code { font-family: "JetBrains Mono",ui-monospace,monospace; background: #ffffff; padding: 3px 8px; border: 1px solid #3b2f20; font-size: 0.78rem; vertical-align: middle; }
 
 .copy-row {
   display: flex; align-items: center; gap: 8px;
@@ -845,8 +845,8 @@ body {
 .section-disabled .section-title { text-decoration: line-through; }
 
 .statusline {
-  margin: 24px 0 0; padding: 0; text-align: left;
-  font-size: 0.68rem; color: #3b2f20; font-weight: 600; letter-spacing: 0;
+  margin: 24px 0 0; padding: 0; text-align: right;
+  font-size: 0.72rem; color: #3b2f20; font-weight: 600; letter-spacing: 0;
 }
 
 @media (max-width: 640px) {
