@@ -66,11 +66,11 @@ body {
 .card-desc { margin: 6px 0 0; font-size: 0.88rem; color: var(--ink); }
 .card-body { padding: 28px 24px; display: flex; flex-direction: column; gap: 24px; }
 
-.status-bar { display: flex; align-items: center; gap: 8px; font-size: 0.82rem; color: var(--muted); }
+.status-bar { display: inline-flex; align-items: center; gap: 6px; font-size: 0.78rem; color: var(--ink); padding: 6px 12px; border: 2px solid #3b2f20; box-shadow: 3px 3px 0 #3b2f20; font-weight: 600; }
 .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--green); }
-.status-bar strong { color: var(--ink); margin-left: auto; }
+.status-bar strong { color: var(--ink); }
 
-.stats { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; }
+.stats { display: flex; gap: 28px; justify-content: center; flex-wrap: wrap; }
 .stat { text-align: center; }
 .stat-value { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.02em; }
 .stat-label { font-size: 0.76rem; color: var(--muted); margin-top: 3px; letter-spacing: 0.02em; }
@@ -95,7 +95,7 @@ body {
 .copy-btn {
   padding: 4px 10px; border: 2px solid #3b2f20; border-radius: 0;
   box-shadow: 2px 2px 0 #3b2f20; transition: transform 80ms, box-shadow 80ms, background var(--motion-fast);
-  background: none; font-size: 0.72rem; font-weight: 700; color: var(--ink);
+  background: #fffdf7; font-size: 0.72rem; font-weight: 700; color: var(--ink);
   cursor: pointer; transition: background var(--motion-fast), color var(--motion-fast);
   font-family: inherit;
 }
@@ -109,7 +109,7 @@ body {
 .field-grid span { color: #a08d6f; white-space: nowrap; text-align: right; font-weight: 500; font-size: 0.7rem; }
 .field-grid code {
   font-family: "JetBrains Mono",ui-monospace,monospace; font-size: 0.85rem; font-weight: 500; color: #1a1207;
-  padding: 10px 12px; background: var(--bg); border: 2px solid #3b2f20;
+  padding: 12px 14px; background: var(--bg); border: 2px solid #3b2f20;
   border-radius: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 
@@ -242,9 +242,9 @@ JSON API: GET / (Accept에 text/html 없으면 JSON). MCP: POST /mcp (도구명 
 function cc(el,v){navigator.clipboard.writeText(v).then(function(){el.textContent='copied!';setTimeout(function(){el.textContent='복사'},1500)})}
 function hc(){fetch('/health').then(function(r){return r.json()}).then(function(d){
 var el=document.getElementById('hc');
-if(d.status==='ok')el.innerHTML='<span class="dot" style="background:#2f6b4e"></span><span>서버 정상</span><strong>'+d.origin_ms+'ms</strong>';
-else{el.innerHTML='<span class="dot" style="background:#dc2626"></span><span>오프라인</span><strong>점검 중</strong>';setTimeout(hc,10000);}
-}).catch(function(){document.getElementById('hc').innerHTML='<span class="dot" style="background:#d97706"></span><span>확인 불가</span><strong>—</strong>';setTimeout(hc,10000);});}
+if(d.status==='ok')el.innerHTML='<span class="dot" style="background:#2f6b4e"></span> 서버 정상 · '+d.origin_ms+'ms';
+else{el.innerHTML='<span class="dot" style="background:#dc2626"></span> 오프라인 · 점검 중';setTimeout(hc,10000);}
+}).catch(function(){document.getElementById('hc').innerHTML='<span class="dot" style="background:#d97706"></span> 확인 불가';setTimeout(hc,10000);});}
 hc();setInterval(hc,60000);
 fetch('/stats').then(function(r){return r.json()}).then(function(d){
 var r=d.result||d;var n=document.getElementById('stat-note');if(n&&r.last_synced&&r.sync_complete){var p=r.last_synced.split('-');n.textContent=p[0]+'. '+parseInt(p[1])+'. '+parseInt(p[2])+'. 기준 법제처 API 제공 법령 등 100% 수록';}
