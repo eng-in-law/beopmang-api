@@ -668,7 +668,7 @@ body {
   background:
     radial-gradient(circle at top left, rgba(255, 253, 247, 0.9), transparent 30rem),
     radial-gradient(circle at bottom right, rgba(194, 166, 118, 0.14), transparent 24rem),
-    linear-gradient(180deg, #f8f1de 0%, #f2ead3 18%, #efe4c9 100%);
+    #f2ead3;
 }
 
 body::before {
@@ -677,10 +677,10 @@ body::before {
   inset: 0;
   pointer-events: none;
   background-image:
-    linear-gradient(rgba(155, 124, 77, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(155, 124, 77, 0.025) 1px, transparent 1px);
+    #f2ead3 1px, transparent 1px),
+    #f2ead3 1px, transparent 1px);
   background-size: 100% 2.25rem, 2.25rem 100%;
-  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.34), transparent 90%);
+  mask-image: #f2ead3, transparent 90%);
 }
 
 a {
@@ -693,7 +693,7 @@ button {
   margin: 0;
   border-radius: 999px;
   border: 1px solid rgba(194, 166, 118, 0.9);
-  background: linear-gradient(180deg, #fffdf7 0%, #f7efd9 100%);
+  background: #f2ead3;
   color: #3b2f20;
   box-shadow: none;
   transition: transform 180ms ease, border-color 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
@@ -733,7 +733,7 @@ main {
   position: absolute;
   inset: auto 0 0;
   height: 7rem;
-  background: linear-gradient(180deg, rgba(242, 234, 211, 0) 0%, rgba(242, 234, 211, 0.96) 70%, #f2ead3 100%);
+  background: #f2ead3;
   pointer-events: none;
 }
 
@@ -754,7 +754,7 @@ main {
 
 .hero h1 {
   margin: 0 0 0.8rem;
-  font-size: clamp(3rem, 8vw, 6.2rem);
+  font-size: 2rem;
   line-height: 0.95;
   letter-spacing: -0.06em;
 }
@@ -762,7 +762,7 @@ main {
 .hero p {
   margin: 0;
   max-width: 24rem;
-  font-size: clamp(1.05rem, 2vw, 1.35rem);
+  font-size: 1rem;
   color: #5f4a2f;
 }
 
@@ -814,7 +814,7 @@ main {
   padding: 2rem;
   text-align: center;
   background:
-    linear-gradient(180deg, rgba(255, 253, 247, 0.96), rgba(250, 241, 219, 0.92)),
+    #f2ead3, rgba(250, 241, 219, 0.92)),
     rgba(255, 253, 247, 0.9);
   border: 1px solid rgba(194, 166, 118, 0.9);
   box-shadow: var(--paper-shadow);
@@ -829,7 +829,7 @@ main {
 }
 
 .seal-mark {
-  font-size: clamp(4rem, 9vw, 6rem);
+  font-size: 2.5rem;
   line-height: 1;
 }
 
@@ -872,7 +872,7 @@ main {
 
 .stat strong {
   display: block;
-  font-size: clamp(1.35rem, 3vw, 2.15rem);
+  font-size: 1.1rem;
   letter-spacing: -0.04em;
 }
 
@@ -889,9 +889,9 @@ main {
 
 .document {
   position: relative;
-  padding: clamp(1.4rem, 3vw, 2rem);
+  padding:  1rem;
   background:
-    linear-gradient(180deg, rgba(255, 253, 247, 0.94), rgba(255, 251, 242, 0.96)),
+    #f2ead3, rgba(255, 251, 242, 0.96)),
     #fffdf7;
   border: 1px solid rgba(194, 166, 118, 0.82);
   border-radius: 2rem;
@@ -915,7 +915,7 @@ main {
 
 .usage-header h2 {
   margin: 0;
-  font-size: clamp(2rem, 3vw, 3rem);
+  font-size: 1.5rem;
   letter-spacing: -0.05em;
 }
 
@@ -932,7 +932,7 @@ main {
   border-radius: 1.4rem;
   border: 1px solid rgba(194, 166, 118, 0.72);
   background:
-    linear-gradient(180deg, rgba(255, 253, 247, 0.98), rgba(250, 241, 219, 0.62));
+    #f2ead3, rgba(250, 241, 219, 0.62));
   box-shadow: 0 10px 24px rgba(90, 64, 26, 0.05);
   overflow: hidden;
 }
@@ -942,7 +942,7 @@ main {
   position: absolute;
   inset: 0 auto 0 0;
   width: 0.32rem;
-  background: linear-gradient(180deg, rgba(155, 124, 77, 0.9), rgba(155, 124, 77, 0.22));
+  background: #f2ead3;
 }
 
 .channel-head {
@@ -1177,7 +1177,7 @@ main {
   }
 
   .hero h1 {
-    font-size: clamp(2.55rem, 14vw, 4.6rem);
+    font-size: 2rem;
   }
 
   .hero p {
