@@ -896,8 +896,8 @@ JSON API: GET / (Accept에 text/html 없으면 JSON). MCP: POST /mcp (도구명 
 <li>설정 변경 후 새 채팅에서 다시 시도</li>
 </ol>
 <div class="copy-row">
-<code>api.beopmang.org 에 근거해서 임대차 관련 법 체계를 설명해줘.</code>
-<button class="copy-btn" onclick="cc(this,'api.beopmang.org 에 근거해서 임대차 관련 법 체계를 설명해줘.')">복사</button>
+<code>api.beopmang.org 이용해서 임대차 관련 법 체계를 설명해줘.</code>
+<button class="copy-btn" onclick="cc(this,'api.beopmang.org 이용해서 임대차 관련 법 체계를 설명해줘.')">복사</button>
 </div>
 </div>
 
