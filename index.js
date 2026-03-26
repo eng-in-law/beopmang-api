@@ -63,8 +63,10 @@ function buildOriginUrl(base, command, p = {}) {
       + (p.full || p.articles ? '&articles=true' : '');
   }
   if (command === 'getArticle') {
+    if (!lawId) return null;
+    if (!articleLabel && !p.article_path) return null;
     return base + '/api/v2/article?law=' + encodeURIComponent(lawId)
-      + (p.article_path ? '&path=' + encodeURIComponent(p.article_path) : '&label=' + encodeURIComponent(articleLabel || ''));
+      + (p.article_path ? '&path=' + encodeURIComponent(p.article_path) : '&label=' + encodeURIComponent(articleLabel));
   }
   if (command === 'searchArticles') {
     return base + '/api/v2/search?q=' + encodeURIComponent(p.query || '') + '&top_k=20';
@@ -316,6 +318,9 @@ export default {
     const mode = fullParam === '1' || briefParam === '0' ? 'full' : 'brief';
 
     const originUrl = buildOriginUrl(env.ORIGIN_BASE, parsed.operation, parsed.request);
+    if (!originUrl) {
+      return json({ ok: false, error: { code: 'INVALID_ARGUMENT', message: 'Missing required parameters', command: parsed.operation } }, 422, rl.headers);
+    }
     const cacheKey = `cache:${buildOriginUrl('', parsed.operation, parsed.request)}`;
     const t0 = Date.now();
     let originData;
@@ -773,6 +778,12 @@ async function handleMcp(request, env) {
 
     try {
       const originUrl = buildOriginUrl(env.ORIGIN_BASE, command, p);
+      if (!originUrl) {
+        const errMsg = command === 'getArticle'
+          ? {error:{code:'INVALID_ARGUMENT',message:'getArticle requires law_id and (article_label or article_path)',example:{law_id:'001706',article_label:'제750조'}}}
+          : {error:{code:'INVALID_ARGUMENT',message:'Missing required parameters for ' + command}};
+        return mcpOk(id, { content: [{ type: 'text', text: JSON.stringify(errMsg) }], isError: true });
+      }
       const originData = await fetchOriginNormalized(originUrl, 'beopmang-mcp/1.0', command);
       if (!originData.ok) {
         return mcpOk(id, { content: [{ type: 'text', text: JSON.stringify(originData.errorPayload) }], isError: true });
