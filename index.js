@@ -817,8 +817,7 @@ body {
 </div>
 
 <div class="card-footer">
-<p><a href="/privacy">Privacy</a></p>
-<p>데이터 출처: 법제처 Open API · 국회 Open API. 참고용이며 법적 효력 없음.</p>
+<p>개인정보를 수집하지 않습니다. 로그인 없음, 쿠키 없음. IP 주소는 레이트 리밋 목적으로만 일시 처리되며 저장되지 않습니다. 데이터 출처: 법제처 Open API · 국회 Open API. 이 API의 출력은 참고용이며 법적 효력이 없습니다. 문의: help@beopmang.org</p>
 <p class="footer-update">최근 업데이트: ${buildDate}</p>
 </div>
 
