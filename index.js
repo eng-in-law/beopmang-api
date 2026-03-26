@@ -385,7 +385,7 @@ async function handleRequest(request, env) {
     if (path === '/health') {
       try {
         const t = Date.now();
-        const r = await fetch(env.ORIGIN_BASE + '/api/lawcli?cmd=stats&json=1', {
+        const r = await fetch(env.ORIGIN_BASE + '/api/health', {
           headers: { 'User-Agent': 'beopmang-api/health' },
           signal: AbortSignal.timeout(5000),
         });
