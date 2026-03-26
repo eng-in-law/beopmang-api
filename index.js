@@ -288,10 +288,12 @@ async function handleRequest(request, env) {
     }
 
     if (path === '/sitemap.xml') {
-      const urls = ['/', '/stats', '/openapi.json', '/.well-known/agent.json',
-        '/find?q=민법', '/law/001692', '/history/001692', '/article/001692/제1조',
-        '/xref/001692', '/case-by-law/001692', '/bill?q=형법', '/timeline/001692',
-        '/explore/001692', '/usearch?q=법률행위', '/health'];
+      const urls = ['/', '/.well-known/agent.json', '/health',
+        '/api/v3/help?action=schema', '/api/v3/help?action=stats',
+        '/api/v3/law?action=find&q=민법', '/api/v3/law?action=explore&law_id=001692',
+        '/api/v3/law?action=article&law_id=001692&label=제1조',
+        '/api/v3/case?action=hsearch&q=임대차', '/api/v3/graph?action=xref&law_id=001692',
+        '/api/v3/search?action=keyword&q=화학물질', '/api/v3/bill?action=search&q=형법'];
       const xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
         urls.map(u => '  <url><loc>https://api.beopmang.org' + u + '</loc><changefreq>daily</changefreq></url>').join('\n') +
         '\n</urlset>';
@@ -311,30 +313,25 @@ async function handleRequest(request, env) {
         source: 'live_database',
         timestamp: ts,
         rate_limit: '100/min per IP',
-        workflow: '1) /find로 law_id 확인 → 2) /explore로 종합 탐색 → 3) /article로 조문 상세',
+        api_version: 'v3',
+        workflow: '1) law?action=find로 law_id 확인 → 2) law?action=explore로 종합 탐색 → 3) law?action=article로 조문 상세',
         endpoints: {
-          '/find?q={name}': '법령 찾기. law_id 반환. 모든 조회의 시작점',
-          '/explore/{id}': '법령 종합 탐색 — 조문+판례+의안+인용 한 번에 반환',
-          '/law/{id}': '법령 기본정보 (소관부처, 시행일, 조문 수)',
-          '/article/{id}/{조문}': '조문 상세 (항/호/목 포함). 예: /article/001706/제750조',
-          '/history/{id}': '개정 연혁 (제정→최근)',
-          '/search?q={keyword}': '조문 본문 키워드 검색',
-          '/usearch?q={query}': '자연어 시맨틱 검색 (법령+판례+제안이유)',
-          '/xref/{id}': '법령 간 인용관계',
-          '/case/{keyword}': '판례 키워드 검색',
-          '/case-by-law/{id}': '법령별 판례',
-          '/case-view/{case_id}': '판례 상세 (판결요지, 참조조문, 전문)',
-          '/bill?q={keyword}': '국회 의안 검색',
-          '/timeline/{id}': '입법 타임라인 (의안+개정+판례 통합)',
-          '/stats': 'DB 현황',
+          '/api/v3/law': 'find, article, explore, detail, history, byulpyo, diff, follow',
+          '/api/v3/case': 'search, view, text, vsearch, by-law, hsearch',
+          '/api/v3/bill': 'search, detail, sponsors, vote, minutes',
+          '/api/v3/graph': 'neighbors, xref, timeline',
+          '/api/v3/search': 'keyword, semantic, ordinance, treaty',
+          '/api/v3/ref': 'doc',
+          '/api/v3/help': 'schema, stats',
         },
+        usage: '/api/v3/{endpoint}?action={action}&{params}. 예: /api/v3/law?action=find&q=민법',
         params: {
-          'brief': '?brief=1 (기본) — 핵심 필드만',
-          'full': '?full=1 — 전체 데이터',
-          'include': '?include=history,cases,xref,bills,timeline — 추가 데이터 병합',
+          'action': '필수 — 엔드포인트별 작업 지정',
+          'include': 'history,cases,xref,bills,timeline — 추가 데이터 병합',
         },
-        note: '한글 path/query는 반드시 percent-encode. 예: /find?q=%EB%AF%BC%EB%B2%95',
+        note: '한글 query는 반드시 percent-encode. 예: /api/v3/law?action=find&q=%EB%AF%BC%EB%B2%95',
         mcp: '/mcp (ChatGPT MCP 서버)',
+        legacy: '기존 /find, /law/{id} 등 v1 경로도 하위호환 유지',
       }, 200, rl.headers);
     }
 
