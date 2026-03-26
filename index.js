@@ -920,6 +920,7 @@ JSON API: GET / (Accept에 text/html 없으면 JSON). MCP: POST /mcp (도구명 
 <div class="section">
 <p class="section-title">ChatGPT <small>Plus 이상</small></p>
 <ol class="steps">
+<li>설정 → 앱 → 고급 설정 → 개발자 모드 켜기</li>
 <li>설정 → 앱 → 앱 만들기</li>
 <li>아래 값 입력:</li>
 </ol>
@@ -929,7 +930,7 @@ JSON API: GET / (Accept에 text/html 없으면 JSON). MCP: POST /mcp (도구명 
 <span>MCP 서버 URL</span><code>https://api.beopmang.org/mcp</code><button class="copy-btn" onclick="cc(this,'https://api.beopmang.org/mcp')">복사</button>
 <span>인증</span><code style="grid-column:2/-1">없음</code>
 </div>
-<ol class="steps" start="3">
+<ol class="steps" start="4">
 <li>채팅에서 + → 더 보기 → 법망 선택</li>
 </ol>
 <p class="muted-note">추천 모델: GPT 5.4 Thinking 이상</p>
