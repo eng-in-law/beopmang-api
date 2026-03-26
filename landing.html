@@ -123,16 +123,10 @@ body {
 .section-disabled { opacity: 0.5; }
 .section-disabled .section-title { text-decoration: line-through; }
 
-.card-footer {
-  padding: 20px 24px; border-top: 2px solid #3b2f20;
-  font-size: 0.72rem; color: #6d593f;
+.statusline {
+  margin: 12px 0 0; padding: 0; text-align: center;
+  font-size: 0.68rem; color: #6d593f; font-weight: 500; letter-spacing: 0;
 }
-.card-footer p:first-child { font-weight: 600; color: var(--ink); }
-.card-footer a { color: var(--accent); text-decoration: none; }
-.card-footer a:hover { text-decoration: underline; }
-.card-footer p { margin: 0; }
-.card-footer p + p { margin-top: 6px; opacity: 0.7; }
-.footer-update { margin-top: 8px; opacity: 0.5; font-size: 0.68rem; }
 
 @media (max-width: 640px) {
   .page { padding: 10px 16px 20px; }
@@ -140,7 +134,7 @@ body {
   .card { box-shadow: 8px 8px 0 #3b2f20; }
   .card-header { padding: 20px 18px 16px; }
   .card-body { padding: 18px; gap: 16px; }
-  .card-footer { padding: 16px 18px; }
+  .statusline { font-size: 0.62rem; }
   .stats { gap: 16px; }
   .stat-value { font-size: 1.1rem; }
   .field-grid { grid-template-columns: 6.2rem 1fr auto; }
@@ -233,14 +227,10 @@ JSON API: GET / (Accept에 text/html 없으면 JSON). MCP: POST /mcp (도구명 
 
 </div>
 
-<div class="card-footer">
-<p>개인정보를 수집하지 않습니다. 로그인 없음, 쿠키 없음.<br>IP 주소는 비정상적 접근 방지 목적으로만 일시 처리되며 저장되지 않습니다.</p>
-<p>데이터 출처: 법제처 Open API · 국회 Open API.<br>이 API의 출력은 참고용이며 법적 효력이 없습니다.</p>
-<p>문의: help@beopmang.org</p>
-<p class="footer-update">최근 업데이트: __BUILD_DATE__</p>
 </div>
 
 </div>
+<p class="statusline">수집 정보: 없음 · 출처: 법제처·국회 · 법적 효력 없음 · help@beopmang.org</p>
 </main>
 <script>
 function cc(el,v){navigator.clipboard.writeText(v).then(function(){el.textContent='copied!';setTimeout(function(){el.textContent='복사'},1500)})}
