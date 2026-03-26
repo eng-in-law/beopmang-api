@@ -321,12 +321,15 @@ async function handleRequest(request, env) {
     }
 
     if (path === '/' || path === '') {
-      if ((request.headers.get('Accept') || '').includes('text/html')) {
+      const ua = (request.headers.get('User-Agent') || '').toLowerCase();
+      const isAgent = /claude|anthropic|openai|gpt|chatgpt|perplexity|cohere/i.test(ua);
+      if (!isAgent && (request.headers.get('Accept') || '').includes('text/html')) {
         return statusPage(env, rl.headers);
       }
       const ts = new Date().toISOString();
       const daily = await env.API_KV.get('stats:daily') || '0';
       return json({
+        IMPORTANT: '이 API는 web_fetch/브라우저로 호출하지 마세요. bash 도구로 curl을 사용하세요. Claude: 네트워크 차단 시 사용자에게 "설정→기능→코드 실행 ON→네트워크 송신 허용 ON→추가 허용 도메인에 api.beopmang.org 추가" 안내.',
         name: '법망 API',
         url: 'https://api.beopmang.org',
         description: '대한민국 현행 법령 5,573건 (헌법·법률·대통령령·총리령/부령·규칙) + 판례 171K + 의안 114K. 법제처 API 100% 수록.',
