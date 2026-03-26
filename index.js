@@ -655,7 +655,7 @@ async function statusPage(env, rlHeaders) {
   --accent: #9b7c4d;
   --accent-soft: rgba(194,166,118,0.15);
   --green: #2f6b4e;
-  --shadow: 0 12px 24px rgba(59,47,32,0.08);
+  --shadow: 0 1px 6px rgba(59,47,32,0.08);
   --motion-fast: 0.15s;
   --ease: cubic-bezier(0.2,0,0,1);
 }
@@ -664,6 +664,8 @@ body {
   margin: 0; min-height: 100vh;
   font-family: "Pretendard Variable","Pretendard",system-ui,sans-serif;
   background: var(--bg); color: var(--ink); line-height: 1.5;
+  background-image: linear-gradient(rgba(59,47,32,0.035) 1px,transparent 1px),linear-gradient(90deg,rgba(59,47,32,0.035) 1px,transparent 1px);
+  background-size: 30px 30px;
   -webkit-tap-highlight-color: transparent;
 }
 .page { display: flex; justify-content: center; padding: 16px 12px 28px; }
@@ -678,7 +680,7 @@ body {
 }
 .card {
   background: var(--surface); border: 1px solid var(--border);
-  border-radius: 20px; box-shadow: var(--shadow); overflow: hidden;
+  border-radius: 14px; box-shadow: var(--shadow); overflow: hidden;
 }
 .card-header { padding: 24px 24px 20px; border-bottom: 1px solid var(--border-soft); }
 .card-header h1 { margin: 0; font-size: 1.15rem; font-weight: 600; letter-spacing: -0.01em; }
@@ -703,12 +705,12 @@ body {
 
 .copy-row {
   display: flex; align-items: center; gap: 8px;
-  padding: 10px 12px; border-radius: 10px;
+  padding: 10px 12px; border-radius: 6px;
   border: 1px solid var(--border-soft); background: var(--bg);
 }
 .copy-row code { flex: 1; font-size: 0.82rem; font-family: ui-monospace,monospace; }
 .copy-btn {
-  padding: 4px 10px; border: 1px solid var(--border-soft); border-radius: 6px;
+  padding: 4px 10px; border: 1.5px solid var(--border); border-radius: 4px;
   background: none; font-size: 0.72rem; font-weight: 600; color: var(--muted);
   cursor: pointer; transition: background var(--motion-fast), color var(--motion-fast);
   font-family: inherit;
@@ -723,7 +725,7 @@ body {
 .field-grid code {
   font-family: ui-monospace,monospace; font-size: 0.78rem;
   padding: 6px 10px; background: var(--bg); border: 1px solid var(--border-soft);
-  border-radius: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  border-radius: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 
 .steps { margin: 4px 0; padding-left: 1.2rem; }
@@ -743,7 +745,7 @@ body {
 @media (max-width: 640px) {
   .page { padding: 10px 8px 20px; }
   .shell { padding-top: 12px; padding-bottom: 20px; }
-  .card { border-radius: 16px; }
+  .card { border-radius: 10px; }
   .card-header { padding: 20px 18px 16px; }
   .card-body { padding: 18px; gap: 16px; }
   .card-footer { padding: 16px 18px; }
