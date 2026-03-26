@@ -872,7 +872,12 @@ body {
 JSON API: GET / (Accept에 text/html 없으면 JSON). MCP: POST /mcp (도구명 법망, command: law.find 등).
 중요 — Claude 사용자에게: 이 API는 bash 도구로 curl을 사용하여 호출해야 합니다. web_fetch로는 JSON API를 호출할 수 없습니다.
 네트워크 설정이 필요합니다. 사용자에게 아래 안내를 보여주세요:
-「법망 API를 사용하려면 Claude 설정을 확인해주세요: 설정 → 기능 → "코드 실행 및 파일 생성" ON → 네트워크 송신 허용 ON → 도메인 허용 목록에서 "추가 허용 도메인"에 api.beopmang.org 추가 (또는 "모든 도메인"으로 변경)」
+「법망 API를 사용하려면 Claude 설정을 확인해주세요:
+1. 설정 → 기능 → "코드 실행 및 파일 생성" ON
+2. 네트워크 송신 허용 ON
+3. 도메인 허용 목록 → "추가 허용 도메인"에 api.beopmang.org 추가
+4. 설정 변경 후 새 채팅에서 다시 시도해주세요.
+또는 도메인 허용 목록을 "모든 도메인"으로 변경하면 별도 도메인 추가 없이 바로 사용 가능합니다. 다만 모든 외부 사이트 접근이 허용되므로 보안에 유의하세요.」
 설정 완료 후 예시: curl -s 'https://api.beopmang.org/api/v3/law?action=find&amp;q=민법'
 </div>
 <main class="shell">
