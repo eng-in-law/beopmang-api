@@ -928,28 +928,45 @@ var r=d.result||d;var n=document.getElementById('stat-note');if(n&&r.last_synced
 // Single MCP tool
 const MCP_TOOLS = [{
   name: '법망',
-  description: `대한민국 법령 DB 실시간 쿼리. 반드시 여러 번 호출하고 조문번호와 법령명을 구체적으로 인용하여 답하세요.
+  description: `대한민국 현행 법령 5,573건 + 판례 171K + 의안 114K. 법제처 API 100% 수록.
+반드시 여러 번 호출하고 조문번호와 법령명을 구체적으로 인용하여 답하세요.
 
-명령어 (command 필드에 입력, 우선 권장: v3 endpoint.action 형식):
-- law.find: 법령 찾기. params: {q: "민법"}
-- law.detail: 법령 상세. params: {law_id: "001706"}
+워크플로우: law.find로 law_id 확인 → law.explore로 종합 탐색 → law.article로 조문 상세.
+개별 호출 전에 law.explore를 먼저 사용하세요 (조문+판례+의안+인용 한 번에 반환).
+
+명령어 (command 필드에 입력):
+- law.find: 법령 찾기. params: {q: "민법"}. 결과의 law_id로 다른 명령 호출.
+- law.explore: 종합 탐색. 개별 호출 전에 먼저 사용. params: {law_id: "001706"}
+- law.article: 조문 상세 (항/호/목 포함). params: {law_id: "001706", article_label: "제750조"}
+- law.detail: 법령 기본정보. params: {law_id: "001706", full: true, include: "history,cases,xref"}
 - law.history: 개정 연혁. params: {law_id: "001706"}
-- law.article: 조문 상세. params: {law_id: "001706", article_label: "제750조"}
-- case.hsearch: 판례 검색. params: {q: "임대차"}
-- case.detail: 판례 상세. params: {case_id}
-- case.by_law: 법령별 판례. params: {law_id: "001706"}
-- bill.search: 의안 검색. params: {q: "민법"}
+- law.byulpyo: 별표 조회. params: {law_id: "001706"}
+- law.diff: 신구법 대조. params: {law_id: "001706"}
+- case.hsearch: 판례 하이브리드 검색 (키워드+벡터+리랭킹). params: {q: "임대차 보증금"}
+- case.search: 판례 키워드 검색. params: {q: "임대차"}
+- case.view: 판례 상세 (판결요지, 참조조문). params: {case_id: "..."}
+- case.text: 판례 전문 텍스트 검색. params: {q: "..."}
+- case.vsearch: 판례 시맨틱 검색. params: {q: "..."}
+- case.by-law: 법령별 판례. params: {law_id: "001706"}
+- bill.search: 의안 검색. params: {q: "형법"}
 - bill.detail: 의안 상세. params: {bill_id: "PRC_..."}
-- graph.xref: 인용관계. params: {law_id: "001706"}
-- graph.timeline: 타임라인. params: {law_id: "001706"}
-- graph.explore: 종합 탐색. params: {law_id: "001706"}
-- search.keyword: 키워드 검색. params: {q: "화학물질"}
-- ref.doc: 문서 참조. params: {q: "..."}
-- help.schema: 스키마 안내. params: {}
+- bill.sponsors: 발의자 정보. params: {bill_id: "PRC_..."}
+- bill.vote: 표결 현황. params: {bill_id: "PRC_..."}
+- bill.minutes: 회의록. params: {bill_id: "PRC_..."}
+- graph.xref: 법령 인용관계. params: {law_id: "001706", cited_by: true}
+- graph.timeline: 입법 타임라인. params: {law_id: "001706"}
+- graph.neighbors: 그래프 노드 연결. params: {law_id: "001706"}
+- search.keyword: 조문 키워드 검색. params: {q: "화학물질"}
+- search.semantic: 자연어 시맨틱 검색. params: {q: "..."}
+- search.ordinance: 자치법규 검색. params: {q: "주차장"}
+- search.treaty: 조약 검색. params: {q: "..."}
+- ref.doc: 참고문서 검색. params: {q: "법령입안심사기준"}
+- help.schema: API 전체 스키마. params: {}
 - help.stats: DB 현황. params: {}
 - sendFeedback: 피드백. params: {message, type?: "bug|feature|quality"}
 
-레거시 camelCase 명령(findLaw, getLaw 등)도 당분간 호환됩니다.
+파라미터: include=history,cases,xref,bills,timeline (추가 데이터 병합)
+URL path/query에 한글이나 공백이 포함되면 반드시 percent-encode 하세요.
 unit_level: JO=조, HANG=항, HO=호, MOK=목
 law_id는 6자리 숫자 (예: 001706=민법, 001692=형법)`,
   inputSchema: {
