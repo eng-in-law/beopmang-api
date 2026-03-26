@@ -420,7 +420,7 @@ function json(data, status = 200, extra = {}) {
 async function statusPage(env, rlHeaders) {
   const daily = await env.API_KV.get('stats:daily') || '0';
   const html = `<!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -429,60 +429,75 @@ async function statusPage(env, rlHeaders) {
 <meta property="og:title" content="법망 API">
 <meta property="og:description" content="프롬프트 한 줄로 법률AI 에이전트 흉내내기">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦒</text></svg>">
-<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard/dist/web/static/pretendard.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap">
-<script>
-tailwind.config={theme:{extend:{colors:{p:{bg:'#f2ead3',card:'#fffdf7',border:'#c2a676',text:'#3b2f20',dim:'#6d593f',muted:'#897457',amber:'#9b7c4d'}},fontFamily:{sans:['Pretendard','system-ui','sans-serif'],mono:['JetBrains Mono','monospace']}}}}
-</script>
+<style>
+:root {
+  --pico-font-family: 'Pretendard', system-ui, sans-serif;
+  --pico-background-color: #f2ead3;
+  --pico-card-background-color: #fffdf7;
+  --pico-card-border-color: #c2a676;
+  --pico-primary: #9b7c4d;
+  --pico-primary-hover: #7d6340;
+  --pico-color: #3b2f20;
+  --pico-muted-color: #6d593f;
+  --pico-muted-border-color: #c2a67650;
+  --pico-code-background-color: #c2a67620;
+  --pico-code-color: #3b2f20;
+  --pico-code-font-family: 'JetBrains Mono', monospace;
+}
+body > main { max-width: 640px; margin: 0 auto; padding: 4rem 1.5rem; }
+.stats { display: flex; gap: 2.5rem; flex-wrap: wrap; margin: 3rem 0; }
+.stats div { text-align: center; }
+.stats strong { display: block; font-size: 1.5rem; color: #3b2f20; }
+.stats small { font-size: 0.75rem; color: #897457; }
+.copy-row { display: flex; align-items: center; gap: 0.5rem; }
+.copy-row code { flex: 1; font-size: 0.85rem; }
+.copy-row button { font-size: 0.7rem; padding: 0.25rem 0.5rem; }
+section { margin-top: 3rem; }
+footer { margin-top: 4rem; padding-top: 2rem; border-top: 1px solid #c2a67640; font-size: 0.75rem; color: #897457; }
+</style>
 </head>
-<body class="bg-p-bg min-h-screen font-sans">
-<div class="max-w-3xl mx-auto px-6 sm:px-8 lg:px-10 py-24 sm:py-28 lg:py-32">
+<body>
+<main>
 
-<h1 class="text-5xl sm:text-6xl font-extrabold text-p-text tracking-tight leading-none">🦒 법망 API</h1>
-<p class="mt-5 text-base leading-7 text-p-dim max-w-xl">프롬프트 한 줄로 법률AI 에이전트 흉내내기</p>
+<h1>🦒 법망 API</h1>
+<p>프롬프트 한 줄로 법률AI 에이전트 흉내내기</p>
 
-<div class="mt-16 sm:mt-20 flex gap-x-12 gap-y-10 sm:gap-x-16 sm:gap-y-12 flex-wrap">
-<div class="text-center min-w-[92px]"><div class="text-3xl sm:text-[2rem] font-bold text-p-text tracking-tight">1,707</div><div class="text-xs text-p-muted mt-3">법률</div></div>
-<div class="text-center min-w-[92px]"><div class="text-3xl sm:text-[2rem] font-bold text-p-text tracking-tight">499,310</div><div class="text-xs text-p-muted mt-3">조문</div></div>
-<div class="text-center min-w-[92px]"><div class="text-3xl sm:text-[2rem] font-bold text-p-text tracking-tight">171,257</div><div class="text-xs text-p-muted mt-3">판례</div></div>
-<div class="text-center min-w-[92px]"><div class="text-3xl sm:text-[2rem] font-bold text-p-text tracking-tight">61,755</div><div class="text-xs text-p-muted mt-3">인용관계</div></div>
+<div class="stats">
+<div><strong>1,707</strong><small>법률</small></div>
+<div><strong>499,310</strong><small>조문</small></div>
+<div><strong>171,257</strong><small>판례</small></div>
+<div><strong>61,755</strong><small>인용관계</small></div>
 </div>
 
-<div class="mt-20 sm:mt-24 space-y-12 sm:space-y-14">
+<section>
+<h2>사용하기</h2>
 
-<div class="space-y-3">
-<p class="text-sm font-semibold tracking-tight text-p-text">Claude</p>
-<div class="mt-2 flex items-center gap-2 bg-p-card border border-p-border rounded-lg px-4 py-3.5">
-<code class="text-sm font-mono text-p-text flex-1 leading-6">https://api.beopmang.org</code>
-<button onclick="cc(this,'https://api.beopmang.org')" class="text-xs text-p-amber border border-p-border rounded px-2 py-1 hover:bg-p-bg">copy</button>
+<h3>Claude</h3>
+<div class="copy-row">
+<code>https://api.beopmang.org</code>
+<button onclick="cc(this,'https://api.beopmang.org')">copy</button>
 </div>
-<p class="mt-1 text-sm leading-7 text-p-dim max-w-2xl">대화에 붙여넣으면 알아서 호출합니다.</p>
-</div>
+<p><small>대화에 붙여넣으면 알아서 호출합니다.</small></p>
 
-<div class="space-y-3">
-<p class="text-sm font-semibold tracking-tight text-p-text">ChatGPT</p>
-<div class="mt-2 flex items-center gap-2 bg-p-card border border-p-border rounded-lg px-4 py-3.5">
-<code class="text-sm font-mono text-p-text flex-1 leading-6">https://api.beopmang.org/mcp</code>
-<button onclick="cc(this,'https://api.beopmang.org/mcp')" class="text-xs text-p-amber border border-p-border rounded px-2 py-1 hover:bg-p-bg">copy</button>
+<h3>ChatGPT</h3>
+<div class="copy-row">
+<code>https://api.beopmang.org/mcp</code>
+<button onclick="cc(this,'https://api.beopmang.org/mcp')">copy</button>
 </div>
-<p class="mt-1 text-sm leading-7 text-p-dim max-w-3xl">설정 → 앱 → 고급 설정 → 개발자 모드 → 앱 만들기. 이름: <button onclick="cc(this,'법망')" class="font-mono text-p-text underline">법망</button> · 인증: 없음. Plus 이상. 추천: GPT 5.4 Thinking 이상.</p>
-</div>
+<p><small>설정 → 앱 → 고급 설정 → 개발자 모드 → 앱 만들기. 이름: <button onclick="cc(this,'법망')">법망</button> · 인증: 없음. Plus 이상. 추천: GPT 5.4 Thinking 이상.</small></p>
 
-<div class="space-y-2">
-<p class="text-sm font-semibold tracking-tight text-p-text">Gemini</p>
-<p class="mt-1 text-sm leading-7 text-p-dim">환각이 심하여 권장하지 않습니다.</p>
-<p class="text-sm text-p-muted">사용 불가</p>
-</div>
+<h3>Gemini</h3>
+<p><small>환각이 심하여 권장하지 않습니다.<br>사용 불가</small></p>
+</section>
 
-</div>
+<footer>
+<p><a href="/openapi.json">OpenAPI</a> · <a href="/.well-known/agent.json">Agent Card</a> · <a href="/privacy">Privacy</a> · <a href="/health">Health</a></p>
+<p>데이터 출처: 법제처 Open API · 국회 Open API. 매주 일요일 갱신. 참고용이며 법적 효력 없음.</p>
+</footer>
 
-<div class="mt-24 sm:mt-28 pt-10 border-t border-p-border/50">
-<p class="text-xs leading-6 text-p-muted"><a href="/openapi.json" class="underline">OpenAPI</a> · <a href="/.well-known/agent.json" class="underline">Agent Card</a> · <a href="/privacy" class="underline">Privacy</a> · <a href="/health" class="underline">Health</a></p>
-<p class="mt-3 text-xs leading-6 text-p-muted/70">데이터 출처: 법제처 Open API · 국회 Open API. 매주 일요일 갱신. 참고용이며 법적 효력 없음.</p>
-</div>
-
-</div>
+</main>
 <script>function cc(el,v){navigator.clipboard.writeText(v).then(function(){el.textContent='copied!';setTimeout(function(){el.textContent='copy'},1500)})}</script>
 </body>
 </html>
