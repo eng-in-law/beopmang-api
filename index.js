@@ -76,7 +76,7 @@ function buildOriginUrl(base, command, p = {}) {
   const lawId = p.law_id || p.id || '';
   const articleLabel = p.article_label || p.label || '';
   if (command === 'findLaw' || command === 'getLaw') {
-    return base + '/api/v2/law?q=' + encodeURIComponent(p.query || lawId || '')
+    return base + '/api/v3/law?action=find&q=' + encodeURIComponent(p.query || lawId || '')
       + (p.exact ? '&exact=true' : '')
       + (p.active_only ? '&active_only=true' : '')
       + (p.law_type ? '&law_type=' + encodeURIComponent(p.law_type) : '')
@@ -86,14 +86,14 @@ function buildOriginUrl(base, command, p = {}) {
   if (command === 'getArticle') {
     if (!lawId) return null;
     if (!articleLabel && !p.article_path) return null;
-    return base + '/api/v2/article?law=' + encodeURIComponent(lawId)
+    return base + '/api/v3/law?action=article&law_id=' + encodeURIComponent(lawId)
       + (p.article_path ? '&path=' + encodeURIComponent(p.article_path) : '&label=' + encodeURIComponent(articleLabel));
   }
   if (command === 'searchArticles') {
-    return base + '/api/v2/search?q=' + encodeURIComponent(p.query || '') + '&top_k=20';
+    return base + '/api/v3/search?action=keyword&q=' + encodeURIComponent(p.query || '') + '&top_k=20';
   }
   if (command === 'exploreLaw') {
-    return base + '/api/v2/explore?law_id=' + encodeURIComponent(p.law_id || '');
+    return base + '/api/v3/law?action=explore&law_id=' + encodeURIComponent(p.law_id || '');
   }
   const cmd = {
     getHistory: 'history',
