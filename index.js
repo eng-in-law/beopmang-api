@@ -173,7 +173,26 @@ async function fetchOriginNormalized(originUrl, userAgent, command) {
 }
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
+    if (request.method !== 'GET') return handleRequest(request, env);
+
+    const cache = caches.default;
+    const cacheKey = new Request(request.url, request);
+    const cached = await cache.match(cacheKey);
+    if (cached) return cached;
+
+    const response = await handleRequest(request, env);
+    if (response.status === 200) {
+      const resp = new Response(response.body, response);
+      resp.headers.set('Cache-Control', 'public, max-age=60');
+      ctx.waitUntil(cache.put(cacheKey, resp.clone()));
+      return resp;
+    }
+    return response;
+  }
+};
+
+async function handleRequest(request, env) {
     const url = new URL(request.url);
     const path = url.pathname;
     const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
@@ -397,8 +416,7 @@ export default {
       return resultPage(parsed.cmd, parsed.args, payload, rl.headers);
     }
     return json(payload, 200, rl.headers);
-  }
-};
+}
 
 function applyBrief(data, fields) {
   if (!fields) return data;
