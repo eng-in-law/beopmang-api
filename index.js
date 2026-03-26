@@ -520,20 +520,20 @@ a{color:var(--text0);text-decoration:underline;text-decoration-color:var(--strok
 // ──────────────────────────────────────
 
 const MCP_TOOLS = [
-  { name: 'findLaw', description: '법령명/약칭으로 법령 찾기. law_id를 확인한 뒤 exploreLaw로 종합 탐색하세요.', inputSchema: { type: 'object', properties: { query: { type: 'string', description: '법령명 또는 약칭' }, include: { type: 'string', description: '추가 데이터를 함께 반환. 쉼표 구분: history,cases,xref,bills,timeline' } }, required: ['query'] }, cmd: 'law' },
-  { name: 'getLaw', description: '법령 기본정보 (소관부처, 시행일, 조문 수)', inputSchema: { type: 'object', properties: { id: { type: 'string', description: '법령 ID (6자리)' }, full: { type: 'boolean', description: '전체 데이터' }, include: { type: 'string', description: '추가 데이터: history,cases,xref,bills,timeline' } }, required: ['id'] }, cmd: 'law' },
-  { name: 'getHistory', description: '법령 개정 연혁', inputSchema: { type: 'object', properties: { id: { type: 'string', description: '법령 ID' } }, required: ['id'] }, cmd: 'history' },
-  { name: 'getArticle', description: '조문 상세 (항/호/목)', inputSchema: { type: 'object', properties: { id: { type: 'string', description: '법령 ID' }, label: { type: 'string', description: '조문 번호 (예: 제1조)' } }, required: ['id', 'label'] }, cmd: 'article' },
-  { name: 'getXref', description: '법령 간 인용관계', inputSchema: { type: 'object', properties: { id: { type: 'string', description: '법령 ID' }, cited_by: { type: 'boolean', description: '피인용 조회' } }, required: ['id'] }, cmd: 'xref' },
-  { name: 'searchArticles', description: '조문 본문 키워드 검색', inputSchema: { type: 'object', properties: { query: { type: 'string', description: '검색 키워드' } }, required: ['query'] }, cmd: 'search' },
+  { name: 'findLaw', description: '법령명/약칭으로 법령 찾기. law_id를 확인한 뒤 exploreLaw로 종합 탐색하세요.', inputSchema: { type: 'object', properties: { query: { type: 'string', description: '법령명 또는 약칭 (예: 민법, 형법)' }, include: { type: 'string', description: '추가 데이터 병렬 반환. 쉼표 구분: history,cases,xref,bills,timeline' } }, required: ['query'] }, cmd: 'law' },
+  { name: 'getLaw', description: '법령 기본정보 (소관부처, 시행일, 조문 수)', inputSchema: { type: 'object', properties: { law_id: { type: 'string', description: '법령 ID 6자리 (findLaw 결과에서 확인)' }, full: { type: 'boolean', description: '조문 목록 포함 여부' }, include: { type: 'string', description: '추가 데이터: history,cases,xref,bills,timeline' } }, required: ['law_id'] }, cmd: 'law' },
+  { name: 'getHistory', description: '법령 개정 연혁 (제정→최근, 개정별 변경 조문 수)', inputSchema: { type: 'object', properties: { law_id: { type: 'string', description: '법령 ID 6자리' } }, required: ['law_id'] }, cmd: 'history' },
+  { name: 'getArticle', description: '조문 상세 조회 (항/호/목 구조). unit_level: JO=조, HANG=항, HO=호, MOK=목', inputSchema: { type: 'object', properties: { law_id: { type: 'string', description: '법령 ID 6자리' }, article_label: { type: 'string', description: '조문 번호 (예: 제1조, 제750조)' } }, required: ['law_id', 'article_label'] }, cmd: 'article' },
+  { name: 'getXref', description: '법령 간 인용관계 (이 법이 인용하는/인용되는 법령)', inputSchema: { type: 'object', properties: { law_id: { type: 'string', description: '법령 ID 6자리' }, cited_by: { type: 'boolean', description: 'true면 피인용 (이 법을 인용하는 법령)' } }, required: ['law_id'] }, cmd: 'xref' },
+  { name: 'searchArticles', description: '조문 본문에서 키워드 검색', inputSchema: { type: 'object', properties: { query: { type: 'string', description: '검색 키워드' } }, required: ['query'] }, cmd: 'search' },
   { name: 'searchCases', description: '판례 키워드 검색', inputSchema: { type: 'object', properties: { query: { type: 'string', description: '검색 키워드' } }, required: ['query'] }, cmd: 'case' },
-  { name: 'getCasesByLaw', description: '특정 법령 관련 판례', inputSchema: { type: 'object', properties: { id: { type: 'string', description: '법령 ID' } }, required: ['id'] }, cmd: 'case-by-law' },
-  { name: 'getCaseDetail', description: '판례 상세 (판결요지, 참조조문)', inputSchema: { type: 'object', properties: { case_id: { type: 'string', description: '판례 ID' } }, required: ['case_id'] }, cmd: 'case-view' },
+  { name: 'getCasesByLaw', description: '특정 법령 관련 판례 조회', inputSchema: { type: 'object', properties: { law_id: { type: 'string', description: '법령 ID 6자리' } }, required: ['law_id'] }, cmd: 'case-by-law' },
+  { name: 'getCaseDetail', description: '판례 상세 (판결요지, 참조조문, 전문)', inputSchema: { type: 'object', properties: { case_id: { type: 'string', description: '판례 ID' } }, required: ['case_id'] }, cmd: 'case-view' },
   { name: 'searchBills', description: '국회 의안 검색', inputSchema: { type: 'object', properties: { query: { type: 'string', description: '법률안명 키워드' } }, required: ['query'] }, cmd: 'bill' },
-  { name: 'getTimeline', description: '법령 입법 타임라인', inputSchema: { type: 'object', properties: { id: { type: 'string', description: '법령 ID' } }, required: ['id'] }, cmd: 'timeline' },
-  { name: 'exploreLaw', description: '법령 종합 탐색. 개별 호출 전에 먼저 사용하세요. 조문 목록, 관련 판례, 의안, 인용관계를 한 번에 반환합니다.', inputSchema: { type: 'object', properties: { id: { type: 'string', description: '법령 ID' } }, required: ['id'] }, cmd: 'explore' },
-  { name: 'getStats', description: 'DB 전체 현황', inputSchema: { type: 'object', properties: {} }, cmd: 'stats' },
-  { name: 'sendFeedback', description: 'API에 대한 피드백 전송 (버그, 기능 요청, 품질 의견)', inputSchema: { type: 'object', properties: { message: { type: 'string', description: '피드백 내용' }, type: { type: 'string', description: 'bug, feature, quality 중 하나' }, context: { type: 'string', description: '관련 도구/쿼리 (선택)' } }, required: ['message'] }, cmd: '_feedback' },
+  { name: 'getTimeline', description: '법령 입법 타임라인 (의안+개정+판례 시계열)', inputSchema: { type: 'object', properties: { law_id: { type: 'string', description: '법령 ID 6자리' } }, required: ['law_id'] }, cmd: 'timeline' },
+  { name: 'exploreLaw', description: '법령 종합 탐색. 개별 호출 전에 먼저 사용. 조문, 판례, 의안, 인용관계를 한 번에 반환.', inputSchema: { type: 'object', properties: { law_id: { type: 'string', description: '법령 ID 6자리' } }, required: ['law_id'] }, cmd: 'explore' },
+  { name: 'getStats', description: 'DB 전체 현황 (법령, 판례, 의안 건수)', inputSchema: { type: 'object', properties: {} }, cmd: 'stats' },
+  { name: 'sendFeedback', description: 'API 피드백 전송', inputSchema: { type: 'object', properties: { message: { type: 'string', description: '피드백 내용' }, type: { type: 'string', description: 'bug, feature, quality' }, context: { type: 'string', description: '관련 도구/쿼리' } }, required: ['message'] }, cmd: '_feedback' },
 ];
 
 function mcpOk(id, result) {
@@ -576,9 +576,11 @@ async function handleMcp(request, env) {
       return mcpOk(id, { content: [{ type: 'text', text: 'Feedback received. Thank you.' }] });
     }
 
-    // Build origin URL
-    let cmdArgs = args.query || args.id || args.case_id || '';
-    if (tool.cmd === 'article' && args.id && args.label) cmdArgs = args.id + ' ' + args.label;
+    // Normalize params (law_id ?? id, article_label ?? label for backward compat)
+    const lawId = args.law_id ?? args.id ?? '';
+    const articleLabel = args.article_label ?? args.label ?? '';
+    let cmdArgs = args.query || lawId || args.case_id || '';
+    if (tool.cmd === 'article' && lawId && articleLabel) cmdArgs = lawId + ' ' + articleLabel;
     let flags = '';
     if (args.full) flags += '--json';
     if (args.cited_by) flags += (flags ? ' ' : '') + '--cited-by';

@@ -74,5 +74,54 @@
   "source": "live_database",
   "rate_limit": "100/min per IP",
   "brief_mode": "?brief=1 (default) for minimal fields, ?full=1 for complete data",
-  "note": "URL path/query에 한글이나 공백이 포함되면 반드시 percent-encode 하세요. 예: /search?q=%EB%AF%BC%EB%B2%95, /case-vsearch/%EB%B0%9C%EC%82%AC%EC%B2%B4%20%EC%86%90%ED%95%B4%EB%B0%B0%EC%83%81"
+  "note": "URL path/query에 한글이나 공백이 포함되면 반드시 percent-encode 하세요. 예: /search?q=%EB%AF%BC%EB%B2%95, /case-vsearch/%EB%B0%9C%EC%82%AC%EC%B2%B4%20%EC%86%90%ED%95%B4%EB%B0%B0%EC%83%81",
+  "examples": [
+    {
+      "description": "법령 찾기",
+      "tool": "findLaw",
+      "input": {
+        "query": "민법"
+      },
+      "output_hint": "law_id=001706"
+    },
+    {
+      "description": "법령 상세",
+      "tool": "getLaw",
+      "input": {
+        "law_id": "001706"
+      },
+      "output_hint": "민법, 조문 1193개"
+    },
+    {
+      "description": "조문 조회",
+      "tool": "getArticle",
+      "input": {
+        "law_id": "001706",
+        "article_label": "제750조"
+      },
+      "output_hint": "불법행위 조문"
+    },
+    {
+      "description": "인용관계",
+      "tool": "getXref",
+      "input": {
+        "law_id": "001706"
+      },
+      "output_hint": "민법이 인용하는 법령"
+    },
+    {
+      "description": "종합 탐색",
+      "tool": "exploreLaw",
+      "input": {
+        "law_id": "001706"
+      },
+      "output_hint": "조문+판례+의안+인용 한 번에"
+    }
+  ],
+  "unit_level_enum": {
+    "JO": "조",
+    "HANG": "항",
+    "HO": "호",
+    "MOK": "목"
+  }
 }
