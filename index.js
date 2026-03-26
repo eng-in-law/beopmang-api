@@ -303,6 +303,11 @@ async function handleRequest(request, env) {
       });
     }
 
+    if (path === '/og.jpg') {
+      const img = await env.API_KV.get('og.jpg', { type: 'arrayBuffer' });
+      if (img) return new Response(img, { headers: { 'Content-Type': 'image/jpeg', 'Cache-Control': 'public, max-age=86400' } });
+    }
+
     if (path === '/robots.txt') {
       return new Response('User-agent: *\nAllow: /\n\nSitemap: https://api.beopmang.org/sitemap.xml\n', {
         headers: { 'Content-Type': 'text/plain' }
@@ -723,6 +728,11 @@ async function statusPage(env, rlHeaders) {
 <meta name="description" content="프롬프트 한 줄로 법률AI 에이전트 흉내내기">
 <meta property="og:title" content="법망 API">
 <meta property="og:description" content="프롬프트 한 줄로 법률AI 에이전트 흉내내기">
+<meta property="og:image" content="https://api.beopmang.org/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://api.beopmang.org/og.jpg">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦒</text></svg>">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
