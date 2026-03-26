@@ -903,12 +903,6 @@ JSON API: GET / (Accept에 text/html 없으면 JSON). MCP: POST /mcp (도구명 
 
 <div class="section">
 <p class="section-title">Claude</p>
-<ol class="steps">
-<li>설정 → 기능 → 코드 실행 및 파일 생성 ON</li>
-<li>네트워크 송신 허용 ON</li>
-<li>추가 허용 도메인에 api.beopmang.org 추가</li>
-<li>설정 변경 후 새 채팅에서 다시 시도</li>
-</ol>
 <div class="copy-row">
 <code>임대차 관련 법 체계를 api.beopmang.org 이용해서 설명해줘.</code>
 <button class="copy-btn" onclick="cc(this,'임대차 관련 법 체계를 api.beopmang.org 이용해서 설명해줘.')">복사</button>
