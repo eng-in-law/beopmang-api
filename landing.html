@@ -92,7 +92,7 @@ body {
   display: grid; grid-template-columns: 6.5rem 1fr auto;
   gap: 6px 8px; align-items: center; font-size: 0.82rem;
 }
-.field-grid span { color: var(--muted); white-space: nowrap; }
+.field-grid span { color: var(--muted); white-space: nowrap; text-align: right; }
 .field-grid code {
   font-family: ui-monospace,monospace; font-size: 0.78rem;
   padding: 6px 10px; background: var(--bg); border: 2px solid #3b2f20;
@@ -171,7 +171,7 @@ body {
 <span>이름</span><code>법망</code><button class="copy-btn" onclick="cc(this,'법망')">복사</button>
 <span>설명 (선택)</span><code>반드시 여러 번 호출하고 조문번호와 법령명을 구체적으로 인용하여 답하세요</code><button class="copy-btn" onclick="cc(this,'반드시 여러 번 호출하고 조문번호와 법령명을 구체적으로 인용하여 답하세요')">복사</button>
 <span>MCP 서버 URL</span><code>https://api.beopmang.org/mcp</code><button class="copy-btn" onclick="cc(this,'https://api.beopmang.org/mcp')">복사</button>
-<span>인증</span><code>없음</code><span></span>
+<span>인증</span><code style="grid-column:2/-1">없음</code>
 </div>
 <ol class="steps" start="3">
 <li>채팅에서 + → 더 보기 → 법망 선택</li>
