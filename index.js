@@ -893,6 +893,7 @@ JSON API: GET / (Accept에 text/html 없으면 JSON). MCP: POST /mcp (도구명 
 <li>설정 → 기능 → 코드 실행 및 파일 생성 ON</li>
 <li>네트워크 송신 허용 ON</li>
 <li>추가 허용 도메인에 api.beopmang.org 추가</li>
+<li>새 채팅을 열고 아래 URL 붙여넣기</li>
 </ol>
 <div class="copy-row">
 <code>https://api.beopmang.org</code>
