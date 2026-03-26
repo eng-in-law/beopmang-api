@@ -23,7 +23,7 @@
   --accent: #9b7c4d;
   --accent-soft: rgba(194,166,118,0.15);
   --green: #2f6b4e;
-  --shadow: 0 1px 6px rgba(59,47,32,0.08);
+  --shadow: 10px 10px 0 rgba(59,47,32,0.15);
   --motion-fast: 0.15s;
   --ease: cubic-bezier(0.2,0,0,1);
 }
@@ -47,8 +47,8 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 .card {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 14px; box-shadow: var(--shadow); overflow: hidden;
+  background: var(--surface); border: 3px solid var(--border);
+  border-radius: 8px; box-shadow: var(--shadow); overflow: hidden;
 }
 .card-header { padding: 24px 24px 20px; border-bottom: 1px solid var(--border-soft); }
 .card-header h1 { margin: 0; font-size: 1.15rem; font-weight: 600; letter-spacing: -0.01em; }
@@ -74,16 +74,19 @@ body {
 .copy-row {
   display: flex; align-items: center; gap: 8px;
   padding: 10px 12px; border-radius: 6px;
-  border: 1px solid var(--border-soft); background: var(--bg);
+  border: 2px solid var(--border); background: var(--bg);
+  box-shadow: 4px 4px 0 rgba(59,47,32,0.1);
 }
 .copy-row code { flex: 1; font-size: 0.82rem; font-family: ui-monospace,monospace; }
 .copy-btn {
-  padding: 4px 10px; border: 1.5px solid var(--border); border-radius: 4px;
+  padding: 4px 10px; border: 2px solid var(--border); border-radius: 4px;
+  box-shadow: 2px 2px 0 rgba(59,47,32,0.12); transition: transform 80ms, box-shadow 80ms, background var(--motion-fast);
   background: none; font-size: 0.72rem; font-weight: 600; color: var(--ink-soft);
   cursor: pointer; transition: background var(--motion-fast), color var(--motion-fast);
   font-family: inherit;
 }
-.copy-btn:hover { background: var(--accent-soft); color: var(--ink); }
+.copy-btn:hover { background: var(--accent-soft); color: var(--ink); transform: translate(-1px,-1px); box-shadow: 3px 3px 0 rgba(59,47,32,0.15); }
+.copy-btn:active { transform: translate(1px,1px); box-shadow: 1px 1px 0 rgba(59,47,32,0.1); }
 
 .field-grid {
   display: grid; grid-template-columns: 6.5rem 1fr auto;
@@ -113,7 +116,7 @@ body {
 @media (max-width: 640px) {
   .page { padding: 10px 8px 20px; }
   .shell { padding-top: 12px; padding-bottom: 20px; }
-  .card { border-radius: 10px; }
+  .card { border-radius: 8px; box-shadow: 6px 6px 0 rgba(59,47,32,0.15); }
   .card-header { padding: 20px 18px 16px; }
   .card-body { padding: 18px; gap: 16px; }
   .card-footer { padding: 16px 18px; }
