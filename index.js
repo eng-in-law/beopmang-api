@@ -813,7 +813,9 @@ body {
   border: 2px solid #3b2f20; background: var(--bg);
   box-shadow: 4px 4px 0 #3b2f20;
 }
-.copy-row code { flex: 1; font-size: 0.82rem; font-family: "JetBrains Mono",ui-monospace,monospace; font-weight: 500; color: #1a1207; word-break: break-all; white-space: normal; }
+.copy-row code { flex: 1; font-size: 0.82rem; font-family: "JetBrains Mono",ui-monospace,monospace; font-weight: 500; color: #1a1207; word-break: break-all; white-space: normal; font-style: italic; }
+.copy-row code::before { content: '\\201C'; color: var(--muted); margin-right: 2px; font-style: normal; }
+.copy-row code::after { content: '\\201D'; color: var(--muted); margin-left: 2px; font-style: normal; }
 .copy-btn {
   padding: 4px 10px; border: 2px solid #3b2f20; border-radius: 0;
   box-shadow: 2px 2px 0 #3b2f20; transition: transform 80ms, box-shadow 80ms, background var(--motion-fast);
