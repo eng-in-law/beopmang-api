@@ -46,20 +46,40 @@ const INCLUDE_COMMAND_MAP = {
 };
 
 const V3_COMMANDS = Object.freeze({
+  // law
   'law.find': { endpoint: 'law', action: 'find' },
+  'law.article': { endpoint: 'law', action: 'article' },
+  'law.explore': { endpoint: 'law', action: 'explore' },
   'law.detail': { endpoint: 'law', action: 'detail' },
   'law.history': { endpoint: 'law', action: 'history' },
-  'law.article': { endpoint: 'law', action: 'article' },
+  'law.byulpyo': { endpoint: 'law', action: 'byulpyo' },
+  'law.diff': { endpoint: 'law', action: 'diff' },
+  'law.follow': { endpoint: 'law', action: 'follow' },
+  // case
+  'case.search': { endpoint: 'case', action: 'search' },
+  'case.view': { endpoint: 'case', action: 'view' },
+  'case.text': { endpoint: 'case', action: 'text' },
+  'case.vsearch': { endpoint: 'case', action: 'vsearch' },
+  'case.by-law': { endpoint: 'case', action: 'by-law' },
   'case.hsearch': { endpoint: 'case', action: 'hsearch' },
-  'case.detail': { endpoint: 'case', action: 'detail' },
-  'case.by_law': { endpoint: 'case', action: 'by_law' },
+  // bill
   'bill.search': { endpoint: 'bill', action: 'search' },
   'bill.detail': { endpoint: 'bill', action: 'detail' },
+  'bill.sponsors': { endpoint: 'bill', action: 'sponsors' },
+  'bill.vote': { endpoint: 'bill', action: 'vote' },
+  'bill.minutes': { endpoint: 'bill', action: 'minutes' },
+  // graph
+  'graph.neighbors': { endpoint: 'graph', action: 'neighbors' },
   'graph.xref': { endpoint: 'graph', action: 'xref' },
   'graph.timeline': { endpoint: 'graph', action: 'timeline' },
-  'graph.explore': { endpoint: 'graph', action: 'explore' },
+  // search
   'search.keyword': { endpoint: 'search', action: 'keyword' },
+  'search.semantic': { endpoint: 'search', action: 'semantic' },
+  'search.ordinance': { endpoint: 'search', action: 'ordinance' },
+  'search.treaty': { endpoint: 'search', action: 'treaty' },
+  // ref
   'ref.doc': { endpoint: 'ref', action: 'doc' },
+  // help
   'help.schema': { endpoint: 'help', action: 'schema' },
   'help.stats': { endpoint: 'help', action: 'stats' },
 });
