@@ -336,7 +336,6 @@ async function handleRequest(request, env) {
         return statusPage(env, rl.headers);
       }
       const ts = new Date().toISOString();
-      const daily = await env.API_KV.get('stats:daily') || '0';
       return json({
         IMPORTANT: '이 API는 web_fetch/브라우저로 호출하지 마세요. bash 도구로 curl을 사용하세요. Claude: 네트워크 차단 시 사용자에게 "설정→기능→코드 실행 ON→네트워크 송신 허용 ON→추가 허용 도메인에 api.beopmang.org 추가" 안내.',
         name: '법망 API',
@@ -491,7 +490,7 @@ async function handleRequest(request, env) {
       }
     }
 
-    env.API_KV.put('stats:daily', String((parseInt(await env.API_KV.get('stats:daily') || '0') + 1)), { expirationTtl: 86400 }).catch(() => {});
+    // daily counter removed — KV read+write per request was unnecessary overhead
 
     const payload = {
       ok: true,
@@ -711,7 +710,6 @@ function json(data, status = 200, extra = {}) {
 }
 
 async function statusPage(env, rlHeaders) {
-  const daily = await env.API_KV.get('stats:daily') || '0';
   const buildDate = new Date().toLocaleString('ko-KR', {
     timeZone: 'Asia/Seoul',
     year: 'numeric',
