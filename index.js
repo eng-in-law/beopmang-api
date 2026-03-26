@@ -55,6 +55,7 @@ const V3_COMMANDS = Object.freeze({
   'law.byulpyo': { endpoint: 'law', action: 'byulpyo' },
   'law.diff': { endpoint: 'law', action: 'diff' },
   'law.follow': { endpoint: 'law', action: 'follow' },
+  'law.verify': { endpoint: 'law', action: 'verify' },
   // case
   'case.search': { endpoint: 'case', action: 'search' },
   'case.view': { endpoint: 'case', action: 'view' },
@@ -62,6 +63,7 @@ const V3_COMMANDS = Object.freeze({
   'case.vsearch': { endpoint: 'case', action: 'vsearch' },
   'case.by-law': { endpoint: 'case', action: 'by-law' },
   'case.hsearch': { endpoint: 'case', action: 'hsearch' },
+  'case.verify': { endpoint: 'case', action: 'verify' },
   // bill
   'bill.search': { endpoint: 'bill', action: 'search' },
   'bill.detail': { endpoint: 'bill', action: 'detail' },
@@ -971,6 +973,7 @@ const MCP_TOOLS = [{
 
 워크플로우: law.find로 law_id 확인 → law.explore로 종합 탐색 → law.article로 조문 상세.
 개별 호출 전에 law.explore를 먼저 사용하세요 (조문+판례+의안+인용 한 번에 반환).
+답변에 조문번호나 판례번호를 인용할 때는 반드시 law.verify 또는 case.verify로 실재 여부를 검증하세요 (환각 방지).
 
 명령어 (command 필드에 입력):
 - law.find: 법령 찾기. params: {q: "민법"}. 결과의 law_id로 다른 명령 호출.
@@ -980,12 +983,14 @@ const MCP_TOOLS = [{
 - law.history: 개정 연혁. params: {law_id: "001706"}
 - law.byulpyo: 별표 조회. params: {law_id: "001706"}
 - law.diff: 신구법 대조. params: {law_id: "001706"}
+- law.verify: 조문 인용 검증 (환각 방지). params: {q: "민법 제750조"}. exists=true/false 반환.
 - case.hsearch: 판례 하이브리드 검색 (키워드+벡터+리랭킹). params: {q: "임대차 보증금"}
 - case.search: 판례 키워드 검색. params: {q: "임대차"}
 - case.view: 판례 상세 (판결요지, 참조조문). params: {case_id: "..."}
 - case.text: 판례 전문 텍스트 검색. params: {q: "..."}
 - case.vsearch: 판례 시맨틱 검색. params: {q: "..."}
 - case.by-law: 법령별 판례. params: {law_id: "001706"}
+- case.verify: 판례 인용 검증 (환각 방지). params: {q: "2017두47045"}. exists=true/false 반환.
 - bill.search: 의안 검색. params: {q: "형법"}
 - bill.detail: 의안 상세. params: {bill_id: "PRC_..."}
 - bill.sponsors: 발의자 정보. params: {bill_id: "PRC_..."}
