@@ -445,17 +445,24 @@ async function statusPage(env, rlHeaders) {
   --pico-code-background-color: #c2a67620;
   --pico-code-color: #3b2f20;
   --pico-code-font-family: 'JetBrains Mono', monospace;
+  --pico-line-height: 1.4;
+  --pico-typography-spacing-vertical: 0.8rem;
 }
 body > main { max-width: 640px; margin: 0 auto; padding: 4rem 1.5rem; }
-.stats { display: flex; gap: 2.5rem; flex-wrap: wrap; margin: 3rem 0; }
+.stats { display: flex; gap: 2rem; flex-wrap: wrap; margin: 2rem 0; }
 .stats div { text-align: center; }
 .stats strong { display: block; font-size: 1.5rem; color: #3b2f20; }
 .stats small { font-size: 0.75rem; color: #897457; }
 .copy-row { display: flex; align-items: center; gap: 0.5rem; }
 .copy-row code { flex: 1; font-size: 0.85rem; }
 .copy-row button { font-size: 0.7rem; padding: 0.25rem 0.5rem; }
-section { margin-top: 3rem; }
-footer { margin-top: 4rem; padding-top: 2rem; border-top: 1px solid #c2a67640; font-size: 0.75rem; color: #897457; }
+h1 { margin-bottom: 0.5rem; }
+h2 { margin-top: 2.5rem; margin-bottom: 1rem; }
+h3 { margin-top: 1.5rem; margin-bottom: 0.3rem; font-size: 1rem; }
+p { margin-bottom: 0.4rem; }
+small { line-height: 1.4; }
+section { margin-top: 2.5rem; }
+footer { margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #c2a67640; font-size: 0.75rem; color: #897457; }
 </style>
 </head>
 <body>
