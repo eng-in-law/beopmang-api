@@ -205,7 +205,7 @@ export default {
     if (originData.exit_code !== 0) {
       const rawDetail = originData.output || '';
       const cleanDetail = rawDetail.replace(/lawcli\.py/g, 'lawcli').replace(/\/home\/[^\s]+/g, '').replace(/Traceback[\s\S]*$/m, '').trim();
-      return json({ ok: false, error: 'command_failed', detail: cleanDetail || 'command returned an error', command: parsed.cmd }, 422, rl.headers);
+      return json({ ok: false, error: { code: 'COMMAND_FAILED', message: cleanDetail || 'command returned an error', command: parsed.cmd } }, 422, rl.headers);
     }
 
     let result;
@@ -518,7 +518,10 @@ const MCP_TOOLS = [{
 - searchBills: 의안 검색. params: {query}
 - getTimeline: 타임라인. params: {law_id}
 - getStats: DB 현황. params: {}
-- sendFeedback: 피드백. params: {message, type?: "bug|feature|quality"}`,
+- sendFeedback: 피드백. params: {message, type?: "bug|feature|quality"}
+
+unit_level: JO=조, HANG=항, HO=호, MOK=목
+law_id는 6자리 숫자 (예: 001706=민법, 001692=형법)`,
   inputSchema: {
     type: 'object',
     properties: {
@@ -587,7 +590,8 @@ async function handleMcp(request, env) {
       const resp = await fetch(env.ORIGIN_BASE + '/api/lawcli?' + qs, { headers: { 'User-Agent': 'beopmang-mcp/1.0' } });
       const data = await resp.json();
       if (data.exit_code !== 0) {
-        return mcpOk(id, { content: [{ type: 'text', text: 'Error: ' + (data.output || 'command failed') }], isError: true });
+        const msg = (data.output || 'command failed').replace(/lawcli\.py/g, 'lawcli').replace(/\/home\/[^\s]+/g, '').trim();
+        return mcpOk(id, { content: [{ type: 'text', text: JSON.stringify({ error: { code: 'COMMAND_FAILED', message: msg, command: command } }) }], isError: true });
       }
       let mainResult = data.output || '{}';
       // Handle include parameter
