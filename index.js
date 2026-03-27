@@ -77,7 +77,7 @@ const V3_COMMANDS = Object.freeze({
   // search
   'search.keyword': { endpoint: 'search', action: 'keyword' },
   'search.semantic': { endpoint: 'search', action: 'semantic' },
-  'search.ordinance': { endpoint: 'search', action: 'ordinance' },
+  'search.local-ordinance': { endpoint: 'search', action: 'local-ordinance' },
   'search.treaty': { endpoint: 'search', action: 'treaty' },
   // ref
   'ref.doc': { endpoint: 'ref', action: 'doc' },
@@ -962,6 +962,7 @@ async function handleCatalog(path, env) {
       name: String(law?.law_name || law?.name || law?.title || '').trim(),
       type: String(law?.law_type || law?.type || law?.kind || '').trim(),
       id: String(law?.law_id || law?.id || '').trim(),
+      case_count: Number(law?.case_count || 0),
     }))
     .filter((law) => law.name);
 
@@ -983,6 +984,7 @@ async function handleCatalog(path, env) {
         name: String(item?.law_name || item?.name || item?.title || '').trim(),
         type: String(item?.law_type || item?.type || item?.kind || '행정규칙').trim(),
         id: String(item?.law_id || item?.id || '').trim(),
+        case_count: Number(item?.case_count || 0),
       }))
       .filter((item) => item.name);
     catalogCounts['administrative-rules'] = normalizedItems.length || catalogCounts['administrative-rules'];
@@ -993,6 +995,7 @@ async function handleCatalog(path, env) {
         name: String(item?.name || item?.law_name || item?.title || '').trim(),
         type: String(item?.type || item?.law_type || '조약').trim(),
         id: String(item?.treaty_id || item?.law_id || item?.id || '').trim(),
+        case_count: Number(item?.case_count || 0),
       }))
       .filter((item) => item.name);
     catalogCounts.treaties = normalizedItems.length || catalogCounts.treaties;
@@ -1012,7 +1015,8 @@ async function handleCatalog(path, env) {
 
   const isSingleCategory = !!currentCategory?.single;
   const currentItems = isSingleCategory ? normalizedItems : (grouped[selectedCho] || []);
-  const examples = currentItems.slice(0, 3).map((law) => law.name).join(', ');
+  const topLaws = [...currentItems].sort((a, b) => (b.case_count || 0) - (a.case_count || 0)).slice(0, 3);
+  const examples = topLaws.map((law) => law.name).join(', ');
   const currentLabel = currentCategory?.label || '법령';
   const listDescription = isSingleCategory
     ? `${currentLabel} ${currentItems.length}건${examples ? `. ${examples} 등.` : '.'}`
@@ -1082,7 +1086,7 @@ ${lawList}
         '@type': 'ItemList',
         name: pageTitle,
         numberOfItems: currentItems.length,
-        itemListElement: currentItems.slice(0, 20).map((law, index) => ({
+        itemListElement: [...currentItems].sort((a, b) => (b.case_count || 0) - (a.case_count || 0)).slice(0, 20).map((law, index) => ({
           '@type': 'ListItem',
           position: index + 1,
           name: law.name,
