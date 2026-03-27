@@ -1349,7 +1349,7 @@ JSON API: GET / (Accept에 text/html 없으면 JSON). MCP: POST /mcp (도구명 
 
 <div class="section">
 <p class="section-title">피드백</p>
-<p class="section-desc">AI에게 <code>법망에 피드백 보내줘</code>라고 말하면 됩니다.</p>
+<p class="section-desc">AI에게 "법망에 피드백 보내줘"라고 말하면 됩니다.</p>
 </div>
 
 </div>
@@ -1360,7 +1360,7 @@ JSON API: GET / (Accept에 text/html 없으면 JSON). MCP: POST /mcp (도구명 
 <p class="statusline">수집 정보: 없음 | 출처: 법제처·국회 | 법적 효력 없음 | help@beopmang.org</p>
 </main>
 <script>
-function cc(el,v){navigator.clipboard.writeText(v).then(function(){el.textContent='copied!';setTimeout(function(){el.textContent='복사'},1500)})}
+function cc(el,v){navigator.clipboard.writeText(v).then(function(){el.textContent='완료';setTimeout(function(){el.textContent='복사'},1500)})}
 function hc(){fetch('/health').then(function(r){return r.json()}).then(function(d){
 var el=document.getElementById('hc');
 if(d.status==='ok')el.innerHTML='<span class="dot" style="background:#2f6b4e"></span> 서버 원활 · '+d.origin_ms+'ms';
