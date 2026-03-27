@@ -373,12 +373,7 @@ async function handleRequest(request, env) {
     }
 
     if (path === '/sitemap.xml') {
-      const urls = ['/', '/.well-known/agent.json', '/health',
-        '/api/v3/help?action=schema', '/api/v3/help?action=stats',
-        '/api/v3/law?action=find&q=민법', '/api/v3/law?action=explore&law_id=001692',
-        '/api/v3/law?action=article&law_id=001692&label=제1조',
-        '/api/v3/case?action=hsearch&q=임대차', '/api/v3/graph?action=xref&law_id=001692',
-        '/api/v3/search?action=keyword&q=화학물질', '/api/v3/bill?action=search&q=형법'];
+      const urls = ['/', '/privacy'];
       const xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
         urls.map(u => '  <url><loc>https://api.beopmang.org' + u + '</loc><changefreq>daily</changefreq></url>').join('\n') +
         '\n</urlset>';
