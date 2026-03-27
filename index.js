@@ -1075,6 +1075,21 @@ ${lawList}
 </ul>`;
   }
 
+  const canonicalUrl = `https://api.beopmang.org${path}`;
+  const itemListJsonLd = (!isCatalogHome && currentCategory && !currentCategory.disabled)
+    ? `<script type="application/ld+json">${JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'ItemList',
+        name: pageTitle,
+        numberOfItems: currentItems.length,
+        itemListElement: currentItems.slice(0, 20).map((law, index) => ({
+          '@type': 'ListItem',
+          position: index + 1,
+          name: law.name,
+        })),
+      })}</script>`
+    : '';
+
   const html = `<!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -1082,6 +1097,13 @@ ${lawList}
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${escapeHtmlW(pageTitle)}</title>
 <meta name="description" content="${escapeHtmlW(metaDescription)}">
+<meta property="og:title" content="${escapeHtmlW(pageTitle)}">
+<meta property="og:description" content="${escapeHtmlW(metaDescription)}">
+<meta property="og:url" content="${escapeHtmlW(canonicalUrl)}">
+<meta property="og:image" content="https://api.beopmang.org/og.jpg">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="법망">
+<link rel="canonical" href="${escapeHtmlW(canonicalUrl)}">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
 <style>
@@ -1156,9 +1178,10 @@ body {
   .page { padding: 10px 16px 20px; }
   .card { box-shadow: 8px 8px 0 var(--border); }
   .card-header { padding: 20px 18px 16px; }
-  .card-body { padding: 18px 18px 32px; }
+.card-body { padding: 18px 18px 32px; }
 }
 </style>
+${itemListJsonLd}
 </head>
 <body class="page">
 <main class="shell">
