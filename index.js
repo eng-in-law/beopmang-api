@@ -394,9 +394,9 @@ async function handleRequest(request, env) {
     }
 
     if (path === '/' || path === '') {
-      const ua = (request.headers.get('User-Agent') || '').toLowerCase();
-      const isAgent = /claude|anthropic|openai|gpt|chatgpt|perplexity|cohere/i.test(ua);
-      if (!isAgent && (request.headers.get('Accept') || '').includes('text/html')) {
+      const accept = request.headers.get('Accept') || '';
+      const wantsJson = accept === 'application/json' || (accept.startsWith('application/json') && !accept.includes('text/html'));
+      if (!wantsJson) {
         return statusPage(env, rl.headers);
       }
       const now = new Date();
