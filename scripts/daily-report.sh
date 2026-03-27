@@ -5,7 +5,11 @@ set -euo pipefail
 
 ACCOUNT_ID="620f18d4a719cadf71aece4130208c41"
 DATASET="ANALYTICS"
-API_TOKEN="${CF_API_TOKEN:-}"
+# .env에서 토큰 로드
+if [ -f "$HOME/beopmang-api/.env" ]; then
+  export $(grep -v '^#' "$HOME/beopmang-api/.env" | xargs)
+fi
+API_TOKEN="${CLOUDFLARE_API_TOKEN:-${CF_API_TOKEN:-}}"
 REPORT_DIR="$HOME/beopmang-api/reports"
 DATE=$(date -d "yesterday" +%Y-%m-%d 2>/dev/null || date -v-1d +%Y-%m-%d)
 REPORT="$REPORT_DIR/$DATE.md"
