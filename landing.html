@@ -73,10 +73,10 @@ body {
 .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--green); }
 .status-bar strong { color: var(--ink); }
 
-.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px 24px; }
-.stat { text-align: center; }
+.stats { display: grid; grid-template-columns: repeat(4, auto); gap: 16px 24px; justify-content: center; }
+.stat { text-align: center; min-width: 0; }
 .stat-value { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.02em; }
-.stat-label { font-size: 0.8rem; color: #6d593f; margin-top: 3px; letter-spacing: 0.02em; font-weight: 600; }
+.stat-label { font-size: 0.72rem; color: #6d593f; margin-top: 3px; letter-spacing: 0; font-weight: 600; white-space: nowrap; }
 
 .stat-upcoming { font-size: 1.25rem; font-weight: 700; color: var(--muted); letter-spacing: -0.02em; }
 .stat-note { margin: 0; font-size: 0.76rem; color: #6d593f; text-align: center; font-weight: 500; }
