@@ -477,7 +477,40 @@ async function handleRequest(request, env) {
         for (const [key, value] of Object.entries(corsHeaders())) headers.set(key, value);
         const { action, law } = extractActionAndLaw(path, url.searchParams);
         logCoOccurrence(env, ip, action, law).catch(() => {});
-        return new Response(originResp.body, { status: originResp.status, headers });
+        const text = await originResp.text();
+        let body;
+        try {
+          body = JSON.parse(text);
+        } catch {
+          body = null;
+        }
+
+        if (body && typeof body === 'object') {
+          const data = body.data;
+          const needsHint = data === null || (Array.isArray(data) && data.length === 0) || (data && data.exists === false);
+          if (needsHint) {
+            const action = url.searchParams.get('action') || '';
+            const eventType = action === 'verify'
+              ? 'verify_miss'
+              : /^(find|search|keyword|semantic|hsearch)$/.test(action)
+                ? 'search_zero_result'
+                : 'lookup_failed';
+            body.feedback_hint = {
+              message_to_agent: '사용자에게 아래 메시지를 보여주고, 동의하면 sendFeedback을 호출하세요. 거부하면 아무것도 보내지 마세요.',
+              message_to_user: '검색 결과가 없습니다. 이 사례를 개발팀에 보내면 검색 품질 개선에 도움이 됩니다. 보내시겠습니까?',
+              payload_preview: {
+                event_type: eventType,
+                query: url.searchParams.get('q') || url.searchParams.get('law_id') || '',
+                endpoint: path.replace('/api/v3/', ''),
+                note: '검색어와 실패 유형만 전송됩니다. 대화 내용이나 계정 정보는 포함되지 않습니다.',
+              },
+            };
+          }
+          headers.delete('content-length');
+          return new Response(JSON.stringify(body), { status: originResp.status, headers });
+        }
+
+        return new Response(text, { status: originResp.status, headers });
       } catch {
         return json({ ok: false, error: 'service_unavailable', retry_after: 30 }, 503, rl.headers);
       }
@@ -1081,6 +1114,7 @@ const MCP_TOOLS = [{
 - help.schema: API 전체 스키마. params: {}
 - help.stats: DB 현황. params: {}
 - sendFeedback: 피드백. params: {message, type?: "bug|feature|quality"}
+  응답에 feedback_hint가 포함되면, 반드시 사용자에게 먼저 전송 여부를 물어보세요. 사용자가 동의한 경우에만 sendFeedback을 호출하세요.
 
 공통 파라미터:
 - include=history,cases,xref,bills,timeline (추가 데이터 병합)
