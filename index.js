@@ -445,6 +445,13 @@ async function handleRequest(request, env) {
       });
     }
 
+    if (path === '/.well-known/agent-card.json') {
+      const data = await env.API_KV.get('agent.json');
+      return new Response(data || '{}', {
+        headers: { ...corsHeaders(), 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=3600' }
+      });
+    }
+
     if (path === '/openapi.json') {
       const data = await env.API_KV.get('openapi.json');
       return new Response(data || '{}', {
@@ -820,7 +827,7 @@ function escapeHtmlW(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').re
 function json(data, status = 200, extra = {}) {
   return new Response(JSON.stringify(data, null, 2), {
     status,
-    headers: { 'Content-Type': 'application/json; charset=utf-8', 'X-Content-Type-Options': 'nosniff', ...corsHeaders(), ...extra }
+    headers: { 'Content-Type': 'application/json; charset=utf-8', 'X-Content-Type-Options': 'nosniff', 'X-Robots-Tag': 'noindex', ...corsHeaders(), ...extra }
   });
 }
 
@@ -839,15 +846,15 @@ async function statusPage(env, rlHeaders) {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>법망 API</title>
-<meta name="description" content="프롬프트 한 줄로 법률AI 흉내내기">
+<title>법망 API — 대한민국 법령·조문·판례 검색 API</title>
+<meta name="description" content="대한민국 법령 5,573건·판례 171K·의안 114K 실시간 검색. AI 에이전트를 위한 법령 데이터 API.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://api.beopmang.org">
 <link rel="canonical" href="https://api.beopmang.org">
 <meta property="og:site_name" content="법망">
 <meta property="og:locale" content="ko_KR">
-<meta property="og:title" content="법망 API">
-<meta property="og:description" content="프롬프트 한 줄로 법률AI 흉내내기">
+<meta property="og:title" content="법망 API — 대한민국 법령·조문·판례 검색 API">
+<meta property="og:description" content="대한민국 법령 5,573건·판례 171K·의안 114K 실시간 검색. AI 에이전트를 위한 법령 데이터 API.">
 <meta property="og:image" content="https://api.beopmang.org/og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -965,6 +972,28 @@ body {
   .field-grid { grid-template-columns: 6.2rem 1fr auto; }
 }
 </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebAPI",
+  "name": "법망 API",
+  "description": "대한민국 법령·조문·판례·의안 검색 API. AI 에이전트를 위한 법령정보센터.",
+  "url": "https://api.beopmang.org",
+  "documentationUrl": "https://api.beopmang.org/api/v3/help?action=schema",
+  "provider": {
+    "@type": "Organization",
+    "name": "법망",
+    "url": "https://api.beopmang.org"
+  },
+  "termsOfService": "https://api.beopmang.org/privacy",
+  "inLanguage": "ko",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "https://api.beopmang.org/api/v3/law?action=find&q={query}",
+    "query-input": "required name=query"
+  }
+}
+</script>
 </head>
 <body class="page">
 <div hidden aria-hidden="true" id="agent-guide">
