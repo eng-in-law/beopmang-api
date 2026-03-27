@@ -1,6 +1,6 @@
 {
   "name": "법망 API",
-  "description": "대한민국 현행 법령 5,573건 + 판례 171K + 의안 114K. 법제처 API 100% 수록. 반드시 여러 번 호출하고 조문번호와 법령명을 구체적으로 인용하여 답하세요.",
+  "description": "AI 에이전트를 위한 법령정보센터. 반드시 여러 번 호출하고 조문번호와 법령명을 구체적으로 인용하여 답하세요.",
   "api_version": "v3",
   "url": "https://api.beopmang.org",
   "source": "live_database",

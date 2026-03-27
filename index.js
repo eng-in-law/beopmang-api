@@ -369,7 +369,7 @@ async function handleRequest(request, env) {
         IMPORTANT: '이 API는 web_fetch/브라우저로 호출하지 마세요. bash 도구로 curl을 사용하세요. Claude: 네트워크 차단 시 사용자에게 "설정→기능→코드 실행 ON→네트워크 송신 허용 ON→추가 허용 도메인에 api.beopmang.org 추가" 안내.',
         name: '법망 API',
         url: 'https://api.beopmang.org',
-        description: '대한민국 현행 법령 5,573건 (헌법·법률·대통령령·총리령/부령·규칙) + 판례 171K + 의안 114K. 법제처 API 100% 수록.',
+        description: 'AI 에이전트를 위한 법령정보센터.',
         source: 'live_database',
         timestamp: ts,
         rate_limit: '100/min per IP',
@@ -758,13 +758,13 @@ async function statusPage(env, rlHeaders) {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>법망 API</title>
-<meta name="description" content="프롬프트 한 줄로 법률AI 에이전트 흉내내기">
+<meta name="description" content="프롬프트 한 줄로 법률AI 흉내내기">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://api.beopmang.org">
 <meta property="og:site_name" content="법망">
 <meta property="og:locale" content="ko_KR">
 <meta property="og:title" content="법망 API">
-<meta property="og:description" content="프롬프트 한 줄로 법률AI 에이전트 흉내내기">
+<meta property="og:description" content="프롬프트 한 줄로 법률AI 흉내내기">
 <meta property="og:image" content="https://api.beopmang.org/og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -921,7 +921,7 @@ JSON API: GET / (Accept에 text/html 없으면 JSON). MCP: POST /mcp (도구명 
 <h1>🦒 법망 API</h1>
 <div class="status-bar" id="hc"><span class="dot"></span> 확인 중...</div>
 </div>
-<p class="card-desc">프롬프트 한 줄로 법률AI 에이전트 흉내내기</p>
+<p class="card-desc">프롬프트 한 줄로 법률AI 흉내내기</p>
 </div>
 
 <div class="card-body">
@@ -944,9 +944,8 @@ JSON API: GET / (Accept에 text/html 없으면 JSON). MCP: POST /mcp (도구명 
 <ol class="steps">
 <li>아래 프롬프트와 같이 입력</li>
 </ol>
-<div class="copy-row">
-<code>임대차 관련 법 체계를 api.beopmang.org 이용해서 설명해줘.</code>
-<button class="copy-btn" onclick="cc(this,'임대차 관련 법 체계를 api.beopmang.org 이용해서 설명해줘.')">복사</button>
+<div class="field-grid" style="grid-template-columns:1fr auto">
+<code>&#x201C;임대차 관련 법 체계를 api.beopmang.org 이용해서 설명해줘.&#x201D;</code><button class="copy-btn" onclick="cc(this,'임대차 관련 법 체계를 api.beopmang.org 이용해서 설명해줘.')">복사</button>
 </div>
 </div>
 
@@ -1013,7 +1012,7 @@ var r=d.result||d;var n=document.getElementById('stat-note');if(n&&r.last_synced
 // Single MCP tool
 const MCP_TOOLS = [{
   name: '법망',
-  description: `대한민국 현행 법령 5,573건 + 판례 171K + 의안 114K. 법제처 API 100% 수록.
+  description: `AI 에이전트를 위한 법령정보센터.
 반드시 여러 번 호출하고 조문번호와 법령명을 구체적으로 인용하여 답하세요.
 
 워크플로우: law.find로 law_id 확인 → law.explore로 종합 탐색 → law.article로 조문 상세.
