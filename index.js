@@ -383,7 +383,10 @@ async function handleRequest(request, env) {
     }
 
     if (path === '/sitemap.xml') {
-      const urls = ['/', '/privacy'];
+      const urls = ['/', '/privacy', '/catalog',
+        '/catalog/laws/ㄱ','/catalog/laws/ㄴ','/catalog/laws/ㄷ','/catalog/laws/ㅁ',
+        '/catalog/laws/ㅂ','/catalog/laws/ㅅ','/catalog/laws/ㅇ','/catalog/laws/ㅈ',
+        '/catalog/laws/ㅊ','/catalog/laws/ㅋ','/catalog/laws/ㅌ','/catalog/laws/ㅍ','/catalog/laws/ㅎ'];
       const xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
         urls.map(u => '  <url><loc>https://api.beopmang.org' + u + '</loc><changefreq>daily</changefreq></url>').join('\n') +
         '\n</urlset>';
