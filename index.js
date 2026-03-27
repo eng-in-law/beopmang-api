@@ -487,7 +487,7 @@ async function handleRequest(request, env) {
 
         if (body && typeof body === 'object') {
           const data = body.data;
-          const needsHint = data === null || (Array.isArray(data) && data.length === 0) || (data && data.exists === false);
+          const needsHint = data === null || (Array.isArray(data) && data.length === 0) || (data && data.exists === false) || (data && Array.isArray(data.results) && data.results.length === 0);
           if (needsHint) {
             const action = url.searchParams.get('action') || '';
             const eventType = action === 'verify'
