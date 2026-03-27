@@ -1368,7 +1368,7 @@ else{el.innerHTML='<span class="dot" style="background:#dc2626"></span> 오프�
 }).catch(function(){document.getElementById('hc').innerHTML='<span class="dot" style="background:#d97706"></span> 확인 불가';setTimeout(hc,10000);});}
 hc();setInterval(hc,60000);
 fetch('/stats').then(function(r){return r.json()}).then(function(d){
-var r=d.result||d;var n=document.getElementById('stat-note');if(n&&r.last_synced&&r.sync_complete){var p=r.last_synced.split('-');n.textContent=p[0]+'. '+parseInt(p[1])+'. '+parseInt(p[2])+'. 기준 국가법령정보센터 제공 법령·행정규칙·조약 등 99.9%+ 수록 (매주 토요일 갱신)';}
+var r=d.result||d;var n=document.getElementById('stat-note');if(n&&r.last_synced&&r.sync_complete){var p=r.last_synced.split('-');n.innerHTML=p[0]+'. '+parseInt(p[1])+'. '+parseInt(p[2])+'. 기준 국가법령정보센터 제공 법령·행정규칙·조약 등 99.9%+ 수록 <span style="white-space:nowrap">(매주 토요일 갱신)</span>';}
 }).catch(function(){});
 </script>
 </body>
