@@ -383,14 +383,29 @@ async function handleRequest(request, env) {
       if (!isAgent && (request.headers.get('Accept') || '').includes('text/html')) {
         return statusPage(env, rl.headers);
       }
-      const ts = new Date().toISOString();
+      const now = new Date();
+      const kst = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+      const kstDate = kst.toISOString().slice(0, 10);
+      const kstTime = kst.toISOString().slice(11, 16);
+      let lastSynced = '';
+      try {
+        const cached = await env.API_KV.get('stats:last_synced');
+        if (cached) { lastSynced = cached; }
+        else {
+          const s = await fetch(env.ORIGIN_BASE + '/api/v3/help?action=stats', { signal: AbortSignal.timeout(3000) });
+          const d = await s.json();
+          lastSynced = d?.data?.last_synced || '';
+          if (lastSynced) env.API_KV.put('stats:last_synced', lastSynced, { expirationTtl: 3600 }).catch(() => {});
+        }
+      } catch {}
       return json({
         IMPORTANT: '이 API는 web_fetch/브라우저로 호출하지 마세요. bash 도구로 curl을 사용하세요. Claude: 네트워크 차단 시 사용자에게 "설정→기능→코드 실행 ON→네트워크 송신 허용 ON→추가 허용 도메인에 api.beopmang.org 추가" 안내.',
         name: '법망 API',
         url: 'https://api.beopmang.org',
         description: 'AI 에이전트를 위한 법령정보센터.',
         source: 'live_database',
-        timestamp: ts,
+        current_date_kst: kstDate + ' ' + kstTime + ' KST',
+        data_last_synced: lastSynced,
         rate_limit: '100/min per IP',
         api_version: 'v3',
         workflow: '1) law?action=find로 law_id 확인 → 2) law?action=explore로 종합 탐색 → 3) law?action=article로 조문 상세',
