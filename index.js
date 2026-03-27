@@ -317,6 +317,13 @@ async function handleRequest(request, env) {
       if (img) return new Response(img, { headers: { 'Content-Type': 'image/jpeg', 'Cache-Control': 'public, max-age=86400' } });
       return new Response('not found', { status: 404 });
     }
+    if (path.startsWith('/catalog')) {
+      const ua = request.headers.get('User-Agent') || '';
+      if (/(GPTBot|ChatGPT|Claude|Anthropic|PerplexityBot|Google-Extended|CCBot|Bytespider|Meta-ExternalAgent)/i.test(ua)) {
+        return json({ message: '이 페이지는 사람용입니다. API는 /api/v3/를 사용하세요.', api: 'https://api.beopmang.org' });
+      }
+      return handleCatalog(path, env);
+    }
 
     const rl = await checkRateLimit(env.API_KV, ip);
     if (!rl.ok) {
@@ -826,6 +833,217 @@ function json(data, status = 200, extra = {}) {
   return new Response(JSON.stringify(data, null, 2), {
     status,
     headers: { 'Content-Type': 'application/json; charset=utf-8', 'X-Content-Type-Options': 'nosniff', 'X-Robots-Tag': 'noindex', ...corsHeaders(), ...extra }
+  });
+}
+
+async function handleCatalog(path, env) {
+  const cacheKey = 'catalog:laws';
+  let laws = null;
+  const cached = await env.API_KV.get(cacheKey);
+  if (cached) {
+    try {
+      laws = JSON.parse(cached);
+    } catch {
+      laws = null;
+    }
+  }
+
+  if (!Array.isArray(laws)) {
+    try {
+      const resp = await fetch(env.ORIGIN_BASE + '/api/v3/law?action=list', {
+        headers: { 'User-Agent': 'beopmang-api/catalog' },
+        cf: { cacheTtl: 0 },
+        signal: AbortSignal.timeout(15000),
+      });
+      const text = await resp.text();
+      let payload;
+      try {
+        payload = JSON.parse(text);
+      } catch {
+        payload = null;
+      }
+      if (Array.isArray(payload)) laws = payload;
+      else if (Array.isArray(payload?.data)) laws = payload.data;
+      else if (Array.isArray(payload?.result)) laws = payload.result;
+      else laws = [];
+      env.API_KV.put(cacheKey, JSON.stringify(laws), { expirationTtl: 3600 }).catch(() => {});
+    } catch {
+      laws = [];
+    }
+  }
+
+  function getChosung(c) {
+    const cho = 'ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
+    const merge = { 'ㄲ': 'ㄱ', 'ㄸ': 'ㄷ', 'ㅃ': 'ㅂ', 'ㅆ': 'ㅅ', 'ㅉ': 'ㅈ' };
+    if (c >= '가' && c <= '힣') {
+      const r = cho[Math.floor((c.charCodeAt(0) - 0xAC00) / 588)];
+      return merge[r] || r;
+    }
+    return c;
+  }
+
+  const chosungs = ['ㄱ', 'ㄴ', 'ㄷ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅅ', 'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'];
+  let selectedCho = 'ㄱ';
+  const parts = path.split('/').filter(Boolean);
+  if (parts[0] === 'catalog' && parts[1] === 'laws' && chosungs.includes(parts[2])) {
+    selectedCho = parts[2];
+  }
+
+  const normalizedLaws = (Array.isArray(laws) ? laws : [])
+    .map((law) => {
+      const name = String(law?.law_name || law?.name || law?.title || '').trim();
+      const type = String(law?.law_type || law?.type || law?.kind || '').trim();
+      return { name, type };
+    })
+    .filter((law) => law.name);
+
+  normalizedLaws.sort((a, b) => a.name.localeCompare(b.name, 'ko'));
+
+  const grouped = Object.fromEntries(chosungs.map((cho) => [cho, []]));
+  for (const law of normalizedLaws) {
+    const cho = getChosung(law.name[0]);
+    if (grouped[cho]) grouped[cho].push(law);
+  }
+
+  const currentLaws = grouped[selectedCho] || [];
+  const examples = currentLaws.slice(0, 2).map((law) => law.name).join(', ');
+  const description = examples
+    ? `${selectedCho}으로 시작하는 법령 ${currentLaws.length}건. ${examples} 등.`
+    : `${selectedCho}으로 시작하는 법령 ${currentLaws.length}건.`;
+
+  const choNav = chosungs.map((cho) => {
+    const count = (grouped[cho] || []).length;
+    const classes = ['cho-link'];
+    if (cho === selectedCho) classes.push('active');
+    else if (count === 0) classes.push('empty');
+    return `<a href="/catalog/laws/${encodeURIComponent(cho)}" class="${classes.join(' ')}">${cho}${count > 0 ? ` <small>${count}</small>` : ''}</a>`;
+  }).join('\n');
+
+  const lawList = currentLaws.length > 0
+    ? currentLaws.map((law) => `<li class="law-item"><span class="law-name">${escapeHtmlW(law.name)}</span><span class="law-type">${escapeHtmlW(law.type || '법령')}</span></li>`).join('\n')
+    : '<li class="law-item"><span class="law-name">해당 초성으로 시작하는 법령이 없습니다.</span><span class="law-type">-</span></li>';
+
+  const html = `<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${selectedCho}으로 시작하는 법령 — 법망 카탈로그</title>
+<meta name="description" content="${escapeHtmlW(description)}">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
+<style>
+:root {
+  --bg: #f2ead3;
+  --surface: #f7ecd2;
+  --ink: #3b2f20;
+  --muted: #6d593f;
+  --border: #3b2f20;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; min-height: 100vh;
+  font-family: "Pretendard Variable","Pretendard",system-ui,sans-serif;
+  font-weight: 500; letter-spacing: -0.02em;
+  background: var(--bg); color: var(--ink); line-height: 1.5;
+  background-image: linear-gradient(rgba(59,47,32,0.035) 1px,transparent 1px),linear-gradient(90deg,rgba(59,47,32,0.035) 1px,transparent 1px);
+  background-size: 30px 30px;
+}
+.page { display: flex; justify-content: center; padding: 16px 20px 28px; }
+.shell { max-width: 640px; width: 100%; padding-top: 24px; padding-bottom: 40px; }
+.card {
+  background: var(--surface); border: 3px solid var(--border);
+  border-radius: 0; box-shadow: 12px 12px 0 var(--border); overflow: hidden;
+}
+.card-header { padding: 24px 24px 20px; border-bottom: 2px solid var(--border); }
+.card-header h1 { margin: 0; font-size: 1.15rem; font-weight: 800; letter-spacing: -0.03em; }
+.card-desc { margin: 6px 0 0; font-size: 0.85rem; color: var(--ink); }
+.card-body { padding: 28px 24px 40px; }
+
+.categories { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+.cat-btn {
+  padding: 8px 16px; border: 2px solid var(--border); background: var(--surface);
+  font-size: 0.85rem; font-weight: 700; color: var(--ink); cursor: pointer;
+  box-shadow: 3px 3px 0 var(--border); font-family: inherit;
+}
+.cat-btn:hover { background: #fffdf7; transform: translate(-1px,-1px); box-shadow: 4px 4px 0 var(--border); }
+.cat-btn.active { background: var(--ink); color: var(--bg); }
+
+.chosung-nav { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; }
+.cho-link {
+  padding: 4px 8px; border: 2px solid var(--border); background: var(--surface);
+  font-size: 0.82rem; font-weight: 700; color: var(--ink); text-decoration: none;
+  box-shadow: 2px 2px 0 var(--border);
+}
+.cho-link:hover { background: #fffdf7; }
+.cho-link.active { background: var(--ink); color: var(--bg); }
+.cho-link.empty { opacity: 0.3; pointer-events: none; }
+
+.law-list { list-style: none; padding: 0; margin: 0; }
+.law-item {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: 8px 0; border-bottom: 1px solid rgba(59,47,32,0.15);
+}
+.law-name { font-size: 0.85rem; font-weight: 600; }
+.law-type { font-size: 0.72rem; color: var(--muted); font-weight: 500; white-space: nowrap; margin-left: 12px; }
+
+.count-badge {
+  display: inline-block; padding: 2px 8px; font-size: 0.72rem;
+  font-weight: 700; color: var(--muted); border: 1px solid var(--muted);
+  margin-left: 6px;
+}
+
+.statusline {
+  margin: 24px 0 0; text-align: right;
+  font-size: 0.72rem; color: var(--ink); font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .page { padding: 10px 16px 20px; }
+  .card { box-shadow: 8px 8px 0 var(--border); }
+  .card-header { padding: 20px 18px 16px; }
+  .card-body { padding: 18px 18px 32px; }
+}
+</style>
+</head>
+<body class="page">
+<main class="shell">
+<div class="card">
+
+<div class="card-header">
+<h1>🦒 법령 카탈로그</h1>
+<p class="card-desc">대한민국 현행 법령 가나다순 목록</p>
+</div>
+
+<div class="card-body">
+
+<div class="categories">
+<button class="cat-btn active">법령 <span class="count-badge">${normalizedLaws.length}</span></button>
+<button class="cat-btn" disabled aria-disabled="true">행정규칙</button>
+<button class="cat-btn" disabled aria-disabled="true">조약</button>
+</div>
+
+<nav class="chosung-nav">
+${choNav}
+</nav>
+
+<ul class="law-list">
+${lawList}
+</ul>
+
+</div>
+</div>
+
+<p class="statusline">수집 정보: 없음 | 출처: 법제처·국회 | 법적 효력 없음 | help@beopmang.org</p>
+</main>
+</body>
+</html>`;
+
+  return new Response(html, {
+    headers: {
+      'Content-Type': 'text/html; charset=utf-8',
+      'Cache-Control': 'public, max-age=3600',
+    },
   });
 }
 

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>법령 카탈로그 — 법망</title>
+<meta name="description" content="대한민국 현행 법령 5,573건 · 행정규칙 23,829건 · 조약 3,260건 가나다순 목록">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
+<style>
+:root {
+  --bg: #f2ead3;
+  --surface: #f7ecd2;
+  --ink: #3b2f20;
+  --muted: #6d593f;
+  --border: #3b2f20;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; min-height: 100vh;
+  font-family: "Pretendard Variable","Pretendard",system-ui,sans-serif;
+  font-weight: 500; letter-spacing: -0.02em;
+  background: var(--bg); color: var(--ink); line-height: 1.5;
+  background-image: linear-gradient(rgba(59,47,32,0.035) 1px,transparent 1px),linear-gradient(90deg,rgba(59,47,32,0.035) 1px,transparent 1px);
+  background-size: 30px 30px;
+}
+.page { display: flex; justify-content: center; padding: 16px 20px 28px; }
+.shell { max-width: 640px; width: 100%; padding-top: 24px; padding-bottom: 40px; }
+.card {
+  background: var(--surface); border: 3px solid var(--border);
+  border-radius: 0; box-shadow: 12px 12px 0 var(--border); overflow: hidden;
+}
+.card-header { padding: 24px 24px 20px; border-bottom: 2px solid var(--border); }
+.card-header h1 { margin: 0; font-size: 1.15rem; font-weight: 800; letter-spacing: -0.03em; }
+.card-desc { margin: 6px 0 0; font-size: 0.85rem; color: var(--ink); }
+.card-body { padding: 28px 24px 40px; }
+
+.categories { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+.cat-btn {
+  padding: 8px 16px; border: 2px solid var(--border); background: var(--surface);
+  font-size: 0.85rem; font-weight: 700; color: var(--ink); cursor: pointer;
+  box-shadow: 3px 3px 0 var(--border); font-family: inherit;
+}
+.cat-btn:hover { background: #fffdf7; transform: translate(-1px,-1px); box-shadow: 4px 4px 0 var(--border); }
+.cat-btn.active { background: var(--ink); color: var(--bg); }
+
+.chosung-nav { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; }
+.cho-link {
+  padding: 4px 8px; border: 2px solid var(--border); background: var(--surface);
+  font-size: 0.82rem; font-weight: 700; color: var(--ink); text-decoration: none;
+  box-shadow: 2px 2px 0 var(--border);
+}
+.cho-link:hover { background: #fffdf7; }
+.cho-link.active { background: var(--ink); color: var(--bg); }
+.cho-link.empty { opacity: 0.3; pointer-events: none; }
+
+.law-list { list-style: none; padding: 0; margin: 0; }
+.law-item {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: 8px 0; border-bottom: 1px solid rgba(59,47,32,0.15);
+}
+.law-name { font-size: 0.85rem; font-weight: 600; }
+.law-type { font-size: 0.72rem; color: var(--muted); font-weight: 500; white-space: nowrap; margin-left: 12px; }
+
+.count-badge {
+  display: inline-block; padding: 2px 8px; font-size: 0.72rem;
+  font-weight: 700; color: var(--muted); border: 1px solid var(--muted);
+  margin-left: 6px;
+}
+
+.statusline {
+  margin: 24px 0 0; text-align: right;
+  font-size: 0.72rem; color: var(--ink); font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .page { padding: 10px 16px 20px; }
+  .card { box-shadow: 8px 8px 0 var(--border); }
+  .card-header { padding: 20px 18px 16px; }
+  .card-body { padding: 18px 18px 32px; }
+}
+</style>
+</head>
+<body class="page">
+<main class="shell">
+<div class="card">
+
+<div class="card-header">
+<h1>🦒 법령 카탈로그</h1>
+<p class="card-desc">대한민국 현행 법령 가나다순 목록</p>
+</div>
+
+<div class="card-body">
+
+<div class="categories">
+<button class="cat-btn active">법령 <span class="count-badge">5,573</span></button>
+<button class="cat-btn">행정규칙 <span class="count-badge">23,829</span></button>
+<button class="cat-btn">조약 <span class="count-badge">3,260</span></button>
+</div>
+
+<nav class="chosung-nav">
+<a href="/catalog/laws/ㄱ" class="cho-link active">ㄱ <small>1426</small></a>
+<a href="/catalog/laws/ㄴ" class="cho-link">ㄴ <small>220</small></a>
+<a href="/catalog/laws/ㄷ" class="cho-link">ㄷ <small>299</small></a>
+<a href="/catalog/laws/ㄹ" class="cho-link empty">ㄹ</a>
+<a href="/catalog/laws/ㅁ" class="cho-link">ㅁ <small>172</small></a>
+<a href="/catalog/laws/ㅂ" class="cho-link">ㅂ <small>363</small></a>
+<a href="/catalog/laws/ㅅ" class="cho-link">ㅅ <small>704</small></a>
+<a href="/catalog/laws/ㅇ" class="cho-link">ㅇ <small>565</small></a>
+<a href="/catalog/laws/ㅈ" class="cho-link">ㅈ <small>823</small></a>
+<a href="/catalog/laws/ㅊ" class="cho-link">ㅊ <small>158</small></a>
+<a href="/catalog/laws/ㅋ" class="cho-link">ㅋ <small>11</small></a>
+<a href="/catalog/laws/ㅌ" class="cho-link">ㅌ <small>94</small></a>
+<a href="/catalog/laws/ㅍ" class="cho-link">ㅍ <small>49</small></a>
+<a href="/catalog/laws/ㅎ" class="cho-link">ㅎ <small>635</small></a>
+</nav>
+
+<ul class="law-list">
+<li class="law-item"><span class="law-name">가사소송법</span><span class="law-type">법률</span></li>
+<li class="law-item"><span class="law-name">가사소송법 시행규칙</span><span class="law-type">대법원규칙</span></li>
+<li class="law-item"><span class="law-name">가사소송법 시행령</span><span class="law-type">대통령령</span></li>
+<li class="law-item"><span class="law-name">가습기살균제 피해구제를 위한 특별법</span><span class="law-type">법률</span></li>
+<li class="law-item"><span class="law-name">가정폭력범죄의 처벌 등에 관한 특례법</span><span class="law-type">법률</span></li>
+<li class="law-item"><span class="law-name">건축법</span><span class="law-type">법률</span></li>
+<li class="law-item"><span class="law-name">건축법 시행규칙</span><span class="law-type">국토교통부령</span></li>
+<li class="law-item"><span class="law-name">건축법 시행령</span><span class="law-type">대통령령</span></li>
+<li class="law-item"><span class="law-name">경비업법</span><span class="law-type">법률</span></li>
+<li class="law-item"><span class="law-name">공직선거법</span><span class="law-type">법률</span></li>
+<li class="law-item"><span class="law-name">국가배상법</span><span class="law-type">법률</span></li>
+<li class="law-item"><span class="law-name">국가유산기본법</span><span class="law-type">법률</span></li>
+<li class="law-item"><span class="law-name">근로기준법</span><span class="law-type">법률</span></li>
+<li class="law-item"><span class="law-name">근로기준법 시행령</span><span class="law-type">대통령령</span></li>
+<li class="law-item"><span class="law-name">금융실명거래 및 비밀보장에 관한 법률</span><span class="law-type">법률</span></li>
+</ul>
+
+</div>
+</div>
+
+<p class="statusline">수집 정보: 없음 | 출처: 법제처·국회 | 법적 효력 없음 | help@beopmang.org</p>
+</main>
+</body>
+</html>
