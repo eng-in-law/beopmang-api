@@ -904,6 +904,12 @@ async function handleCatalog(path, env) {
   let lastSynced = '';
   try {
     lastSynced = (await env.API_KV.get('stats:last_synced')) || '';
+    if (!lastSynced) {
+      const s = await fetch(env.ORIGIN_BASE + '/api/v3/help?action=stats', { signal: AbortSignal.timeout(3000) });
+      const sd = await s.json();
+      lastSynced = sd?.data?.last_synced || '';
+      if (lastSynced) env.API_KV.put('stats:last_synced', lastSynced, { expirationTtl: 3600 }).catch(() => {});
+    }
   } catch {}
   const lastSyncedLabel = formatDateLabel(lastSynced);
 
@@ -964,7 +970,7 @@ ${lawList}
 </ul>`;
 
   if (isCatalogHome) {
-    pageTitle = '법령 카탈로그 — 법망';
+    pageTitle = '법망 API 법령정보 목록 — 법망';
     metaDescription = '대한민국 현행 법령 5,573건 · 행정규칙 23,829건 · 조약 3,260건 가나다순 목록';
     cardDesc = '대한민국 현행 법령 가나다순 목록';
     bodyContent = categoriesHtml;
@@ -1069,7 +1075,7 @@ body {
 <div class="card">
 
 <div class="card-header">
-<h1>🦒 법령 카탈로그</h1>
+<h1>🦒 법망 API 법령정보 목록</h1>
 <p class="card-desc">${escapeHtmlW(cardDesc)}</p>
 </div>
 
