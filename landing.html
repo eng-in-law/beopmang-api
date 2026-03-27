@@ -7,6 +7,7 @@
 <meta name="description" content="프롬프트 한 줄로 법률AI 흉내내기">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://api.beopmang.org">
+<link rel="canonical" href="https://api.beopmang.org">
 <meta property="og:site_name" content="법망">
 <meta property="og:locale" content="ko_KR">
 <meta property="og:title" content="법망 API">
@@ -86,16 +87,6 @@ body {
 .section-title small { font-weight: 600; color: #6d593f; font-size: 0.8rem; }
 .section-desc { margin: 0; font-size: 0.85rem; color: var(--ink); line-height: 1.5; }
 .section-desc code { font-family: "JetBrains Mono",ui-monospace,monospace; background: #ffffff; padding: 3px 8px; border: 1px solid #3b2f20; font-size: 0.78rem; vertical-align: middle; }
-
-.copy-row {
-  display: flex; align-items: center; gap: 8px;
-  padding: 14px 14px; border-radius: 0;
-  border: 2px solid #3b2f20; background: var(--bg);
-  box-shadow: 4px 4px 0 #3b2f20;
-}
-.copy-row code { flex: 1; font-size: 0.85rem; font-family: "JetBrains Mono",ui-monospace,monospace; font-weight: 500; color: #1a1207; word-break: break-all; white-space: normal; }
-.copy-row code::before { content: '\201C'; color: var(--muted); margin-right: 2px; }
-.copy-row code::after { content: '\201D'; color: var(--muted); margin-left: 2px; }
 .copy-btn {
   padding: 4px 10px; border: 2px solid #3b2f20; border-radius: 0;
   box-shadow: 2px 2px 0 #3b2f20; transition: transform 80ms, box-shadow 80ms, background var(--motion-fast);
@@ -120,8 +111,6 @@ body {
 .steps { margin: 4px 0; padding-left: 1.2rem; }
 .steps li { font-size: 0.85rem; color: var(--ink); margin-bottom: 6px; line-height: 1.6; }
 .muted-note { font-size: 0.82rem; color: var(--ink-soft); margin: 10px 0 0; }
-.section-disabled { opacity: 0.5; }
-.section-disabled .section-title { text-decoration: line-through; }
 
 .statusline {
   margin: 24px 0 0; padding: 0; text-align: right;
@@ -180,6 +169,7 @@ JSON API: GET / (Accept에 text/html 없으면 JSON). MCP: POST /mcp (도구명 
 <div class="stat"><div class="stat-value">379</div><div class="stat-label">기타 규칙</div></div>
 <div class="stat"><div class="stat-value">23,829</div><div class="stat-label">행정규칙</div></div>
 <div class="stat"><div class="stat-value">3,260</div><div class="stat-label">조약</div></div>
+<div class="stat"><div class="stat-value stat-upcoming">예정</div><div class="stat-label">조례</div></div>
 </div>
 <p class="stat-note" id="stat-note"></p>
 
