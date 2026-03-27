@@ -975,7 +975,7 @@ ${lawList}
   if (isCatalogHome) {
     pageTitle = '법망 API 법령정보 목록 — 법망';
     metaDescription = '대한민국 현행 법령 5,573건 · 행정규칙 23,829건 · 조약 3,260건 가나다순 목록';
-    cardDesc = '대한민국 현행 법령 가나다순 목록';
+    cardDesc = lastSyncedLabel ? lastSyncedLabel + ' 기준' : '대한민국 현행 법령 가나다순 목록';
     bodyContent = categoriesHtml;
   } else if (catalogSection === 'rules' || catalogSection === 'treaties') {
     const sectionName = catalogSection === 'rules' ? '행정규칙' : '조약';
