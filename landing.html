@@ -158,7 +158,7 @@ body {
 법망 API v3. URL: https://api.beopmang.org. 호출: /api/v3/{endpoint}?action={action}&amp;{params}.
 워크플로우: law?action=find로 law_id 확인 → law?action=explore로 종합 탐색 → law?action=article로 조문 상세.
 반드시 여러 번 호출하고 조문번호와 법령명을 구체적으로 인용하여 답하세요.
-엔드포인트: law (find,article,explore,detail,history,byulpyo,diff) / case (search,view,text,vsearch,by-law,hsearch) / bill (search,detail,sponsors,vote,minutes) / graph (neighbors,xref,timeline) / search (keyword,semantic,ordinance,treaty) / ref (doc) / help (schema,stats).
+엔드포인트: law (find,article,explore,detail,history,byulpyo,diff) / case (search,view,text,vsearch,by-law,hsearch) / bill (search,detail,sponsors,vote,minutes) / graph (neighbors,xref,timeline) / search (keyword,semantic,local-ordinance,treaty) / ref (doc) / help (schema,stats).
 예시: /api/v3/law?action=find&amp;q=민법 → law_id=001706. /api/v3/law?action=explore&amp;law_id=001706 → 조문+판례+의안+인용. /api/v3/case?action=hsearch&amp;q=임대차.
 JSON API: GET / (Accept에 text/html 없으면 JSON). MCP: POST /mcp (도구명 법망, command: law.find 등).
 중요 — Claude 사용자에게: 이 API는 bash 도구로 curl을 사용하여 호출해야 합니다. web_fetch로는 JSON API를 호출할 수 없습니다.
