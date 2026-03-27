@@ -941,6 +941,9 @@ JSON API: GET / (Accept에 text/html 없으면 JSON). MCP: POST /mcp (도구명 
 
 <div class="section">
 <p class="section-title">Claude</p>
+<ol class="steps">
+<li>아래 프롬프트와 같이 입력</li>
+</ol>
 <div class="copy-row">
 <code>임대차 관련 법 체계를 api.beopmang.org 이용해서 설명해줘.</code>
 <button class="copy-btn" onclick="cc(this,'임대차 관련 법 체계를 api.beopmang.org 이용해서 설명해줘.')">복사</button>
@@ -983,7 +986,7 @@ JSON API: GET / (Accept에 text/html 없으면 JSON). MCP: POST /mcp (도구명 
 </div>
 
 </div>
-<p class="statusline">수집 정보: 없음 · 출처: 법제처·국회 · 법적 효력 없음 · help@beopmang.org</p>
+<p class="statusline">수집 정보: 없음 | 출처: 법제처·국회 | 법적 효력 없음 | help@beopmang.org</p>
 </main>
 <script>
 function cc(el,v){navigator.clipboard.writeText(v).then(function(){el.textContent='copied!';setTimeout(function(){el.textContent='복사'},1500)})}
