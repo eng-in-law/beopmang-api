@@ -1183,6 +1183,10 @@ async function handleMcp(request, env) {
     const args = params?.arguments || {};
     const command = args.command;
     const p = args.params || {};
+    // Parameter alias mapping for low-effort models
+    if (p.article_label && !p.label) p.label = p.article_label;
+    if (p.query && !p.q) p.q = p.query;
+    if (p.id && !p.law_id) p.law_id = p.id;
     const availableCommands = TOOL_COMMANDS.join(', ');
     if (!command) return mcpOk(id, { content: [{ type: 'text', text: JSON.stringify({
       error_type: 'missing_command',
@@ -1243,6 +1247,14 @@ async function handleMcp(request, env) {
       if (!originData.ok) {
         const enriched = { error_type: 'origin_error', retryable: true, command, ...originData.errorPayload };
         return mcpOk(id, { content: [{ type: 'text', text: JSON.stringify(enriched) }], isError: true });
+      }
+      if (!isV3Command && (!originData.result || originData.result === '')) {
+        return mcpOk(id, { content: [{ type: 'text', text: JSON.stringify({
+          error_type: 'empty_result',
+          retryable: true,
+          message: 'No results. Try v3 command: law.find with params {q: "검색어"}',
+          hint: 'Legacy commands (findLaw, getLaw etc) are deprecated. Use law.find, law.explore, law.article instead.'
+        }) }], isError: true });
       }
 
       let mainPayload = originData.result;
