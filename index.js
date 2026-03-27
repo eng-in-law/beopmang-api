@@ -55,7 +55,6 @@ const V3_COMMANDS = Object.freeze({
   'law.history': { endpoint: 'law', action: 'history' },
   'law.byulpyo': { endpoint: 'law', action: 'byulpyo' },
   'law.diff': { endpoint: 'law', action: 'diff' },
-  'law.follow': { endpoint: 'law', action: 'follow' },
   'law.verify': { endpoint: 'law', action: 'verify' },
   // case
   'case.search': { endpoint: 'case', action: 'search' },
@@ -410,7 +409,7 @@ async function handleRequest(request, env) {
         api_version: 'v3',
         workflow: '1) law?action=find로 law_id 확인 → 2) law?action=explore로 종합 탐색 → 3) law?action=article로 조문 상세',
         endpoints: {
-          '/api/v3/law': 'find, article, explore, detail, history, byulpyo, diff, follow',
+          '/api/v3/law': 'find, article, explore, detail, history, byulpyo, diff, verify',
           '/api/v3/case': 'search, view, text, vsearch, by-law, hsearch',
           '/api/v3/bill': 'search, detail, sponsors, vote, minutes',
           '/api/v3/graph': 'neighbors, xref, timeline',
