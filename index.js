@@ -19,6 +19,7 @@ const BRIEF_FIELDS = {
 
 const RATE_LIMIT = 100;
 const RATE_WINDOW = 60;
+const V3_ENDPOINTS = new Set(['help', 'law', 'case', 'bill', 'graph', 'search', 'ref']);
 
 const REST_ROUTE_MAP = {
   find: 'findLaw',
@@ -97,12 +98,13 @@ const TOOL_COMMANDS = [...Object.keys(V3_COMMANDS), ...LEGACY_TOOL_COMMANDS, 'se
 function buildOriginUrl(base, command, p = {}) {
   const lawId = p.law_id || p.id || '';
   const articleLabel = p.article_label || p.label || '';
+  const parsedLimit = Number.parseInt(p.limit, 10);
   if (command === 'findLaw' || command === 'getLaw') {
     return base + '/api/v3/law?action=find&q=' + encodeURIComponent(p.query || lawId || '')
       + (p.exact ? '&exact=true' : '')
       + (p.active_only ? '&active_only=true' : '')
       + (p.law_type ? '&law_type=' + encodeURIComponent(p.law_type) : '')
-      + (p.limit ? '&limit=' + p.limit : '')
+      + (Number.isNaN(parsedLimit) ? '' : '&limit=' + parsedLimit)
       + (p.full || p.articles ? '&articles=true' : '');
   }
   if (command === 'getArticle') {
@@ -260,7 +262,7 @@ async function logCoOccurrence(env, ip, action, lawId) {
   if (!env.ANALYTICS || !action) return;
   try {
     const encoder = new TextEncoder();
-    const hash = await crypto.subtle.digest('SHA-256', encoder.encode(ip + ':cooc'));
+    const hash = await crypto.subtle.digest('SHA-256', encoder.encode(ip + ':' + (env.FEEDBACK_KEY || 'cooc-salt')));
     const sessionKey = 'cooc:' + Array.from(new Uint8Array(hash.slice(0, 8))).map(b => b.toString(16).padStart(2, '0')).join('');
     const prev = await env.API_KV.get(sessionKey);
     if (prev) {
@@ -276,6 +278,19 @@ async function logCoOccurrence(env, ip, action, lawId) {
   } catch {}
 }
 
+async function anonymizeIp(ip, salt) {
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    'raw',
+    encoder.encode(salt || 'default-salt'),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
+  const sig = await crypto.subtle.sign('HMAC', key, encoder.encode(ip));
+  return Array.from(new Uint8Array(sig.slice(0, 8))).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
 function extractActionAndLaw(path, searchParams) {
   if (path.startsWith('/api/v3/')) {
     return { action: path.replace('/api/v3/', '') + '.' + (searchParams.get('action') || ''), law: searchParams.get('law_id') || searchParams.get('q') || '' };
@@ -287,7 +302,8 @@ function extractActionAndLaw(path, searchParams) {
 async function handleRequest(request, env) {
     const url = new URL(request.url);
     const path = url.pathname;
-    const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+    let ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+    if (!/^[\d.:a-fA-F]{3,45}$/.test(ip)) ip = 'invalid';
 
     if (request.method === 'OPTIONS') {
       return new Response(null, { status: 204, headers: corsHeaders() });
@@ -300,26 +316,29 @@ async function handleRequest(request, env) {
       return new Response('not found', { status: 404 });
     }
 
-    // MCP endpoint
-    if (path === '/mcp' && request.method === 'POST') {
-      return handleMcp(request, env);
-    }
-
     const rl = await checkRateLimit(env.API_KV, ip);
     if (!rl.ok) {
       return json({ ok: false, error: 'rate_limit_exceeded', retry_after: rl.reset }, 429, rl.headers);
     }
 
+    // MCP endpoint
+    if (path === '/mcp' && request.method === 'POST') {
+      return handleMcp(request, env);
+    }
+
     // Feedback endpoint
     if (path === '/feedback' && request.method === 'POST') {
       try {
+        const contentLength = parseInt(request.headers.get('Content-Length') || '0', 10);
+        if (contentLength > 102400) return json({ ok: false, error: 'payload_too_large' }, 413, rl.headers);
         const body = await request.json();
         const msg = (body.message || '').slice(0, 1000);
         if (!msg) return json({ ok: false, error: 'message required' }, 400);
-        const entry = { message: msg, type: body.type || 'general', context: body.context || '', ip, ts: new Date().toISOString(), source: 'rest' };
+        const ipAnon = await anonymizeIp(ip, env.FEEDBACK_KEY || 'default-salt');
+        const entry = { message: msg, type: body.type || 'general', context: body.context || '', ip_hash: ipAnon, ts: new Date().toISOString(), source: 'rest' };
         await env.API_KV.put('fb:' + Date.now() + ':' + Math.random().toString(36).slice(2, 6), JSON.stringify(entry), { expirationTtl: 86400 * 90 });
-        return json({ ok: true, message: 'feedback received' });
-      } catch { return json({ ok: false, error: 'invalid request' }, 400); }
+        return json({ ok: true, message: 'feedback received' }, 200, rl.headers);
+      } catch { return json({ ok: false, error: 'invalid request' }, 400, rl.headers); }
     }
     if (path === '/feedback' && request.method === 'GET') {
       const secret = (request.headers.get('Authorization') || '').replace('Bearer ', '');
@@ -425,15 +444,20 @@ async function handleRequest(request, env) {
         }
         return json({ status: 'degraded', origin_status: r.status }, 200, rl.headers);
       } catch (e) {
-        return json({ status: 'down', error: e.message }, 200, rl.headers);
+        return json({ status: 'down', error: 'origin_unreachable' }, 200, rl.headers);
       }
     }
 
     if (path.startsWith('/api/v3/')) {
+      const v3Parts = path.replace('/api/v3/', '').split('/');
+      if (!V3_ENDPOINTS.has(v3Parts[0])) {
+        return json({ ok: false, error: 'invalid_endpoint' }, 404, rl.headers);
+      }
       try {
         const originResp = await fetch(env.ORIGIN_BASE + path + url.search, {
           headers: { 'User-Agent': 'beopmang-api/1.0' },
           cf: { cacheTtl: 0 },
+          signal: AbortSignal.timeout(15000),
         });
         const headers = new Headers(originResp.headers);
         for (const [key, value] of Object.entries(corsHeaders())) headers.set(key, value);
@@ -1070,6 +1094,8 @@ function mcpErr(id, code, msg) {
 }
 
 async function handleMcp(request, env) {
+  const contentLength = parseInt(request.headers.get('Content-Length') || '0', 10);
+  if (contentLength > 102400) return json({ ok: false, error: 'payload_too_large' }, 413);
   let body;
   try { body = await request.json(); } catch { return mcpErr(null, -32700, 'Parse error'); }
   const { id, method, params } = body;
@@ -1120,7 +1146,9 @@ async function handleMcp(request, env) {
       const msg = (p.message || '').slice(0, 1000);
       if (!msg) return mcpOk(id, { content: [{ type: 'text', text: 'Error: message required' }], isError: true });
       const mcpIp = request.headers.get('CF-Connecting-IP') || '';
-      const entry = { message: msg, type: p.type || 'general', context: p.context || '', ip: mcpIp, ts: new Date().toISOString(), source: 'mcp' };
+      const ipForHash = /^[\d.:a-fA-F]{3,45}$/.test(mcpIp) ? mcpIp : 'invalid';
+      const ipAnon = await anonymizeIp(ipForHash, env.FEEDBACK_KEY || 'default-salt');
+      const entry = { message: msg, type: p.type || 'general', context: p.context || '', ip_hash: ipAnon, ts: new Date().toISOString(), source: 'mcp' };
       await env.API_KV.put('fb:' + Date.now() + ':' + Math.random().toString(36).slice(2, 6), JSON.stringify(entry), { expirationTtl: 86400 * 90 });
       return mcpOk(id, { content: [{ type: 'text', text: 'Feedback received. Thank you.' }] });
     }
@@ -1161,7 +1189,7 @@ async function handleMcp(request, env) {
       }
       return mcpOk(id, { content: [{ type: 'text', text: JSON.stringify(mainPayload, null, 2) }] });
     } catch (e) {
-      return mcpOk(id, { content: [{ type: 'text', text: JSON.stringify({ error_type: 'internal_error', retryable: true, message: e.message, command }) }], isError: true });
+      return mcpOk(id, { content: [{ type: 'text', text: JSON.stringify({ error_type: 'internal_error', retryable: true, message: 'Internal error', command }) }], isError: true });
     }
   }
 
