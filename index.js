@@ -838,6 +838,7 @@ function json(data, status = 200, extra = {}) {
 
 async function handleCatalog(path, env) {
   const cacheKey = 'catalog:laws';
+  const catalogCounts = { laws: 5573, rules: 23829, treaties: 3260 };
   let laws = null;
   const cached = await env.API_KV.get(cacheKey);
   if (cached) {
@@ -882,12 +883,29 @@ async function handleCatalog(path, env) {
     return c;
   }
 
+  function formatDateLabel(value) {
+    const raw = String(value || '').trim().slice(0, 10);
+    const parts = raw.split('-');
+    if (parts.length !== 3) return '';
+    const [y, m, d] = parts;
+    if (!/^\d{4}$/.test(y) || !/^\d{2}$/.test(m) || !/^\d{2}$/.test(d)) return '';
+    return `${y}. ${parseInt(m, 10)}. ${parseInt(d, 10)}.`;
+  }
+
   const chosungs = ['ㄱ', 'ㄴ', 'ㄷ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅅ', 'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'];
   let selectedCho = 'ㄱ';
   const parts = path.split('/').filter(Boolean);
-  if (parts[0] === 'catalog' && parts[1] === 'laws' && chosungs.includes(parts[2])) {
+  const isCatalogHome = path === '/catalog';
+  const catalogSection = parts[0] === 'catalog' ? (parts[1] || 'home') : 'home';
+  if (catalogSection === 'laws' && chosungs.includes(parts[2])) {
     selectedCho = parts[2];
   }
+
+  let lastSynced = '';
+  try {
+    lastSynced = (await env.API_KV.get('stats:last_synced')) || '';
+  } catch {}
+  const lastSyncedLabel = formatDateLabel(lastSynced);
 
   const normalizedLaws = (Array.isArray(laws) ? laws : [])
     .map((law) => {
@@ -907,9 +925,12 @@ async function handleCatalog(path, env) {
 
   const currentLaws = grouped[selectedCho] || [];
   const examples = currentLaws.slice(0, 2).map((law) => law.name).join(', ');
-  const description = examples
+  const lawDescription = examples
     ? `${selectedCho}으로 시작하는 법령 ${currentLaws.length}건. ${examples} 등.`
     : `${selectedCho}으로 시작하는 법령 ${currentLaws.length}건.`;
+  const headerDescription = lastSyncedLabel
+    ? `${lastSyncedLabel} 기준 · ${selectedCho}으로 시작하는 법령 ${currentLaws.length}건`
+    : `${selectedCho}으로 시작하는 법령 ${currentLaws.length}건`;
 
   const choNav = chosungs.map((cho) => {
     const count = (grouped[cho] || []).length;
@@ -923,13 +944,49 @@ async function handleCatalog(path, env) {
     ? currentLaws.map((law) => `<li class="law-item"><span class="law-name">${escapeHtmlW(law.name)}</span><span class="law-type">${escapeHtmlW(law.type || '법령')}</span></li>`).join('\n')
     : '<li class="law-item"><span class="law-name">해당 초성으로 시작하는 법령이 없습니다.</span><span class="law-type">-</span></li>';
 
+  const categoriesHtml = `<div class="categories">
+<a href="/catalog/laws" class="cat-btn${catalogSection === 'laws' ? ' active' : ''}">법령 <span class="count-badge">${catalogCounts.laws.toLocaleString('ko-KR')}</span></a>
+<a href="/catalog/rules" class="cat-btn${catalogSection === 'rules' ? ' active' : ''}">행정규칙 <span class="count-badge">${catalogCounts.rules.toLocaleString('ko-KR')}</span></a>
+<a href="/catalog/treaties" class="cat-btn${catalogSection === 'treaties' ? ' active' : ''}">조약 <span class="count-badge">${catalogCounts.treaties.toLocaleString('ko-KR')}</span></a>
+</div>`;
+
+  let pageTitle = `${selectedCho}으로 시작하는 법령 — 법망 카탈로그`;
+  let metaDescription = lawDescription;
+  let cardDesc = headerDescription;
+  let bodyContent = `${categoriesHtml}
+
+<nav class="chosung-nav">
+${choNav}
+</nav>
+
+<ul class="law-list">
+${lawList}
+</ul>`;
+
+  if (isCatalogHome) {
+    pageTitle = '법령 카탈로그 — 법망';
+    metaDescription = '대한민국 현행 법령 5,573건 · 행정규칙 23,829건 · 조약 3,260건 가나다순 목록';
+    cardDesc = '대한민국 현행 법령 가나다순 목록';
+    bodyContent = categoriesHtml;
+  } else if (catalogSection === 'rules' || catalogSection === 'treaties') {
+    const sectionName = catalogSection === 'rules' ? '행정규칙' : '조약';
+    pageTitle = `${sectionName} 카탈로그 — 법망`;
+    metaDescription = `${sectionName} 카탈로그 준비 중`;
+    cardDesc = `${sectionName} 카탈로그 준비 중`;
+    bodyContent = `${categoriesHtml}
+
+<ul class="law-list">
+<li class="law-item"><span class="law-name">${sectionName} 카탈로그는 준비 중입니다.</span><span class="law-type">준비 중</span></li>
+</ul>`;
+  }
+
   const html = `<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>${selectedCho}으로 시작하는 법령 — 법망 카탈로그</title>
-<meta name="description" content="${escapeHtmlW(description)}">
+<title>${escapeHtmlW(pageTitle)}</title>
+<meta name="description" content="${escapeHtmlW(metaDescription)}">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
 <style>
@@ -965,6 +1022,7 @@ body {
   padding: 8px 16px; border: 2px solid var(--border); background: var(--surface);
   font-size: 0.85rem; font-weight: 700; color: var(--ink); cursor: pointer;
   box-shadow: 3px 3px 0 var(--border); font-family: inherit;
+  text-decoration: none; display: inline-block;
 }
 .cat-btn:hover { background: #fffdf7; transform: translate(-1px,-1px); box-shadow: 4px 4px 0 var(--border); }
 .cat-btn.active { background: var(--ink); color: var(--bg); }
@@ -1012,24 +1070,11 @@ body {
 
 <div class="card-header">
 <h1>🦒 법령 카탈로그</h1>
-<p class="card-desc">대한민국 현행 법령 가나다순 목록</p>
+<p class="card-desc">${escapeHtmlW(cardDesc)}</p>
 </div>
 
 <div class="card-body">
-
-<div class="categories">
-<button class="cat-btn active">법령 <span class="count-badge">${normalizedLaws.length}</span></button>
-<button class="cat-btn" disabled aria-disabled="true">행정규칙</button>
-<button class="cat-btn" disabled aria-disabled="true">조약</button>
-</div>
-
-<nav class="chosung-nav">
-${choNav}
-</nav>
-
-<ul class="law-list">
-${lawList}
-</ul>
+${bodyContent}
 
 </div>
 </div>
