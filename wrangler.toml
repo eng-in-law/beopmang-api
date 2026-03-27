@@ -13,3 +13,6 @@ ORIGIN_BASE = "https://bt-internal.beopmang.org"
 [[kv_namespaces]]
 binding = "API_KV"
 id = "8d65ddd831ff4377bcb2e175defdf5e0"
+
+[[analytics_engine_datasets]]
+binding = "ANALYTICS"

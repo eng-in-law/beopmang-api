@@ -255,6 +255,35 @@ export default {
   }
 };
 
+// Anonymous co-occurrence logging (no PII stored)
+async function logCoOccurrence(env, ip, action, lawId) {
+  if (!env.ANALYTICS || !action) return;
+  try {
+    const encoder = new TextEncoder();
+    const hash = await crypto.subtle.digest('SHA-256', encoder.encode(ip + ':cooc'));
+    const sessionKey = 'cooc:' + Array.from(new Uint8Array(hash.slice(0, 8))).map(b => b.toString(16).padStart(2, '0')).join('');
+    const prev = await env.API_KV.get(sessionKey);
+    if (prev) {
+      const p = JSON.parse(prev);
+      // Write pair to Analytics Engine — no IP, no PII
+      env.ANALYTICS.writeDataPoint({
+        indexes: [lawId || '_'],
+        blobs: [p.action, action, p.law || '_', lawId || '_'],
+        doubles: [Date.now() - p.ts],
+      });
+    }
+    await env.API_KV.put(sessionKey, JSON.stringify({ action, law: lawId, ts: Date.now() }), { expirationTtl: 300 });
+  } catch {}
+}
+
+function extractActionAndLaw(path, searchParams) {
+  if (path.startsWith('/api/v3/')) {
+    return { action: path.replace('/api/v3/', '') + '.' + (searchParams.get('action') || ''), law: searchParams.get('law_id') || searchParams.get('q') || '' };
+  }
+  const parts = path.split('/').filter(Boolean);
+  return { action: parts[0] || '', law: parts[1] || searchParams.get('q') || '' };
+}
+
 async function handleRequest(request, env) {
     const url = new URL(request.url);
     const path = url.pathname;
@@ -408,6 +437,8 @@ async function handleRequest(request, env) {
         });
         const headers = new Headers(originResp.headers);
         for (const [key, value] of Object.entries(corsHeaders())) headers.set(key, value);
+        const { action, law } = extractActionAndLaw(path, url.searchParams);
+        logCoOccurrence(env, ip, action, law).catch(() => {});
         return new Response(originResp.body, { status: originResp.status, headers });
       } catch {
         return json({ ok: false, error: 'service_unavailable', retry_after: 30 }, 503, rl.headers);
@@ -490,7 +521,9 @@ async function handleRequest(request, env) {
       }
     }
 
-    // daily counter removed — KV read+write per request was unnecessary overhead
+    // Anonymous co-occurrence logging
+    const { action: coAction, law: coLaw } = extractActionAndLaw(path, url.searchParams);
+    logCoOccurrence(env, ip, coAction, coLaw).catch(() => {});
 
     const payload = {
       ok: true,
