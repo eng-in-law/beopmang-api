@@ -333,10 +333,19 @@ async function handleRequest(request, env) {
         const body = await request.json();
         const msg = (body.message || '').slice(0, 1000);
         if (!msg) return json({ ok: false, error: 'message required' }, 400);
-        const ipAnon = await anonymizeIp(ip, env.FEEDBACK_KEY || 'default-salt');
-        const entry = { message: msg, type: body.type || 'general', context: body.context || '', ip_hash: ipAnon, ts: new Date().toISOString(), source: 'rest' };
-        await env.API_KV.put('fb:' + Date.now() + ':' + Math.random().toString(36).slice(2, 6), JSON.stringify(entry), { expirationTtl: 86400 * 90 });
-        return json({ ok: true, message: 'feedback received' }, 200, rl.headers);
+        if (body.ticket_id) {
+          const ticketKey = 'fb_ticket:' + body.ticket_id;
+          const ticket = await env.API_KV.get(ticketKey);
+          if (!ticket) return json({ ok: false, error: 'invalid_ticket', message: 'ticket_id가 유효하지 않거나 만료되었습니다.' }, 400, rl.headers);
+          await env.API_KV.delete(ticketKey);
+          const ipAnon = await anonymizeIp(ip, env.FEEDBACK_KEY || 'default-salt');
+          const entry = { message: msg, type: body.type || 'general', event_type: body.event_type || '', query: body.query || '', endpoint: body.endpoint || '', ip_hash: ipAnon, ts: new Date().toISOString(), source: 'rest', ticket_id: body.ticket_id };
+          await env.API_KV.put('fb:' + Date.now() + ':' + Math.random().toString(36).slice(2, 6), JSON.stringify(entry), { expirationTtl: 86400 * 90 });
+          return json({ ok: true, message: 'feedback received' }, 200, rl.headers);
+        }
+        const ticketId = crypto.randomUUID();
+        await env.API_KV.put('fb_ticket:' + ticketId, JSON.stringify({ message: msg, ts: Date.now() }), { expirationTtl: 300 });
+        return json({ ok: true, action_required: 'user_consent', ticket_id: ticketId, expires_in: '5분', preview: { message: msg, type: body.type || 'general' }, instruction: '사용자에게 전송 내용을 보여주고 동의를 받은 후 ticket_id와 함께 다시 호출하세요.' }, 200, rl.headers);
       } catch { return json({ ok: false, error: 'invalid request' }, 400, rl.headers); }
     }
     if (path === '/feedback' && request.method === 'GET') {
@@ -1113,8 +1122,7 @@ const MCP_TOOLS = [{
 - ref.doc: 참고문서 검색. params: {q: "법령입안심사기준"}
 - help.schema: API 전체 스키마. params: {}
 - help.stats: DB 현황. params: {}
-- sendFeedback: 피드백. params: {message, type?: "bug|feature|quality"}
-  응답에 feedback_hint가 포함되면, 반드시 사용자에게 먼저 전송 여부를 물어보세요. 사용자가 동의한 경우에만 sendFeedback을 호출하세요.
+- sendFeedback: 피드백 (2단계). 1차: params: {message} → ticket_id 발급 + 사용자에게 보여줄 내용 반환. 사용자에게 보여주고 동의 받기. 2차: params: {message, ticket_id} → 저장. ticket_id 없이는 저장 안 됨.
 
 공통 파라미터:
 - include=history,cases,xref,bills,timeline (추가 데이터 병합)
@@ -1191,16 +1199,35 @@ async function handleMcp(request, env) {
       hint: 'Use one of the available commands'
     }) }], isError: true });
 
-    // Handle sendFeedback locally
+    // Handle sendFeedback — 2-step consent flow
     if (command === 'sendFeedback') {
       const msg = (p.message || '').slice(0, 1000);
       if (!msg) return mcpOk(id, { content: [{ type: 'text', text: 'Error: message required' }], isError: true });
-      const mcpIp = request.headers.get('CF-Connecting-IP') || '';
-      const ipForHash = /^[\d.:a-fA-F]{3,45}$/.test(mcpIp) ? mcpIp : 'invalid';
-      const ipAnon = await anonymizeIp(ipForHash, env.FEEDBACK_KEY || 'default-salt');
-      const entry = { message: msg, type: p.type || 'general', context: p.context || '', ip_hash: ipAnon, ts: new Date().toISOString(), source: 'mcp' };
-      await env.API_KV.put('fb:' + Date.now() + ':' + Math.random().toString(36).slice(2, 6), JSON.stringify(entry), { expirationTtl: 86400 * 90 });
-      return mcpOk(id, { content: [{ type: 'text', text: 'Feedback received. Thank you.' }] });
+
+      // Step 2: ticket_id 있으면 → 검증 후 저장
+      if (p.ticket_id) {
+        const ticketKey = 'fb_ticket:' + p.ticket_id;
+        const ticket = await env.API_KV.get(ticketKey);
+        if (!ticket) return mcpOk(id, { content: [{ type: 'text', text: JSON.stringify({ error_type: 'invalid_ticket', message: 'ticket_id가 유효하지 않거나 만료되었습니다. sendFeedback을 ticket_id 없이 다시 호출하세요.' }) }], isError: true });
+        await env.API_KV.delete(ticketKey);
+        const mcpIp = request.headers.get('CF-Connecting-IP') || '';
+        const ipForHash = /^[\d.:a-fA-F]{3,45}$/.test(mcpIp) ? mcpIp : 'invalid';
+        const ipAnon = await anonymizeIp(ipForHash, env.FEEDBACK_KEY || 'default-salt');
+        const entry = { message: msg, type: p.type || 'general', event_type: p.event_type || '', query: p.query || '', endpoint: p.endpoint || '', ip_hash: ipAnon, ts: new Date().toISOString(), source: 'mcp', ticket_id: p.ticket_id };
+        await env.API_KV.put('fb:' + Date.now() + ':' + Math.random().toString(36).slice(2, 6), JSON.stringify(entry), { expirationTtl: 86400 * 90 });
+        return mcpOk(id, { content: [{ type: 'text', text: '피드백이 전송되었습니다. 감사합니다.' }] });
+      }
+
+      // Step 1: ticket_id 없으면 → 발급 + 사용자 승인 요청
+      const ticketId = crypto.randomUUID();
+      await env.API_KV.put('fb_ticket:' + ticketId, JSON.stringify({ message: msg, ts: Date.now() }), { expirationTtl: 300 });
+      return mcpOk(id, { content: [{ type: 'text', text: JSON.stringify({
+        action_required: 'user_consent',
+        ticket_id: ticketId,
+        expires_in: '5분',
+        instruction: '아래 내용을 사용자에게 그대로 보여주고, 전송 여부를 물어보세요. 사용자가 동의하면 같은 sendFeedback을 ticket_id와 함께 다시 호출하세요. 거부하면 아무것도 하지 마세요.',
+        preview: { message: msg, type: p.type || 'general', event_type: p.event_type || '', query: p.query || '', note: '위 내용만 전송됩니다. 대화 내용이나 계정 정보는 포함되지 않습니다.' }
+      }) }] });
     }
 
     try {
