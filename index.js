@@ -1038,7 +1038,7 @@ const MCP_TOOLS = [{
 명령어 (command 필드에 입력):
 - law.find: 법령 찾기. params: {q: "민법"}. 결과의 law_id로 다른 명령 호출.
 - law.explore: 종합 탐색. 개별 호출 전에 먼저 사용. params: {law_id: "001706"}
-- law.article: 조문 상세 (항/호/목 포함). params: {law_id: "001706", article_label: "제750조"} (750조, 제750조 모두 가능)
+- law.article: 조문 상세 (항/호/목 포함). params: {law_id: "001706", article_label: "제750조"} (750조, 제750조 모두 가능). 범위 조회: {law_id, from_label: "제11조", to_label: "제14조"}
 - law.detail: 법령 기본정보. params: {law_id: "001706", full: true, include: "history,cases,xref"}
 - law.history: 개정 연혁. params: {law_id: "001706"}
 - law.byulpyo: 별표 조회. params: {law_id: "001706"}
