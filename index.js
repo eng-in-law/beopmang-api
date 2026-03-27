@@ -11,9 +11,9 @@ const BRIEF_FIELDS = {
   law: ['law_id','law_name','law_type','article_count','effective_date','ministry'],
   history: ['revision_type','old_effective_date','new_effective_date','changed_article_count'],
   xref: ['law_id','law_name','source_article','target_article'],
-  case: ['case_id','case_name','court','decided_date'],
-  'case-by-law': ['case_id','case_name','court','decided_date'],
-  bill: ['BILL_ID','BILL_NO','BILL_NAME','PROPOSER','PROPOSE_DT','PROC_RESULT'],
+  case: ['prec_id','case_no','case_name','court','decision_date','case_type'],
+  'case-by-law': ['prec_id','case_no','case_name','court','decision_date'],
+  bill: ['bill_id','bill_no','bill_name','proposer','committee','propose_dt','status'],
   timeline: ['date','type','content'],
 };
 
@@ -1038,7 +1038,7 @@ const MCP_TOOLS = [{
 명령어 (command 필드에 입력):
 - law.find: 법령 찾기. params: {q: "민법"}. 결과의 law_id로 다른 명령 호출.
 - law.explore: 종합 탐색. 개별 호출 전에 먼저 사용. params: {law_id: "001706"}
-- law.article: 조문 상세 (항/호/목 포함). params: {law_id: "001706", article_label: "제750조"}
+- law.article: 조문 상세 (항/호/목 포함). params: {law_id: "001706", article_label: "제750조"} (750조, 제750조 모두 가능)
 - law.detail: 법령 기본정보. params: {law_id: "001706", full: true, include: "history,cases,xref"}
 - law.history: 개정 연혁. params: {law_id: "001706"}
 - law.byulpyo: 별표 조회. params: {law_id: "001706"}
