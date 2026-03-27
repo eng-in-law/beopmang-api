@@ -309,6 +309,9 @@ async function handleRequest(request, env) {
     }
 
     // Static assets (before rate limit)
+    if (path === '/googlee32edeea417ddde5.html') {
+      return new Response('google-site-verification: googlee32edeea417ddde5.html', { headers: { 'Content-Type': 'text/html' } });
+    }
     if (path === '/og.jpg') {
       const img = await env.API_KV.get('og.jpg', { type: 'arrayBuffer' });
       if (img) return new Response(img, { headers: { 'Content-Type': 'image/jpeg', 'Cache-Control': 'public, max-age=86400' } });
