@@ -100,5 +100,35 @@ K2. exploreLaw: command=exploreLaw, params={law_id:"001706"} → 민법
 L1. REST: curl -s -X POST https://api.beopmang.org/feedback -H 'Content-Type: application/json' -d '{"message":"QA regression test"}' → ok:true
 L2. MCP: sendFeedback → Feedback received
 
+## M. 응답 스키마 일관성 (4건) — #585 수정 후
+
+M1. 판례 검색 키 snake_case: curl -s 'https://api.beopmang.org/api/v3/case?action=search&q=%EC%9E%84%EB%8C%80%EC%B0%A8' | python3 -c "import sys,json;d=json.load(sys.stdin);k=list(d['data'][0].keys());print('OK' if all(c.islower() or c=='_' for c in ''.join(k) if c.isalpha()) else 'FAIL: '+str(k[:5]))"
+→ 모든 키가 snake_case
+
+M2. 의안 검색 키 snake_case: curl -s 'https://api.beopmang.org/api/v3/bill?action=search&q=%ED%98%95%EB%B2%95' | python3 -c "import sys,json;d=json.load(sys.stdin);k=list(d['data'][0].keys());print('OK' if all(c.islower() or c=='_' for c in ''.join(k) if c.isalpha()) else 'FAIL: '+str(k[:5]))"
+→ BILL_ID 등 대문자 없어야 함
+
+M3. 판례 날짜 ISO 8601: curl -s 'https://api.beopmang.org/api/v3/case?action=search&q=%EC%9E%84%EB%8C%80%EC%B0%A8' | python3 -c "import sys,json;d=json.load(sys.stdin);dates=[v for r in d['data'] for k,v in r.items() if 'date' in k.lower() or '일자' in k or '일' in k];print('OK' if all(len(str(x))==10 and '-' in str(x) for x in dates if x) else 'FAIL: '+str(dates[:3]))"
+→ 전부 YYYY-MM-DD
+
+M4. 판례 상세 날짜: curl -s 'https://api.beopmang.org/api/v3/case?action=view&case_id=210885' | python3 -c "import sys,json;d=json.load(sys.stdin);print(d.get('data',{}))" | grep -oE '[0-9]{8}' | head -1
+→ 20260129 형식 없어야 함 (YYYY-MM-DD로 통일)
+
+## N. 조문 입력 정규화 (3건) — #586 수정 후
+
+N1. "750조" 정규화: curl -s 'https://api.beopmang.org/api/v3/law?action=article&law_id=001706&label=750%EC%A1%B0'
+→ 제750조 데이터 반환 (null 아님)
+
+N2. 공백 포함: curl -s 'https://api.beopmang.org/api/v3/law?action=article&law_id=001706&label=%EC%A0%9C%20750%EC%A1%B0'
+→ 제750조 데이터 반환
+
+N3. searchArticles 자연어: curl -s 'https://api.beopmang.org/api/v3/search?action=keyword&q=%EB%B6%88%EB%B2%95%ED%96%89%EC%9C%84%20%EC%86%90%ED%95%B4%EB%B0%B0%EC%83%81'
+→ 0건이 아닌 관련 조문 반환
+
+## O. 의안 메타데이터 (1건) — #587 수정 후
+
+O1. 빈 필드 null 처리: curl -s 'https://api.beopmang.org/api/v3/bill?action=search&q=%EA%B0%9C%EC%9D%B8%EC%A0%95%EB%B3%B4' | python3 -c "import sys,json;d=json.load(sys.stdin);blanks=[k for r in d['data'][:3] for k,v in r.items() if v==''];print('OK: no blank strings' if not blanks else 'FAIL: blank fields: '+str(set(blanks)))"
+→ 빈 문자열 없음 (null 사용)
+
 ---
-총 50건. 모든 curl에 --max-time 25 (hsearch만 30). 결과를 results.md에 OK/FAIL 테이블로 정리.
+총 58건. 모든 curl에 --max-time 25 (hsearch만 30). 결과를 results.md에 OK/FAIL 테이블로 정리.
