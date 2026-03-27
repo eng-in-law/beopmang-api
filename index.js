@@ -1036,7 +1036,7 @@ const MCP_TOOLS = [{
 답변에 조문번호나 판례번호를 인용할 때는 반드시 law.verify 또는 case.verify로 실재 여부를 검증하세요 (환각 방지).
 
 명령어 (command 필드에 입력):
-- law.find: 법령 찾기. params: {q: "민법"}. 결과의 law_id로 다른 명령 호출.
+- law.find: 법령 찾기. params: {q: "민법", exact?: true, active_only?: true, law_type?: "법률", limit?: 5}. 결과의 law_id로 다른 명령 호출.
 - law.explore: 종합 탐색. 개별 호출 전에 먼저 사용. params: {law_id: "001706"}
 - law.article: 조문 상세 (항/호/목 포함). params: {law_id: "001706", article_label: "제750조"} (750조, 제750조 모두 가능). 범위 조회: {law_id, from_label: "제11조", to_label: "제14조"}
 - law.detail: 법령 기본정보. params: {law_id: "001706", full: true, include: "history,cases,xref"}
@@ -1068,7 +1068,9 @@ const MCP_TOOLS = [{
 - help.stats: DB 현황. params: {}
 - sendFeedback: 피드백. params: {message, type?: "bug|feature|quality"}
 
-파라미터: include=history,cases,xref,bills,timeline (추가 데이터 병합)
+공통 파라미터:
+- include=history,cases,xref,bills,timeline (추가 데이터 병합)
+- count=true (본문 없이 건수만 반환)
 URL path/query에 한글이나 공백이 포함되면 반드시 percent-encode 하세요.
 unit_level: JO=조, HANG=항, HO=호, MOK=목
 law_id는 6자리 숫자 (예: 001706=민법, 001692=형법)`,
