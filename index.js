@@ -988,6 +988,8 @@ async function handleCatalog(path, env) {
   let normalizedItems = [];
   let regionItems = [];
   const selectedRegion = parts[2] || '';
+  let subRegionItems = [];
+  const selectedSubRegion = parts[3] || '';
   if (currentCategory?.listType === 'admrul') {
     const raw = await fetchCatalogList('catalog:admrul', env.ORIGIN_BASE + '/api/v3/law?action=list&type=admrul');
     normalizedItems = (Array.isArray(raw) ? raw : [])
@@ -1019,16 +1021,29 @@ async function handleCatalog(path, env) {
       }))
       .filter((item) => item.sido);
     if (selectedRegion) {
-      const raw = await fetchCatalogList('catalog:ordin:' + selectedRegion, env.ORIGIN_BASE + '/api/v3/search?action=local-ordinance&sido=' + encodeURIComponent(selectedRegion) + '&limit=5000');
-      normalizedItems = (Array.isArray(raw) ? raw : [])
+      subRegionItems = (await fetchCatalogList(
+        'catalog:regions:' + selectedRegion,
+        env.ORIGIN_BASE + '/api/v3/search?action=regions&sido=' + encodeURIComponent(selectedRegion)
+      ))
         .map((item) => ({
-          name: String(item?.name || item?.law_name || item?.title || '').trim(),
-          type: String(item?.org || item?.type || '조례').trim(),
-          id: String(item?.id || item?.law_id || '').trim(),
-          case_count: Number(item?.case_count || 0),
+          sigungu: String(item?.sigungu || item?.name || item?.region || '').trim(),
+          count: Number(item?.count || 0),
         }))
-        .filter((item) => item.name);
-      catalogCounts['local-ordinances'] = normalizedItems.length || currentCategory.count || 0;
+        .filter((item) => item.sigungu);
+      if (selectedSubRegion) {
+        const raw = await fetchCatalogList(
+          'catalog:ordin:' + selectedRegion + ':' + selectedSubRegion,
+          env.ORIGIN_BASE + '/api/v3/search?action=local-ordinance&sido=' + encodeURIComponent(selectedRegion) + '&sigungu=' + encodeURIComponent(selectedSubRegion) + '&limit=5000'
+        );
+        normalizedItems = (Array.isArray(raw) ? raw : [])
+          .map((item) => ({
+            name: String(item?.name || item?.law_name || item?.title || '').trim(),
+            type: String(item?.org || item?.type || '조례').trim(),
+            id: String(item?.id || item?.law_id || '').trim(),
+            case_count: Number(item?.case_count || 0),
+          }))
+          .filter((item) => item.name);
+      }
     }
   } else if (currentCategory?.filter) {
     normalizedItems = allLaws.filter(currentCategory.filter);
@@ -1046,20 +1061,31 @@ async function handleCatalog(path, env) {
 
   const isSingleCategory = !!currentCategory?.single;
   const isRegionalCategory = !!currentCategory?.regional;
-  const currentItems = isSingleCategory || isRegionalCategory ? normalizedItems : (grouped[selectedCho] || []);
+  const isRegionalRoot = isRegionalCategory && !selectedRegion;
+  const isRegionalRegionPage = isRegionalCategory && !!selectedRegion && !selectedSubRegion;
+  const isRegionalSubRegionPage = isRegionalCategory && !!selectedRegion && !!selectedSubRegion;
+  const currentItems = isSingleCategory || isRegionalSubRegionPage ? normalizedItems : (grouped[selectedCho] || []);
   const topLaws = [...currentItems].sort((a, b) => (b.case_count || 0) - (a.case_count || 0)).slice(0, 3);
   const examples = topLaws.map((law) => law.name).join(', ');
   const currentLabel = currentCategory?.label || '법령';
-  const listDescription = isRegionalCategory
-    ? `${selectedRegion} 조례 ${currentItems.length}건${examples ? `. ${examples} 등.` : '.'}`
-    : isSingleCategory
-    ? `${currentLabel} ${currentItems.length}건${examples ? `. ${examples} 등.` : '.'}`
-    : `${selectedCho}으로 시작하는 ${currentLabel} ${currentItems.length}건${examples ? `. ${examples} 등.` : '.'}`;
-  const headerDescription = isRegionalCategory
-    ? (lastSyncedLabel ? `${lastSyncedLabel} 기준 · ${selectedRegion} 조례 ${currentItems.length}건` : `${selectedRegion} 조례 ${currentItems.length}건`)
-    : isSingleCategory
-    ? (lastSyncedLabel ? `${lastSyncedLabel} 기준 · ${currentLabel} ${currentItems.length}건` : `${currentLabel} ${currentItems.length}건`)
-    : (lastSyncedLabel ? `${lastSyncedLabel} 기준 · ${selectedCho}으로 시작하는 ${currentLabel} ${currentItems.length}건` : `${selectedCho}으로 시작하는 ${currentLabel} ${currentItems.length}건`);
+  let listDescription = '';
+  let headerDescription = '';
+  if (isRegionalRoot) {
+    listDescription = `시도별 조례 목록${regionItems.length > 0 ? ` · ${regionItems.length}곳` : ''}`;
+    headerDescription = lastSyncedLabel ? `${lastSyncedLabel} 기준 · 시도별 조례 목록` : '시도별 조례 목록';
+  } else if (isRegionalRegionPage) {
+    listDescription = `${selectedRegion} 시군구별 조례 목록${subRegionItems.length > 0 ? ` · ${subRegionItems.length}곳` : ''}`;
+    headerDescription = lastSyncedLabel ? `${lastSyncedLabel} 기준 · ${selectedRegion} 시군구별 조례 목록` : `${selectedRegion} 시군구별 조례 목록`;
+  } else if (isRegionalSubRegionPage) {
+    listDescription = `${selectedRegion} ${selectedSubRegion} 조례 ${currentItems.length}건${examples ? `. ${examples} 등.` : '.'}`;
+    headerDescription = lastSyncedLabel ? `${lastSyncedLabel} 기준 · ${selectedRegion} ${selectedSubRegion} 조례 ${currentItems.length}건` : `${selectedRegion} ${selectedSubRegion} 조례 ${currentItems.length}건`;
+  } else if (isSingleCategory) {
+    listDescription = `${currentLabel} ${currentItems.length}건${examples ? `. ${examples} 등.` : '.'}`;
+    headerDescription = lastSyncedLabel ? `${lastSyncedLabel} 기준 · ${currentLabel} ${currentItems.length}건` : `${currentLabel} ${currentItems.length}건`;
+  } else {
+    listDescription = `${selectedCho}으로 시작하는 ${currentLabel} ${currentItems.length}건${examples ? `. ${examples} 등.` : '.'}`;
+    headerDescription = lastSyncedLabel ? `${lastSyncedLabel} 기준 · ${selectedCho}으로 시작하는 ${currentLabel} ${currentItems.length}건` : `${selectedCho}으로 시작하는 ${currentLabel} ${currentItems.length}건`;
+  }
 
   const choNav = CATALOG_CHOSUNGS.map((cho) => {
     const count = (grouped[cho] || []).length;
@@ -1072,7 +1098,7 @@ async function handleCatalog(path, env) {
 
   const lawList = currentItems.length > 0
     ? currentItems.map((law) => `<li class="law-item"><span class="law-name">${escapeHtmlW(law.name)}</span><span class="law-type">${escapeHtmlW(law.type || currentLabel)}</span></li>`).join('\n')
-    : `<li class="law-item"><span class="law-name">${isRegionalCategory ? '해당 시도의 조례가 없습니다.' : isSingleCategory ? `${currentLabel} 목록이 없습니다.` : '해당 초성으로 시작하는 법령이 없습니다.'}</span><span class="law-type">-</span></li>`;
+    : `<li class="law-item"><span class="law-name">${isRegionalSubRegionPage ? '해당 시군구의 조례가 없습니다.' : isRegionalCategory ? '해당 시도의 조례가 없습니다.' : isSingleCategory ? `${currentLabel} 목록이 없습니다.` : '해당 초성으로 시작하는 법령이 없습니다.'}</span><span class="law-type">-</span></li>`;
 
   const regionNav = regionItems.length > 0
     ? `<nav class="chosung-nav">
@@ -1081,6 +1107,15 @@ ${regionItems.map((region) => {
       if (region.sido === selectedRegion) classes.push('active');
       const label = region.is_edu ? `${region.sido} 교육청` : region.sido;
       return `<a href="/catalog/local-ordinances/${encodeURIComponent(region.sido)}" class="${classes.join(' ')}">${escapeHtmlW(label)}${region.count > 0 ? ` <small>${region.count.toLocaleString('ko-KR')}</small>` : ''}</a>`;
+    }).join('\n')}
+</nav>`
+    : '';
+  const subRegionNav = subRegionItems.length > 0 && subRegionItems.length <= 25
+    ? `<nav class="chosung-nav">
+${subRegionItems.map((region) => {
+      const classes = ['cho-link'];
+      if (region.sigungu === selectedSubRegion) classes.push('active');
+      return `<a href="/catalog/local-ordinances/${encodeURIComponent(selectedRegion)}/${encodeURIComponent(region.sigungu)}" class="${classes.join(' ')}">${escapeHtmlW(region.sigungu)}${region.count > 0 ? ` <small>${region.count.toLocaleString('ko-KR')}</small>` : ''}</a>`;
     }).join('\n')}
 </nav>`
     : '';
@@ -1094,8 +1129,12 @@ ${CATALOG_CATEGORIES.map((cat) => {
   }).join('\n')}
 </div>`;
 
-  let pageTitle = isRegionalCategory
-    ? `${selectedRegion} 조례 — 법망 카탈로그`
+  let pageTitle = isRegionalRoot
+    ? '조례 — 시도별 목록 — 법망 카탈로그'
+    : isRegionalRegionPage
+    ? `${selectedRegion} 조례 — 시군구별 목록 — 법망 카탈로그`
+    : isRegionalSubRegionPage
+    ? `${selectedRegion} ${selectedSubRegion} 조례 — 법망 카탈로그`
     : isSingleCategory
     ? `${currentLabel} — 법망 카탈로그`
     : `${selectedCho}으로 시작하는 ${currentLabel} — 법망 카탈로그`;
@@ -1116,7 +1155,7 @@ ${lawList}
     metaDescription = lastSyncedLabel ? `${lastSyncedLabel} 기준` : '대한민국 현행 법령 5,573건 · 행정규칙 23,829건 · 조약 3,260건 가나다순 목록';
     cardDesc = '대한민국 현행 법령 가나다순 목록';
     bodyContent = categoriesHtml;
-  } else if (isRegionalCategory && !selectedRegion) {
+  } else if (isRegionalRoot) {
     pageTitle = '조례 — 시도별 목록 — 법망 카탈로그';
     metaDescription = lastSyncedLabel ? `${lastSyncedLabel} 기준` : '조례 시도별 목록';
     cardDesc = lastSyncedLabel ? `${lastSyncedLabel} 기준 · 시도별 조례 목록` : '시도별 조례 목록';
@@ -1128,10 +1167,21 @@ ${regionItems.length > 0 ? regionItems.map((region) => {
       return `<li class="law-item"><span class="law-name"><a href="/catalog/local-ordinances/${encodeURIComponent(region.sido)}" style="color:inherit;text-decoration:none">${escapeHtmlW(label)}</a></span><span class="law-type">${region.count.toLocaleString('ko-KR')}건</span></li>`;
     }).join('\n') : '<li class="law-item"><span class="law-name">시도 목록이 없습니다.</span><span class="law-type">-</span></li>'}
 </ul>`;
-  } else if (isRegionalCategory) {
+  } else if (isRegionalRegionPage) {
+    pageTitle = `${selectedRegion} 조례 — 시군구별 목록 — 법망 카탈로그`;
+    metaDescription = lastSyncedLabel ? `${lastSyncedLabel} 기준 · ${selectedRegion} 시군구별 조례 목록` : `${selectedRegion} 시군구별 조례 목록`;
+    cardDesc = lastSyncedLabel ? `${lastSyncedLabel} 기준 · ${selectedRegion} 시군구별 조례 목록` : `${selectedRegion} 시군구별 조례 목록`;
     bodyContent = `${categoriesHtml}
 
 ${regionNav}
+
+<ul class="law-list">
+${subRegionItems.length > 0 ? subRegionItems.map((region) => `<li class="law-item"><span class="law-name"><a href="/catalog/local-ordinances/${encodeURIComponent(selectedRegion)}/${encodeURIComponent(region.sigungu)}" style="color:inherit;text-decoration:none">${escapeHtmlW(region.sigungu)}</a></span><span class="law-type">${region.count.toLocaleString('ko-KR')}건</span></li>`).join('\n') : `<li class="law-item"><span class="law-name">${escapeHtmlW(selectedRegion)}의 시군구 목록이 없습니다.</span><span class="law-type">-</span></li>`}
+</ul>`;
+  } else if (isRegionalSubRegionPage) {
+    bodyContent = `${categoriesHtml}
+
+${subRegionNav}
 
 <ul class="law-list">
 ${lawList}
