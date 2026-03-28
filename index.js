@@ -335,6 +335,9 @@ async function handleRequest(request, env) {
       if (img) return new Response(img, { headers: { 'Content-Type': 'image/jpeg', 'Cache-Control': 'public, max-age=86400' } });
       return new Response('not found', { status: 404 });
     }
+    if (path === '/about') {
+      return handleAbout(env);
+    }
     if (path.startsWith('/catalog')) {
       const ua = request.headers.get('User-Agent') || '';
       if (/(GPTBot|ChatGPT|ClaudeBot|Anthropic|PerplexityBot|Google-Extended|Bytespider|Meta-ExternalAgent)/i.test(ua)) {
@@ -415,7 +418,7 @@ async function handleRequest(request, env) {
           });
         }
       });
-      const urls = ['/', '/privacy', ...catalogUrls];
+      const urls = ['/', '/about', '/privacy', ...catalogUrls];
       const xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
         urls.map(u => '  <url><loc>https://api.beopmang.org' + u + '</loc><changefreq>daily</changefreq></url>').join('\n') +
         '\n</urlset>';
@@ -865,6 +868,174 @@ function json(data, status = 200, extra = {}) {
   return new Response(JSON.stringify(data, null, 2), {
     status,
     headers: { 'Content-Type': 'application/json; charset=utf-8', 'X-Content-Type-Options': 'nosniff', 'X-Robots-Tag': 'noindex', ...corsHeaders(), ...extra }
+  });
+}
+
+async function handleAbout(env) {
+  let stats = {};
+  try {
+    const cached = await env.API_KV.get('about:stats');
+    if (cached) {
+      stats = JSON.parse(cached);
+    } else {
+      const r = await fetch(env.ORIGIN_BASE + '/api/v3/help?action=stats', { signal: AbortSignal.timeout(5000) });
+      const d = await r.json();
+      stats = d?.data || {};
+      env.API_KV.put('about:stats', JSON.stringify(stats), { expirationTtl: 3600 }).catch(() => {});
+    }
+  } catch {}
+
+  const n = (k, fallback) => Number(stats[k] || fallback || 0).toLocaleString('ko-KR');
+  const pageTitle = '법망 API — 데이터 카탈로그';
+  const metaDescription = '법령·판례·의안·조약·행정규칙·자치법규 구조화 데이터 API';
+  const canonicalUrl = 'https://api.beopmang.org/about';
+  const jsonLd = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: pageTitle,
+    description: metaDescription,
+    url: canonicalUrl,
+  });
+  const html = `<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${escapeHtmlW(pageTitle)}</title>
+<meta name="description" content="${escapeHtmlW(metaDescription)}">
+<meta property="og:title" content="${escapeHtmlW(pageTitle)}">
+<meta property="og:description" content="${escapeHtmlW(metaDescription)}">
+<meta property="og:url" content="${escapeHtmlW(canonicalUrl)}">
+<meta property="og:image" content="https://api.beopmang.org/og.jpg">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="법망">
+<link rel="canonical" href="${escapeHtmlW(canonicalUrl)}">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
+<style>
+:root {
+  --bg: #f2ead3;
+  --surface: #f7ecd2;
+  --ink: #3b2f20;
+  --muted: #6d593f;
+  --border: #3b2f20;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; min-height: 100vh;
+  font-family: "Pretendard Variable","Pretendard",system-ui,sans-serif;
+  font-weight: 500; letter-spacing: -0.02em;
+  background: var(--bg); color: var(--ink); line-height: 1.5;
+  background-image: linear-gradient(rgba(59,47,32,0.035) 1px,transparent 1px),linear-gradient(90deg,rgba(59,47,32,0.035) 1px,transparent 1px);
+  background-size: 30px 30px;
+}
+.page { display: flex; justify-content: center; padding: 16px 20px 28px; }
+.shell { max-width: 640px; width: 100%; padding-top: 24px; padding-bottom: 40px; }
+.card {
+  background: var(--surface); border: 3px solid var(--border);
+  border-radius: 0; box-shadow: 12px 12px 0 var(--border); overflow: hidden;
+}
+.card-header { padding: 24px 24px 20px; border-bottom: 2px solid var(--border); }
+.card-header h1 { margin: 0; font-size: 1.15rem; font-weight: 800; letter-spacing: -0.03em; }
+.card-desc { margin: 6px 0 0; font-size: 0.85rem; color: var(--ink); }
+.card-body { padding: 28px 24px 40px; }
+
+.about-section { margin-bottom: 20px; }
+.about-section h3 { font-size: 0.95rem; font-weight: 800; margin: 0 0 8px; }
+.about-list { list-style: none; padding: 0; margin: 0; }
+.about-list li { font-size: 0.85rem; padding: 4px 0; border-bottom: 1px solid rgba(59,47,32,0.1); }
+.about-list li strong { font-weight: 700; }
+
+.statusline {
+  margin: 24px 0 0; text-align: right;
+  font-size: 0.72rem; color: var(--ink); font-weight: 600;
+}
+.statusline p { margin: 0; }
+
+@media (max-width: 640px) {
+  .page { padding: 10px 16px 20px; }
+  .card { box-shadow: 8px 8px 0 var(--border); }
+  .card-header { padding: 20px 18px 16px; }
+  .card-body { padding: 18px 18px 32px; }
+}
+</style>
+<script type="application/ld+json">${jsonLd}</script>
+</head>
+<body class="page">
+<main class="shell">
+<div class="card">
+
+<div class="card-header">
+<h1>🦒 법망 API</h1>
+<p class="card-desc">데이터 카탈로그</p>
+</div>
+
+<div class="card-body">
+<section class="about-section">
+<h3>데이터</h3>
+<ul class="about-list">
+<li><strong>법령</strong> <span>${n('법령합계', 5573)}건</span></li>
+<li><span>헌법 ${n('헌법', 1)} · 법률 ${n('법률', 1708)} · 대통령령 ${n('대통령령', 1975)} · 총리령·부령 ${n('총리령·부령', 1509)} · 국회 등 헌법기관 규칙 ${n('국회 등 헌법기관 규칙', 379)}</span></li>
+<li><strong>행정규칙</strong> <span>${n('행정규칙', 22303)}건</span></li>
+<li><strong>판례</strong> <span>${n('판례', 171451)}건</span></li>
+<li><strong>의안</strong> <span>${n('의안', 113894)}건</span></li>
+<li><strong>조약</strong> <span>${n('조약', 3596)}건</span></li>
+<li><strong>자치법규</strong> <span>${n('조례', 14007)}건 (적재 중)</span></li>
+<li><strong>법령 간 인용관계</strong> <span>${n('법령인용관계', 132707)}건</span></li>
+<li><strong>개정 연혁</strong> <span>${n('연혁', 77374)}건</span></li>
+<li><span>법제처 대비 99.9%+ 수록, 매주 토요일 갱신</span></li>
+</ul>
+</section>
+
+<section class="about-section">
+<h3>처리</h3>
+<ul class="about-list">
+<li><span>별표·서식(HWP) 파싱 → 구조화된 JSON</span></li>
+<li><span>조문 단위 정규화 (조·항·호·목)</span></li>
+<li><span>판례-조문 연결</span></li>
+<li><span>법령 간 인용 그래프</span></li>
+<li><span>개정 연혁 diff</span></li>
+<li><span>하이브리드 검색 (BM25 + 벡터 + RRF + flashrank 리랭킹)</span></li>
+</ul>
+</section>
+
+<section class="about-section">
+<h3>인터페이스</h3>
+<ul class="about-list">
+<li><span>REST API v3 (7개 엔드포인트, 28개 action)</span></li>
+<li><span>MCP 서버 (ChatGPT 연동)</span></li>
+<li><span>인증 없음, 무료, rate limit 100회/분</span></li>
+<li><span>환각 방지용 인용 검증 (verify)</span></li>
+</ul>
+</section>
+
+<section class="about-section">
+<h3>데이터 소스</h3>
+<ul class="about-list">
+<li><span>법제처 Open API: 법령·행정규칙·조약·판례·해석례·자치법규</span></li>
+<li><span>국회 Open API: 의안·표결·회의록·발의자</span></li>
+</ul>
+</section>
+
+<div hidden aria-hidden="true">/about</div>
+</div>
+</div>
+
+<div class="statusline">
+<p>익명 호출 패턴만 집계하며, 검색어, IP, 개인정보 등은 일절 수집하지 않습니다.</p>
+<p>API 출력(법제처, 국회 출처)은 참고용으로 법적 효력이 없습니다.</p>
+<p>help@beopmang.org</p>
+</div>
+</main>
+</body>
+</html>`;
+
+  return new Response(html, {
+    status: 200,
+    headers: {
+      'Content-Type': 'text/html; charset=utf-8',
+      'Cache-Control': 'public, max-age=3600',
+    },
   });
 }
 
