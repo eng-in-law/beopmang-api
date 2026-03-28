@@ -1246,6 +1246,7 @@ body {
   margin: 24px 0 0; text-align: right;
   font-size: 0.72rem; color: var(--ink); font-weight: 600;
 }
+.statusline p { margin: 0; }
 
 @media (max-width: 640px) {
   .page { padding: 10px 16px 20px; }
@@ -1271,7 +1272,11 @@ ${bodyContent}
 </div>
 </div>
 
-<p class="statusline"><span style="white-space:nowrap">익명 호출 패턴만 집계하며,</span> <span style="white-space:nowrap">검색어, IP, 개인정보 등은 일절 수집하지 않습니다.</span> <span style="white-space:nowrap">API 출력(법제처, 국회 출처)은</span> <span style="white-space:nowrap">참고용으로 법적 효력이 없습니다.</span> <span style="white-space:nowrap">help@beopmang.org</span></p>
+<div class="statusline">
+<p>익명 호출 패턴만 집계하며, 검색어, IP, 개인정보 등은 일절 수집하지 않습니다.</p>
+<p>API 출력(법제처, 국회 출처)은 참고용으로 법적 효력이 없습니다.</p>
+<p>help@beopmang.org</p>
+</div>
 </main>
 </body>
 </html>`;
@@ -1413,6 +1418,7 @@ body {
   margin: 24px 0 0; padding: 0; text-align: right;
   font-size: 0.72rem; color: #3b2f20; font-weight: 600; letter-spacing: 0;
 }
+.statusline p { margin: 0; }
 
 @media (max-width: 640px) {
   .page { padding: 10px 16px 20px; }
@@ -1540,7 +1546,11 @@ JSON API: GET / (Accept에 text/html 없으면 JSON). MCP: POST /mcp (도구명 
 </div>
 
 </div>
-<p class="statusline"><span style="white-space:nowrap">익명 호출 패턴만 집계하며,</span> <span style="white-space:nowrap">검색어, IP, 개인정보 등은 일절 수집하지 않습니다.</span> <span style="white-space:nowrap">API 출력(법제처, 국회 출처)은</span> <span style="white-space:nowrap">참고용으로 법적 효력이 없습니다.</span> <span style="white-space:nowrap">help@beopmang.org</span></p>
+<div class="statusline">
+<p>익명 호출 패턴만 집계하며, 검색어, IP, 개인정보 등은 일절 수집하지 않습니다.</p>
+<p>API 출력(법제처, 국회 출처)은 참고용으로 법적 효력이 없습니다.</p>
+<p>help@beopmang.org</p>
+</div>
 </main>
 <script>
 function cc(el,v){navigator.clipboard.writeText(v).then(function(){el.textContent='완료';setTimeout(function(){el.textContent='복사'},1500)})}
