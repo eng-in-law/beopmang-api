@@ -523,8 +523,11 @@ async function handleRequest(request, env) {
       if (!V3_ENDPOINTS.has(v3Parts[0])) {
         return json({ ok: false, error: 'invalid_endpoint' }, 404, rl.headers);
       }
+      if (url.searchParams.has('query') && !url.searchParams.has('q')) url.searchParams.set('q', url.searchParams.get('query'));
+      if (url.searchParams.has('id') && !url.searchParams.has('law_id')) url.searchParams.set('law_id', url.searchParams.get('id'));
+      if (url.searchParams.has('article_label') && !url.searchParams.has('label')) url.searchParams.set('label', url.searchParams.get('article_label'));
       try {
-        const originResp = await fetch(env.ORIGIN_BASE + path + url.search, {
+        const originResp = await fetch(env.ORIGIN_BASE + path + '?' + url.searchParams.toString(), {
           headers: { 'User-Agent': 'beopmang-api/1.0' },
           cf: { cacheTtl: 0 },
           signal: AbortSignal.timeout(15000),
