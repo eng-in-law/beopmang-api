@@ -899,6 +899,16 @@ body {
 
 <div class="card-body">
 <section class="about-section">
+<h3>요약</h3>
+<ul class="about-list">
+<li><span>국가법령정보센터 제공 법령 99.9%+ 수록, 매주 토요일 최신 동기화</span></li>
+<li><span>XML, HWP, PDF 사전 파싱 — 표 데이터 포함 모든 출력 JSON</span></li>
+<li><span>PostgreSQL + pgvector, 조문 118만건 임베딩(768d) — semantic search 지원</span></li>
+<li><span>인증키 필요 없는 REST API, rate limit 100회/분</span></li>
+<li><span>로그인, IP, 쿼리 등 로깅 없음, 익명 엔드포인트 호출 빈도만 집계</span></li>
+</ul>
+</section>
+<section class="about-section">
 <h3>데이터</h3>
 <ul class="about-list">
 <li><strong>법령</strong> <span>${n('법령합계', 5573)}건</span></li>
