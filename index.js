@@ -493,10 +493,7 @@ async function handleRequest(request, env) {
     }
 
     if (path === '/openapi.json') {
-      const data = await env.API_KV.get('openapi.json');
-      return new Response(data || '{}', {
-        headers: { ...corsHeaders(), 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=3600' }
-      });
+      return Response.redirect('https://api.beopmang.org/api/v3/help?action=schema', 301);
     }
 
     if (path === '/health') {
