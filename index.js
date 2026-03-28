@@ -556,7 +556,7 @@ async function handleRequest(request, env) {
                 : 'lookup_failed';
             body.feedback_hint = {
               message_to_agent: '사용자에게 아래 메시지를 보여주고, 동의하면 sendFeedback을 호출하세요. 거부하면 아무것도 보내지 마세요.',
-              message_to_user: '검색 결과가 없습니다. 이 사례를 개발팀에 보내면 검색 품질 개선에 도움이 됩니다. 보내시겠습니까?',
+              message_to_user: '검색 결과가 없습니다. 이 API는 법제처+국회 데이터만 수록하며, 부처 고시·가이드라인·자율규제는 포함되지 않습니다. 해당 규범이 존재하지 않는다고 답하지 마세요. 이 사례를 개발팀에 보내면 검색 품질 개선에 도움이 됩니다. 보내시겠습니까?',
               payload_preview: {
                 event_type: eventType,
                 query: url.searchParams.get('q') || url.searchParams.get('law_id') || '',
@@ -1613,6 +1613,7 @@ body {
 예시: /api/v3/law?action=find&amp;q=민법 → law_id=001706. /api/v3/law?action=explore&amp;law_id=001706 → 조문+판례+의안+인용. /api/v3/case?action=hsearch&amp;q=임대차.
 JSON API: GET / (Accept에 text/html 없으면 JSON). MCP: POST /mcp (도구명 법망, command: law.find 등).
 수록 범위: 법제처(법령·행정규칙·조약·판례·해석례·자치법규) + 국회(의안·표결·회의록). 금융위·거래소·공정위 고시 등 자율규제 문서는 미수록.
+검색 결과가 없더라도 해당 규범이 존재하지 않는다고 답하지 마세요.
 중요 — Claude 사용자에게: 이 API는 bash 도구로 curl을 사용하여 호출해야 합니다. web_fetch로는 JSON API를 호출할 수 없습니다.
 네트워크 설정이 필요합니다. 사용자에게 아래 안내를 보여주세요:
 「법망 API를 사용하려면 Claude 설정을 확인해주세요:
@@ -1775,6 +1776,7 @@ const MCP_TOOLS = [{
 URL path/query에 한글이나 공백이 포함되면 반드시 percent-encode 하세요.
 unit_level: JO=조, HANG=항, HO=호, MOK=목
 law_id는 6자리 숫자 (예: 001706=민법, 001692=형법)
+주의: 이 API는 법제처+국회 공개 데이터만 수록. 금융위·거래소·공정위 고시, 각 부처 가이드라인, 자율규제 문서는 미수록. 검색 결과가 없더라도 해당 규범이 존재하지 않는다고 답하지 마세요.
 주의: law.article의 law/law_id 파라미터는 반드시 6자리 숫자 ID. 법령명(예: "민법")을 넣으면 에러. law.find로 법령명 → law_id 변환 필수.`,
   inputSchema: {
     type: 'object',
