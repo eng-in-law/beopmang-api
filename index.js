@@ -103,7 +103,7 @@ const CATALOG_CATEGORIES = [
   { slug: 'regulations', label: '국회 등 헌법기관 규칙', filter: (l) => /규칙/.test(l.type), single: true },
   { slug: 'administrative-rules', label: '행정규칙', listType: 'admrul', count: 23829 },
   { slug: 'treaties', label: '조약', listType: 'treaty', count: 3260 },
-  { slug: 'local-ordinances', label: '조례 (적재 중)', disabled: true, count: 11343 },
+  { slug: 'local-ordinances', label: '조례', count: 11343, regional: true },
 ];
 
 function buildOriginUrl(base, command, p = {}) {
@@ -405,7 +405,7 @@ async function handleRequest(request, env) {
       CATALOG_CATEGORIES.forEach((cat) => {
         if (cat.disabled) return;
         catalogUrls.push('/catalog/' + cat.slug);
-        if (!cat.single) {
+        if (!cat.single && !cat.regional) {
           CATALOG_CHOSUNGS.forEach((cho) => {
             catalogUrls.push('/catalog/' + cat.slug + '/' + cho);
           });
@@ -880,7 +880,12 @@ async function handleCatalog(path, env) {
     const cached = await env.API_KV.get(cacheKey);
     if (cached) {
       try {
-        items = JSON.parse(cached);
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed)) items = parsed;
+        else if (Array.isArray(parsed?.data)) items = parsed.data;
+        else if (Array.isArray(parsed?.result)) items = parsed.result;
+        else if (Array.isArray(parsed?.results)) items = parsed.results;
+        else items = null;
       } catch {
         items = null;
       }
@@ -977,6 +982,8 @@ async function handleCatalog(path, env) {
   }
 
   let normalizedItems = [];
+  let regionItems = [];
+  const selectedRegion = parts[2] || '';
   if (currentCategory?.listType === 'admrul') {
     const raw = await fetchCatalogList('catalog:admrul', env.ORIGIN_BASE + '/api/v3/law?action=list&type=admrul');
     normalizedItems = (Array.isArray(raw) ? raw : [])
@@ -999,17 +1006,26 @@ async function handleCatalog(path, env) {
       }))
       .filter((item) => item.name);
     catalogCounts.treaties = normalizedItems.length || catalogCounts.treaties;
-  } else if (currentCategory?.listType === 'local-ordinance') {
-    const raw = await fetchCatalogList('catalog:local-ordinance', env.ORIGIN_BASE + '/api/v3/search?action=local-ordinance&list=true');
-    normalizedItems = (Array.isArray(raw) ? raw : [])
+  } else if (currentCategory?.regional) {
+    regionItems = (await fetchCatalogList('catalog:regions', env.ORIGIN_BASE + '/api/v3/search?action=regions'))
       .map((item) => ({
-        name: String(item?.name || item?.law_name || item?.title || '').trim(),
-        type: String(item?.org || item?.type || '조례').trim(),
-        id: String(item?.id || item?.law_id || '').trim(),
-        case_count: Number(item?.case_count || 0),
+        sido: String(item?.sido || '').trim(),
+        is_edu: !!item?.is_edu,
+        count: Number(item?.count || 0),
       }))
-      .filter((item) => item.name);
-    catalogCounts['local-ordinances'] = normalizedItems.length;
+      .filter((item) => item.sido);
+    if (selectedRegion) {
+      const raw = await fetchCatalogList('catalog:ordin:' + selectedRegion, env.ORIGIN_BASE + '/api/v3/search?action=local-ordinance&sido=' + encodeURIComponent(selectedRegion) + '&limit=5000');
+      normalizedItems = (Array.isArray(raw) ? raw : [])
+        .map((item) => ({
+          name: String(item?.name || item?.law_name || item?.title || '').trim(),
+          type: String(item?.org || item?.type || '조례').trim(),
+          id: String(item?.id || item?.law_id || '').trim(),
+          case_count: Number(item?.case_count || 0),
+        }))
+        .filter((item) => item.name);
+      catalogCounts['local-ordinances'] = normalizedItems.length || currentCategory.count || 0;
+    }
   } else if (currentCategory?.filter) {
     normalizedItems = allLaws.filter(currentCategory.filter);
   } else if (catalogSection === 'laws') {
@@ -1025,14 +1041,19 @@ async function handleCatalog(path, env) {
   }
 
   const isSingleCategory = !!currentCategory?.single;
-  const currentItems = isSingleCategory ? normalizedItems : (grouped[selectedCho] || []);
+  const isRegionalCategory = !!currentCategory?.regional;
+  const currentItems = isSingleCategory || isRegionalCategory ? normalizedItems : (grouped[selectedCho] || []);
   const topLaws = [...currentItems].sort((a, b) => (b.case_count || 0) - (a.case_count || 0)).slice(0, 3);
   const examples = topLaws.map((law) => law.name).join(', ');
   const currentLabel = currentCategory?.label || '법령';
-  const listDescription = isSingleCategory
+  const listDescription = isRegionalCategory
+    ? `${selectedRegion} 조례 ${currentItems.length}건${examples ? `. ${examples} 등.` : '.'}`
+    : isSingleCategory
     ? `${currentLabel} ${currentItems.length}건${examples ? `. ${examples} 등.` : '.'}`
     : `${selectedCho}으로 시작하는 ${currentLabel} ${currentItems.length}건${examples ? `. ${examples} 등.` : '.'}`;
-  const headerDescription = isSingleCategory
+  const headerDescription = isRegionalCategory
+    ? (lastSyncedLabel ? `${lastSyncedLabel} 기준 · ${selectedRegion} 조례 ${currentItems.length}건` : `${selectedRegion} 조례 ${currentItems.length}건`)
+    : isSingleCategory
     ? (lastSyncedLabel ? `${lastSyncedLabel} 기준 · ${currentLabel} ${currentItems.length}건` : `${currentLabel} ${currentItems.length}건`)
     : (lastSyncedLabel ? `${lastSyncedLabel} 기준 · ${selectedCho}으로 시작하는 ${currentLabel} ${currentItems.length}건` : `${selectedCho}으로 시작하는 ${currentLabel} ${currentItems.length}건`);
 
@@ -1047,7 +1068,18 @@ async function handleCatalog(path, env) {
 
   const lawList = currentItems.length > 0
     ? currentItems.map((law) => `<li class="law-item"><span class="law-name">${escapeHtmlW(law.name)}</span><span class="law-type">${escapeHtmlW(law.type || currentLabel)}</span></li>`).join('\n')
-    : `<li class="law-item"><span class="law-name">${isSingleCategory ? `${currentLabel} 목록이 없습니다.` : '해당 초성으로 시작하는 법령이 없습니다.'}</span><span class="law-type">-</span></li>`;
+    : `<li class="law-item"><span class="law-name">${isRegionalCategory ? '해당 시도의 조례가 없습니다.' : isSingleCategory ? `${currentLabel} 목록이 없습니다.` : '해당 초성으로 시작하는 법령이 없습니다.'}</span><span class="law-type">-</span></li>`;
+
+  const regionNav = regionItems.length > 0
+    ? `<nav class="chosung-nav">
+${regionItems.map((region) => {
+      const classes = ['cho-link'];
+      if (region.sido === selectedRegion) classes.push('active');
+      const label = region.is_edu ? `${region.sido} 교육청` : region.sido;
+      return `<a href="/catalog/local-ordinances/${encodeURIComponent(region.sido)}" class="${classes.join(' ')}">${escapeHtmlW(label)}${region.count > 0 ? ` <small>${region.count.toLocaleString('ko-KR')}</small>` : ''}</a>`;
+    }).join('\n')}
+</nav>`
+    : '';
 
   const categoriesHtml = `<div class="categories">
 ${CATALOG_CATEGORIES.map((cat) => {
@@ -1058,7 +1090,9 @@ ${CATALOG_CATEGORIES.map((cat) => {
   }).join('\n')}
 </div>`;
 
-  let pageTitle = isSingleCategory
+  let pageTitle = isRegionalCategory
+    ? `${selectedRegion} 조례 — 법망 카탈로그`
+    : isSingleCategory
     ? `${currentLabel} — 법망 카탈로그`
     : `${selectedCho}으로 시작하는 ${currentLabel} — 법망 카탈로그`;
   let metaDescription = listDescription;
@@ -1078,6 +1112,26 @@ ${lawList}
     metaDescription = lastSyncedLabel ? `${lastSyncedLabel} 기준` : '대한민국 현행 법령 5,573건 · 행정규칙 23,829건 · 조약 3,260건 가나다순 목록';
     cardDesc = '대한민국 현행 법령 가나다순 목록';
     bodyContent = categoriesHtml;
+  } else if (isRegionalCategory && !selectedRegion) {
+    pageTitle = '조례 — 시도별 목록 — 법망 카탈로그';
+    metaDescription = lastSyncedLabel ? `${lastSyncedLabel} 기준` : '조례 시도별 목록';
+    cardDesc = lastSyncedLabel ? `${lastSyncedLabel} 기준 · 시도별 조례 목록` : '시도별 조례 목록';
+    bodyContent = `${categoriesHtml}
+
+<ul class="law-list">
+${regionItems.length > 0 ? regionItems.map((region) => {
+      const label = region.is_edu ? `${region.sido} 교육청` : region.sido;
+      return `<li class="law-item"><span class="law-name"><a href="/catalog/local-ordinances/${encodeURIComponent(region.sido)}" style="color:inherit;text-decoration:none">${escapeHtmlW(label)}</a></span><span class="law-type">${region.count.toLocaleString('ko-KR')}건</span></li>`;
+    }).join('\n') : '<li class="law-item"><span class="law-name">시도 목록이 없습니다.</span><span class="law-type">-</span></li>'}
+</ul>`;
+  } else if (isRegionalCategory) {
+    bodyContent = `${categoriesHtml}
+
+${regionNav}
+
+<ul class="law-list">
+${lawList}
+</ul>`;
   } else if (!currentCategory || currentCategory.disabled) {
     const sectionName = currentCategory?.label || '카탈로그';
     pageTitle = `${sectionName} 카탈로그 — 법망`;
