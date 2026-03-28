@@ -474,7 +474,7 @@ async function handleRequest(request, env) {
         note: '한글 query는 반드시 percent-encode. 예: /api/v3/law?action=find&q=%EB%AF%BC%EB%B2%95',
         mcp: '/mcp (ChatGPT MCP 서버)',
         claude: 'web_fetch 대신 bash 도구로 curl 사용. 네트워크 차단 시 사용자에게 안내: 설정→기능→코드 실행 ON→네트워크 송신 허용 ON→추가 허용 도메인에 api.beopmang.org 추가',
-        legacy: '기존 /find, /law/{id} 등 v1 경로도 하위호환 유지',
+        legacy: 'v1/v2 종료, /api/v3/ 사용',
       }, 200, rl.headers);
     }
 
@@ -576,99 +576,23 @@ async function handleRequest(request, env) {
     }
 
     const parsed = parseCommand(path, url.searchParams);
-    if (!parsed) {
-      return json({ ok: false, error: 'not_found', hint: 'GET / for API info' }, 404, rl.headers);
-    }
-    if (!WHITELIST.has(parsed.cmd)) {
-      return json({ ok: false, error: 'command_not_allowed', command: parsed.cmd }, 403, rl.headers);
-    }
-
-    const briefParam = url.searchParams.get('brief');
-    const fullParam = url.searchParams.get('full');
-    const mode = fullParam === '1' || briefParam === '0' ? 'full' : 'brief';
-
-    const originUrl = buildOriginUrl(env.ORIGIN_BASE, parsed.operation, parsed.request);
-    if (!originUrl) {
-      return json({ ok: false, error: { code: 'INVALID_ARGUMENT', message: 'Missing required parameters', command: parsed.operation } }, 422, rl.headers);
-    }
-    const cacheKey = `cache:${buildOriginUrl('', parsed.operation, parsed.request)}`;
-    const t0 = Date.now();
-    let originData;
-    let fromCache = false;
-
-    try {
-      originData = await fetchOriginNormalized(originUrl, 'beopmang-api/1.0', parsed.operation);
-      if (!originData.ok) {
-        return json(originData.errorPayload, originData.status, rl.headers);
-      }
-      // Cache successful responses (5 min TTL)
-      env.API_KV.put(cacheKey, JSON.stringify(originData), { expirationTtl: 300 }).catch(() => {});
-    } catch (e) {
-      // Fallback: try KV cache
-      try {
-        const cached = await env.API_KV.get(cacheKey);
-        if (cached) {
-          originData = JSON.parse(cached);
-          fromCache = true;
-        } else {
-          return json({ ok: false, error: 'service_unavailable', retry_after: 30 }, 503, rl.headers);
-        }
-      } catch {
-        return json({ ok: false, error: 'service_unavailable', retry_after: 30 }, 503, rl.headers);
-      }
+    if (parsed) {
+      // v1/v2 deprecated
+      return json({
+        deprecated: true,
+        message: 'v1/v2 API는 종료되었습니다. /api/v3/를 사용하세요.',
+        migration: {
+          find: '/api/v3/law?action=find&q={query}',
+          law: '/api/v3/law?action=explore&law_id={law_id}',
+          article: '/api/v3/law?action=article&law_id={law_id}&label={label}',
+          xref: '/api/v3/graph?action=xref&law_id={law_id}',
+          search: '/api/v3/search?action=keyword&q={query}'
+        },
+        docs: 'https://api.beopmang.org/api/v3/help?action=schema'
+      }, 410, rl.headers);
     }
 
-    const elapsed = Date.now() - t0;
-
-    let result = originData.result;
-
-    if (mode === 'brief' && BRIEF_FIELDS[parsed.cmd]) {
-      result = applyBrief(result, BRIEF_FIELDS[parsed.cmd]);
-    }
-
-    const count = Array.isArray(result) ? result.length : undefined;
-
-    // include parameter: fetch additional data in parallel
-    const includeParam = url.searchParams.get('include') || '';
-    let included;
-    if (includeParam) {
-      const lawId = (typeof result === 'object' && !Array.isArray(result) && result?.law_id) ? result.law_id : (Array.isArray(result) && result[0]?.law_id) ? result[0].law_id : null;
-      if (lawId) {
-        const VALID_INCLUDES = INCLUDE_COMMAND_MAP;
-        const incFields = includeParam.split(',').map(s => s.trim()).filter(f => VALID_INCLUDES[f]);
-        included = {};
-        for (const f of incFields) {
-          const command = VALID_INCLUDES[f];
-          if (!command) continue;
-          const query = f === 'bills' ? ((typeof result === 'object' && !Array.isArray(result) ? result?.law_name : '') || lawId) : lawId;
-          const includeParams = f === 'bills' ? { query } : { law_id: lawId };
-          const includeUrl = buildOriginUrl(env.ORIGIN_BASE, command, includeParams);
-          try {
-            const d = await fetchOriginNormalized(includeUrl, 'beopmang-api/1.0', command);
-            if (d.ok) included[f] = d.result;
-          } catch {}
-        }
-      }
-    }
-
-    // Anonymous co-occurrence logging
-    const { action: coAction, law: coLaw } = extractActionAndLaw(path, url.searchParams);
-    logCoOccurrence(env, ip, coAction, coLaw).catch(() => {});
-
-    const payload = {
-      ok: true,
-      command: parsed.cmd,
-      mode,
-      result,
-      ...(count !== undefined && { count }),
-      ...(included && Object.keys(included).length && { included }),
-      meta: { source: fromCache ? 'cache' : 'live_database', db_query_ms: originData.meta?.elapsed_ms || elapsed, elapsed_ms: Date.now() - t0, ...(originData.meta || {}), ...(fromCache && { cached: true }) }
-    };
-
-    if (parsed.forceHtml || (request.headers.get('Accept') || '').includes('text/html')) {
-      return resultPage(parsed.cmd, parsed.args, payload, rl.headers);
-    }
-    return json(payload, 200, rl.headers);
+    return json({ ok: false, error: 'not_found', hint: 'GET / for API info' }, 404, rl.headers);
 }
 
 function applyBrief(data, fields) {
