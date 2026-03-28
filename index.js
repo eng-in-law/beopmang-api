@@ -103,7 +103,7 @@ const CATALOG_CATEGORIES = [
   { slug: 'regulations', label: '국회 등 헌법기관 규칙', filter: (l) => /규칙/.test(l.type), single: true },
   { slug: 'administrative-rules', label: '행정규칙', listType: 'admrul', count: 23829 },
   { slug: 'treaties', label: '조약', listType: 'treaty', count: 3260 },
-  { slug: 'local-ordinances', label: '조례', listType: 'local-ordinance' },
+  { slug: 'local-ordinances', label: '조례 (적재 중)', disabled: true, count: 11343 },
 ];
 
 function buildOriginUrl(base, command, p = {}) {
