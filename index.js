@@ -78,6 +78,7 @@ const V3_COMMANDS = Object.freeze({
   'search.keyword': { endpoint: 'search', action: 'keyword' },
   'search.semantic': { endpoint: 'search', action: 'semantic' },
   'search.local-ordinance': { endpoint: 'search', action: 'local-ordinance' },
+  'search.regions': { endpoint: 'search', action: 'regions' },
   'search.treaty': { endpoint: 'search', action: 'treaty' },
   // ref
   'ref.doc': { endpoint: 'ref', action: 'doc' },
@@ -102,7 +103,7 @@ const CATALOG_CATEGORIES = [
   { slug: 'regulations', label: '국회 등 헌법기관 규칙', filter: (l) => /규칙/.test(l.type), single: true },
   { slug: 'administrative-rules', label: '행정규칙', listType: 'admrul', count: 23829 },
   { slug: 'treaties', label: '조약', listType: 'treaty', count: 3260 },
-  { slug: 'local-ordinances', label: '조례', disabled: true },
+  { slug: 'local-ordinances', label: '조례', listType: 'local-ordinance' },
 ];
 
 function buildOriginUrl(base, command, p = {}) {
@@ -872,7 +873,6 @@ async function handleCatalog(path, env) {
     regulations: 0,
     'administrative-rules': 23829,
     treaties: 3260,
-    'local-ordinances': 0,
   };
 
   async function fetchCatalogList(cacheKey, url) {
@@ -999,6 +999,17 @@ async function handleCatalog(path, env) {
       }))
       .filter((item) => item.name);
     catalogCounts.treaties = normalizedItems.length || catalogCounts.treaties;
+  } else if (currentCategory?.listType === 'local-ordinance') {
+    const raw = await fetchCatalogList('catalog:local-ordinance', env.ORIGIN_BASE + '/api/v3/search?action=local-ordinance&list=true');
+    normalizedItems = (Array.isArray(raw) ? raw : [])
+      .map((item) => ({
+        name: String(item?.name || item?.law_name || item?.title || '').trim(),
+        type: String(item?.org || item?.type || '조례').trim(),
+        id: String(item?.id || item?.law_id || '').trim(),
+        case_count: Number(item?.case_count || 0),
+      }))
+      .filter((item) => item.name);
+    catalogCounts['local-ordinances'] = normalizedItems.length;
   } else if (currentCategory?.filter) {
     normalizedItems = allLaws.filter(currentCategory.filter);
   } else if (catalogSection === 'laws') {
@@ -1067,7 +1078,7 @@ ${lawList}
     metaDescription = lastSyncedLabel ? `${lastSyncedLabel} 기준` : '대한민국 현행 법령 5,573건 · 행정규칙 23,829건 · 조약 3,260건 가나다순 목록';
     cardDesc = '대한민국 현행 법령 가나다순 목록';
     bodyContent = categoriesHtml;
-  } else if (!currentCategory || currentCategory.disabled || catalogSection === 'local-ordinances') {
+  } else if (!currentCategory || currentCategory.disabled) {
     const sectionName = currentCategory?.label || '카탈로그';
     pageTitle = `${sectionName} 카탈로그 — 법망`;
     metaDescription = `${sectionName} 카탈로그 준비 중`;
@@ -1419,7 +1430,7 @@ JSON API: GET / (Accept에 text/html 없으면 JSON). MCP: POST /mcp (도구명 
 <div class="stat"><div class="stat-value">379</div><div class="stat-label">국회 등 헌법기관 규칙</div></div>
 <div class="stat"><div class="stat-value">23,829</div><div class="stat-label">행정규칙</div></div>
 <div class="stat"><div class="stat-value">3,260</div><div class="stat-label">조약</div></div>
-<div class="stat"><div class="stat-value">4,604</div><div class="stat-label">조례</div></div>
+<div class="stat"><div class="stat-value">11,343</div><div class="stat-label">조례</div></div>
 </div>
 <p class="stat-note" id="stat-note"></p>
 
@@ -1531,7 +1542,8 @@ const MCP_TOOLS = [{
 - graph.neighbors: 그래프 노드 연결. params: {law_id: "001706"}
 - search.keyword: 조문 키워드 검색. params: {q: "화학물질"}
 - search.semantic: 자연어 시맨틱 검색. params: {q: "..."}
-- search.local-ordinance: 자치법규(조례) 검색. params: {q: "주차장"}
+- search.regions: 시도별 조례 건수 조회. params: {sido?: "서울특별시"} (sido 없으면 전체 시도)
+- search.local-ordinance: 자치법규(조례) 검색. params: {q: "주차장", sido?: "서울특별시", sigungu?: "용산구"}
 - search.treaty: 조약 검색. params: {q: "..."}
 - ref.doc: 참고문서 검색. params: {q: "법령입안심사기준"}
 - help.schema: API 전체 스키마. params: {}
