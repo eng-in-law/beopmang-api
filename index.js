@@ -911,47 +911,26 @@ body {
 <section class="about-section">
 <h3>데이터</h3>
 <ul class="about-list">
-<li><strong>법령</strong> <span>${n('법령합계', 5573)}건</span></li>
-<li><span>헌법 ${n('헌법', 1)} · 법률 ${n('법률', 1708)} · 대통령령 ${n('대통령령', 1975)} · 총리령·부령 ${n('총리령·부령', 1509)} · 국회 등 헌법기관 규칙 ${n('국회 등 헌법기관 규칙', 379)}</span></li>
-<li><strong>행정규칙</strong> <span>${n('행정규칙', 22303)}건</span></li>
-<li><strong>판례</strong> <span>${n('판례', 171451)}건</span></li>
-<li><strong>의안</strong> <span>${n('의안', 113894)}건</span></li>
-<li><strong>조약</strong> <span>${n('조약', 3596)}건</span></li>
-<li><strong>자치법규</strong> <span>${n('조례', 14007)}건 (적재 중)</span></li>
-<li><strong>법령 간 인용관계</strong> <span>${n('법령인용관계', 132707)}건</span></li>
-<li><strong>개정 연혁</strong> <span>${n('연혁', 77374)}건</span></li>
-<li><span>법제처 대비 99.9%+ 수록, 매주 토요일 갱신</span></li>
-<li><span>수록: 법제처 + 국회 공개 데이터. 금융위·거래소·공정위 고시 등 자율규제는 미수록</span></li>
-</ul>
-</section>
-
-<section class="about-section">
-<h3>처리</h3>
-<ul class="about-list">
-<li><span>별표·서식(HWP) 파싱 → 구조화된 JSON</span></li>
-<li><span>조문 단위 정규화 (조·항·호·목)</span></li>
-<li><span>판례-조문 연결</span></li>
-<li><span>법령 간 인용 그래프</span></li>
-<li><span>개정 연혁 diff</span></li>
-<li><span>하이브리드 검색 (BM25 + 벡터 + RRF + flashrank 리랭킹)</span></li>
+<li><strong>법령</strong> <span>${n('법령합계', 5573)}건 (법률·시행령·시행규칙·규칙)</span></li>
+<li><strong>판례</strong> <span>${n('판례', 171451)}건</span> · <strong>의안</strong> <span>${n('의안', 113894)}건</span> · <strong>행정규칙</strong> <span>${n('행정규칙', 22303)}건</span></li>
+<li><strong>조약</strong> <span>${n('조약', 3596)}건 (양자 ${n('조약_양자', 2841)} / 다자 ${n('조약_다자', 751)})</span> · <strong>해석례</strong> <span>${n('해석례', 8600)}건</span></li>
+<li><strong>자치법규</strong> <span>${n('조례', 14007)}건</span> · <strong>인용관계</strong> <span>${n('법령인용관계', 132707)}건</span> · <strong>연혁</strong> <span>${n('연혁', 77374)}건</span></li>
 </ul>
 </section>
 
 <section class="about-section">
 <h3>인터페이스</h3>
 <ul class="about-list">
-<li><span>REST API v3 (7개 엔드포인트, 28개 action)</span></li>
-<li><span>MCP 서버 (ChatGPT 연동)</span></li>
-<li><span>인증 없음, 무료, rate limit 100회/분</span></li>
-<li><span>환각 방지용 인용 검증 (verify)</span></li>
+<li><span>REST API v3 — 7개 엔드포인트, 28개 action</span></li>
+<li><span>MCP 서버 내장</span></li>
+<li><span>환각 방지용 law.verify / case.verify</span></li>
 </ul>
 </section>
 
 <section class="about-section">
 <h3>데이터 소스</h3>
 <ul class="about-list">
-<li><span>법제처 Open API: 법령·행정규칙·조약·판례·해석례·자치법규</span></li>
-<li><span>국회 Open API: 의안·표결·회의록·발의자</span></li>
+<li><span>법제처 Open API, 국회 Open API</span></li>
 </ul>
 </section>
 
