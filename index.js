@@ -337,7 +337,7 @@ async function handleRequest(request, env) {
     }
     if (path.startsWith('/catalog')) {
       const ua = request.headers.get('User-Agent') || '';
-      if (/(GPTBot|ChatGPT|Claude|Anthropic|PerplexityBot|Google-Extended|CCBot|Bytespider|Meta-ExternalAgent)/i.test(ua)) {
+      if (/(GPTBot|ChatGPT|ClaudeBot|Anthropic|PerplexityBot|Google-Extended|Bytespider|Meta-ExternalAgent)/i.test(ua)) {
         return json({ message: '이 페이지는 사람용입니다. API는 /api/v3/를 사용하세요.', api: 'https://api.beopmang.org' });
       }
       return handleCatalog(path, env);
@@ -1152,7 +1152,7 @@ ${lawList}
 
   if (isCatalogHome) {
     pageTitle = '법망 API 법령정보 목록 — 법망';
-    metaDescription = lastSyncedLabel ? `${lastSyncedLabel} 기준` : '대한민국 현행 법령 5,573건 · 행정규칙 23,829건 · 조약 3,260건 가나다순 목록';
+    metaDescription = lastSyncedLabel ? `${lastSyncedLabel} 기준` : '대한민국 현행 법령 5,573건 · 행정규칙 23,829건 · 조약 3,596건 가나다순 목록';
     cardDesc = '대한민국 현행 법령 가나다순 목록';
     bodyContent = categoriesHtml;
   } else if (isRegionalRoot) {
@@ -1543,7 +1543,7 @@ JSON API: GET / (Accept에 text/html 없으면 JSON). MCP: POST /mcp (도구명 
 <div class="stat"><div class="stat-value" id="sv-3">1,509</div><div class="stat-label">총리령·부령</div></div>
 <div class="stat"><div class="stat-value" id="sv-4">379</div><div class="stat-label">국회 등 헌법기관 규칙</div></div>
 <div class="stat"><div class="stat-value" id="sv-5">23,829</div><div class="stat-label">행정규칙</div></div>
-<div class="stat"><div class="stat-value" id="sv-6">3,260</div><div class="stat-label">조약</div></div>
+<div class="stat"><div class="stat-value" id="sv-6">3,596</div><div class="stat-label">조약</div></div>
 <div class="stat"><div class="stat-value" id="sv-7">11,343</div><div class="stat-label">조례</div></div>
 </div>
 <p class="stat-note" id="stat-note"></p>
