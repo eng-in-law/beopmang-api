@@ -911,6 +911,7 @@ body {
 <li><strong>법령 간 인용관계</strong> <span>${n('법령인용관계', 132707)}건</span></li>
 <li><strong>개정 연혁</strong> <span>${n('연혁', 77374)}건</span></li>
 <li><span>법제처 대비 99.9%+ 수록, 매주 토요일 갱신</span></li>
+<li><span>수록: 법제처 + 국회 공개 데이터. 금융위·거래소·공정위 고시 등 자율규제는 미수록</span></li>
 </ul>
 </section>
 
@@ -1611,6 +1612,7 @@ body {
 엔드포인트: law (find,article,explore,detail,history,byulpyo,diff) / case (search,view,text,vsearch,by-law,hsearch) / bill (search,detail,sponsors,vote,minutes) / graph (neighbors,xref,timeline) / search (keyword,semantic,local-ordinance,treaty) / ref (doc) / help (schema,stats).
 예시: /api/v3/law?action=find&amp;q=민법 → law_id=001706. /api/v3/law?action=explore&amp;law_id=001706 → 조문+판례+의안+인용. /api/v3/case?action=hsearch&amp;q=임대차.
 JSON API: GET / (Accept에 text/html 없으면 JSON). MCP: POST /mcp (도구명 법망, command: law.find 등).
+수록 범위: 법제처(법령·행정규칙·조약·판례·해석례·자치법규) + 국회(의안·표결·회의록). 금융위·거래소·공정위 고시 등 자율규제 문서는 미수록.
 중요 — Claude 사용자에게: 이 API는 bash 도구로 curl을 사용하여 호출해야 합니다. web_fetch로는 JSON API를 호출할 수 없습니다.
 네트워크 설정이 필요합니다. 사용자에게 아래 안내를 보여주세요:
 「법망 API를 사용하려면 Claude 설정을 확인해주세요:
