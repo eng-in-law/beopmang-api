@@ -16,12 +16,3 @@ id = "8d65ddd831ff4377bcb2e175defdf5e0"
 
 [[analytics_engine_datasets]]
 binding = "ANALYTICS"
-
-[durable_objects]
-bindings = [
-  { name = "ORIGIN_SEMAPHORE", class_name = "OriginSemaphore" }
-]
-
-[[migrations]]
-tag = "v1"
-new_classes = ["OriginSemaphore"]
