@@ -321,7 +321,7 @@ async function handleRequest(request, env) {
     if (path === '/googlee32edeea417ddde5.html') {
       return new Response('google-site-verification: googlee32edeea417ddde5.html', { headers: { 'Content-Type': 'text/html' } });
     }
-    if (path === '/og.jpg') {
+    if (path === '/og.jpg' || path === '/og2.jpg') {
       const img = await env.API_KV.get('og.jpg', { type: 'arrayBuffer' });
       if (img) return new Response(img, { headers: { 'Content-Type': 'image/jpeg', 'Cache-Control': 'public, max-age=86400' } });
       return new Response('not found', { status: 404 });
@@ -876,7 +876,7 @@ async function handleAbout(env) {
 <meta property="og:title" content="${escapeHtmlW(pageTitle)}">
 <meta property="og:description" content="${escapeHtmlW(metaDescription)}">
 <meta property="og:url" content="${escapeHtmlW(canonicalUrl)}">
-<meta property="og:image" content="https://api.beopmang.org/og.jpg">
+<meta property="og:image" content="https://api.beopmang.org/og2.jpg">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="법망">
 <meta property="og:locale" content="ko_KR">
@@ -1402,7 +1402,7 @@ ${lawList}
 <meta property="og:title" content="${escapeHtmlW(pageTitle)}">
 <meta property="og:description" content="${escapeHtmlW(metaDescription)}">
 <meta property="og:url" content="${escapeHtmlW(canonicalUrl)}">
-<meta property="og:image" content="https://api.beopmang.org/og.jpg">
+<meta property="og:image" content="https://api.beopmang.org/og2.jpg">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="법망">
 <meta property="og:locale" content="ko_KR">
@@ -1545,11 +1545,11 @@ async function statusPage(env, rlHeaders) {
 <meta property="og:locale" content="ko_KR">
 <meta property="og:title" content="법망 — AI 에이전트를 위한 법령정보센터">
 <meta property="og:description" content="무료 API. 법령을 AI 에이전트가 간편하게 참조할 수 있도록 돕습니다.">
-<meta property="og:image" content="https://api.beopmang.org/og.jpg">
+<meta property="og:image" content="https://api.beopmang.org/og2.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://api.beopmang.org/og.jpg">
+<meta name="twitter:image" content="https://api.beopmang.org/og2.jpg">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦒</text></svg>">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
