@@ -1645,7 +1645,7 @@ JSON API: GET / (Accept에 text/html 없으면 JSON). MCP: POST /mcp (도구명 
 <h1>🦒 법망 API</h1>
 <div class="header-links">
 <div class="status-bar" id="hc"><span class="dot"></span> 확인 중...</div>
-<a href="/about" class="about-link">이런 겁니다</a>
+<a href="/about" class="about-link">??</a>
 </div>
 </div>
 <p class="card-desc">프롬프트 한 줄로 법률AI 흉내내기</p>
