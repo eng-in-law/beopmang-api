@@ -527,6 +527,22 @@ async function handleRequest(request, env) {
           if (action === 'article' && !originResp.ok) {
             body.hint = 'law 파라미터는 law_id(6자리 숫자)입니다. 예: law=001823. 법령명은 불가. law.find로 법령명 → law_id 변환하세요.';
           }
+          if (action === 'keyword' && Array.isArray(body.data) && body.data.length === 0) {
+            const q = url.searchParams.get('q') || '';
+            if (q) {
+              try {
+                const findResp = await fetch(env.ORIGIN_BASE + '/api/v3/law?action=find&q=' + encodeURIComponent(q), {
+                  headers: { 'User-Agent': 'beopmang-api/1.0' },
+                  signal: AbortSignal.timeout(5000),
+                });
+                const findBody = await findResp.json();
+                if (findBody.data && Array.isArray(findBody.data) && findBody.data.length > 0) {
+                  body.auto_find_results = findBody.data.slice(0, 3);
+                  body.hint = 'keyword 검색 0건. auto_find_results의 법령을 law.explore로 탐색해보세요.';
+                }
+              } catch {}
+            }
+          }
           const data = body.data;
           const needsHint = data === null || (Array.isArray(data) && data.length === 0) || (data && data.exists === false) || (data && Array.isArray(data.results) && data.results.length === 0);
           if (needsHint) {
