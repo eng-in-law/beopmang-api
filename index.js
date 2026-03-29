@@ -949,7 +949,7 @@ body {
 </section>
 
 <section class="about-section">
-<h3>데이터 소스</h3>
+<h3>출처</h3>
 <ul class="about-list">
 <li><span>법제처 Open API, 국회 Open API</span></li>
 </ul>
