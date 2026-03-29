@@ -1532,7 +1532,7 @@ body {
 
 .about-link { padding: 4px 10px; border: 2px solid #3b2f20; border-radius: 0; box-shadow: 2px 2px 0 #3b2f20; transition: transform 80ms, box-shadow 80ms, background var(--motion-fast); background: #fffdf7; font-size: 0.76rem; font-weight: 700; color: var(--ink); cursor: pointer; font-family: inherit; text-decoration: none; }
 .about-link:hover { background: var(--accent-soft); color: var(--ink); transform: translate(-1px,-1px); box-shadow: 3px 3px 0 #3b2f20; }
-.status-bar { display: inline-flex; align-items: baseline; gap: 5px; font-size: 0.62rem; color: var(--muted); padding: 0; border: none; font-weight: 500; white-space: nowrap; background: none; }
+.status-bar { display: inline-flex; align-items: center; gap: 5px; font-size: 0.62rem; color: var(--muted); padding: 0; border: none; font-weight: 500; white-space: nowrap; background: none; position: relative; top: 1px; }
 .dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--green); vertical-align: middle; }
 .status-bar strong { color: var(--ink); }
 
