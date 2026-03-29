@@ -951,6 +951,7 @@ body {
 <li><span>PostgreSQL + pgvector, 주요 조문 20만건 임베딩(768d) — semantic search 지원</span></li>
 <li><span>인증키 필요 없는 REST API, rate limit 100회/분</span></li>
 <li><span>로그인, IP, 쿼리 등 로깅 없음, 익명 엔드포인트 호출 빈도만 집계</span></li>
+<li><span>무료 — 수익화 계획 없음</span></li>
 </ol>
 </section>
 
@@ -1717,7 +1718,7 @@ JSON API: GET / (Accept에 text/html 없으면 JSON). MCP: POST /mcp (도구명 
 <a href="/about" class="about-link">??</a>
 </div>
 <p class="card-desc">프롬프트 한 줄로 법률AI 흉내내기</p>
-<p class="card-sub">가입, <strong>결제</strong>, 인증키 발급, HWP 처리 <strong>필요 없음</strong>. 데이터 수집 안 함.</p>
+<p class="card-sub">가입, 결제, 인증키 발급, HWP 처리 필요 없음. 데이터 수집 안 함.</p>
 </div>
 
 <div class="card-body">
