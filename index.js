@@ -1546,7 +1546,8 @@ body {
 .dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--green); vertical-align: middle; }
 .status-bar strong { color: var(--ink); }
 
-.cta-line { margin: 0; text-align: center; font-size: 0.95rem; font-weight: 700; color: var(--ink); letter-spacing: -0.02em; }
+.cta-line { margin: 40px 0 0; text-align: center; font-size: 0.95rem; font-weight: 800; color: var(--ink); letter-spacing: -0.02em; }
+.cta-arrow { margin: 4px 0 12px; text-align: center; font-size: 1.15rem; color: var(--muted); }
 .stats { display: grid; grid-template-columns: repeat(4, auto); gap: 16px 24px; justify-content: center; }
 .stat { text-align: center; }
 .stat-value { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.02em; }
@@ -1555,7 +1556,7 @@ body {
 .stat-upcoming { font-size: 1.25rem; font-weight: 700; color: var(--muted); letter-spacing: -0.02em; }
 .stat-note { margin: 0; font-size: 0.76rem; color: #6d593f; text-align: center; font-weight: 500; }
 
-.divider { border: none; border-top: 2px solid #3b2f20; margin: 0; }
+.divider { border: none; border-top: 1px solid rgba(59,47,32,0.3); margin: 0; }
 
 .section { display: flex; flex-direction: column; gap: 6px; }
 .section-title { margin: 0 0 4px 0; font-size: 1.05rem; font-weight: 800; letter-spacing: -0.03em; }
@@ -1674,9 +1675,10 @@ JSON API: GET / (Accept에 text/html 없으면 JSON). MCP: POST /mcp (도구명 
 </div>
 <p class="stat-note" id="stat-note"></p>
 
-<hr class="divider">
+<p class="cta-line">내 AI에 법률 데이터 연결하기</p>
+<p class="cta-arrow">↓</p>
 
-<p class="cta-line">내 AI에 법률 데이터 연결하기 ↓</p>
+<hr class="divider">
 
 <div class="section">
 <p class="section-title">(권장) Claude / Codex</p>
