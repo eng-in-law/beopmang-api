@@ -854,6 +854,7 @@ async function handleAbout(env) {
   } catch {}
 
   const n = (k, fallback) => Number(stats[k] || fallback || 0).toLocaleString('ko-KR');
+  const syncDate = stats.last_synced ? stats.last_synced.split('-').map((v,i) => i === 0 ? v : parseInt(v)).join('. ') + '.' : '2026. 3. 28.';
   const pageTitle = '법망 API — 데이터 카탈로그';
   const metaDescription = '법령·판례·의안·조약·행정규칙·자치법규 구조화 데이터 API';
   const canonicalUrl = 'https://api.beopmang.org/about';
@@ -912,7 +913,7 @@ body {
 .about-section { margin-bottom: 24px; }
 .about-section h3 { font-size: 1rem; font-weight: 900; margin: 0 0 10px; letter-spacing: -0.04em; }
 .about-list { list-style: none; padding: 0 0 0 16px; margin: 0; }
-.about-list li { font-size: 0.85rem; padding: 5px 0; border-bottom: none; line-height: 1.7; }
+.about-list li { font-size: 0.88rem; padding: 5px 0; border-bottom: none; line-height: 1.55; }
 .about-list li::before { content: '–  '; font-weight: 700; color: var(--muted); }
 .about-ol { list-style: none; counter-reset: about-counter; }
 .about-ol li::before { content: counter(about-counter) ')  '; counter-increment: about-counter; font-weight: 700; color: var(--muted); }
@@ -956,7 +957,7 @@ body {
 </section>
 
 <section class="about-section">
-<h3>1. 수록 데이터 범위</h3>
+<h3>1. 수록 데이터 범위 <small>(${syncDate} 기준)</small></h3>
 <ul class="about-list">
 <li><span>법령 ${n('법령합계', 5573)}건 · 판례 ${n('판례', 171451)}건 · 의안 ${n('의안', 113894)}건 · 행정규칙 ${n('행정규칙', 23829)}건</span></li>
 <li><span>조약 ${n('조약', 3596)}건 (양자 ${n('조약_양자', 2841)} / 다자 ${n('조약_다자', 751)}) · 해석례 ${n('해석례', 8600)}건 · 자치법규 ${n('조례', 18842)}건</span></li>
