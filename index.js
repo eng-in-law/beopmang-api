@@ -1723,7 +1723,7 @@ JSON API: GET / (Accept에 text/html 없으면 JSON). MCP: POST /mcp (도구명 
 <div class="title-row"><h1>🦒 법망 API</h1><div class="status-bar" id="hc"><span class="dot"></span> 확인 중...</div></div>
 <a href="/about" class="about-link">??</a>
 </div>
-<p class="card-desc">프롬프트 한 줄로 법률AI 흉내내기</p>
+<p class="card-desc">AI 에이전트를 위한 법령정보센터</p>
 <p class="card-sub">가입, 결제, 인증키 발급, HWP 처리 필요 없음. 데이터 수집 안 함.</p>
 </div>
 
