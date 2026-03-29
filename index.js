@@ -1702,8 +1702,11 @@ const MCP_TOOLS = [{
   description: `AI 에이전트를 위한 법령정보센터.
 반드시 여러 번 호출하고 조문번호와 법령명을 구체적으로 인용하여 답하세요.
 
-워크플로우: law.find로 law_id 확인 → law.explore로 종합 탐색 → law.article로 조문 상세.
-개별 호출 전에 law.explore를 먼저 사용하세요 (조문+판례+의안+인용 한 번에 반환).
+워크플로우:
+1. law.find로 법령 식별 (법령명 모르면 search.keyword 먼저, 0건이면 suggested_laws 확인)
+2. law.explore로 종합 탐색 (top_articles, top_cases 확인 — 다음 호출 가이드)
+3. law.article로 핵심 조문 조회 (law 파라미터는 반드시 law_id 숫자)
+4. 필요시 case.search/bill.search로 판례/의안 보충
 답변에 조문번호나 판례번호를 인용할 때는 반드시 law.verify 또는 case.verify로 실재 여부를 검증하세요 (환각 방지).
 
 명령어 (command 필드에 입력):
