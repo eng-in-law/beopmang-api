@@ -1527,12 +1527,12 @@ body {
 .header-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .title-row { display: flex; align-items: center; gap: 10px; }
 .card-header h1 { margin: 0; font-size: 1.15rem; font-weight: 800; letter-spacing: -0.03em; }
-.card-desc { margin: 6px 0 0; font-size: 0.92rem; color: var(--ink); }
+.card-desc { margin: 10px 0 0; font-size: 0.92rem; color: var(--ink); }
 .card-body { padding: 28px 24px 56px; display: flex; flex-direction: column; gap: 24px; }
 
-.about-link { font-size: 0.78rem; font-weight: 600; color: var(--muted); text-decoration: none; border: 1.5px solid var(--muted); padding: 3px 10px; box-shadow: 3px 3px 0 var(--border); cursor: pointer; }
-.about-link:hover { color: var(--ink); border-color: var(--ink); }
-.status-bar { display: inline-flex; align-items: center; gap: 5px; font-size: 0.68rem; color: var(--muted); padding: 2px 8px; border: 1px solid var(--muted); font-weight: 500; white-space: nowrap; }
+.about-link { font-size: 0.72rem; font-weight: 600; color: var(--muted); text-decoration: none; border: 2px solid var(--border); padding: 4px 10px; box-shadow: 2px 2px 0 var(--border); cursor: pointer; font-family: inherit; }
+.about-link:hover { color: var(--ink); border-color: var(--ink); transform: translate(-1px,-1px); box-shadow: 3px 3px 0 var(--border); }
+.status-bar { display: inline-flex; align-items: center; gap: 5px; font-size: 0.68rem; color: var(--muted); padding: 0; border: none; font-weight: 500; white-space: nowrap; background: none; }
 .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--green); }
 .status-bar strong { color: var(--ink); }
 
