@@ -878,7 +878,7 @@ body {
   background-size: 30px 30px;
 }
 .page { display: flex; justify-content: center; padding: 16px 20px 28px; }
-.shell { max-width: 640px; width: 100%; padding-top: 24px; padding-bottom: 40px; }
+.shell { max-width: 560px; width: 100%; padding-top: 24px; padding-bottom: 40px; }
 .card {
   background: var(--surface); border: 3px solid var(--border);
   border-radius: 0; box-shadow: 12px 12px 0 var(--border); overflow: hidden;
@@ -1356,7 +1356,7 @@ body {
   background-size: 30px 30px;
 }
 .page { display: flex; justify-content: center; padding: 16px 20px 28px; }
-.shell { max-width: 640px; width: 100%; padding-top: 24px; padding-bottom: 40px; }
+.shell { max-width: 560px; width: 100%; padding-top: 24px; padding-bottom: 40px; }
 .card {
   background: var(--surface); border: 3px solid var(--border);
   border-radius: 0; box-shadow: 12px 12px 0 var(--border); overflow: hidden;
