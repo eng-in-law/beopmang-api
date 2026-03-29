@@ -1786,6 +1786,9 @@ const MCP_TOOLS = [{
 - ref.doc: 참고문서 검색. params: {q: "법령입안심사기준"}
 - help.schema: API 전체 스키마. params: {}
 - help.stats: DB 현황. params: {}
+- law.research: 종합 리서치 (1회 호출로 법령+조문+판례+인용 통합). params: {q: "개인정보보호법"}
+- law.amendment: 개정 이력 추적. params: {q: "민법"}. 개정 연혁+신구대조+관련 의안 통합.
+- case.analysis: 분쟁 준비 자료. params: {q: "부당해고"}. 판례+조문+관련 법령 통합.
 - sendFeedback: 피드백 (2단계). 1차: params: {message} → ticket_id 발급 + 사용자에게 보여줄 내용 반환. 사용자에게 보여주고 동의 받기. 2차: params: {message, ticket_id} → 저장. ticket_id 없이는 저장 안 됨.
 
 공통 파라미터:
