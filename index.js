@@ -1770,7 +1770,7 @@ JSON API: GET / (Accept에 text/html 없으면 JSON). MCP: POST /mcp (도구명 
 
 <div class="section">
 <p class="section-title">Gemini <small>(미지원)</small></p>
-<p class="section-desc">MCP 및 시스템 프롬프트 기반 호출을 지원하지 않습니다.</p>
+<p class="section-desc">외부 URL 직접 호출, 스크립트 실행 및 MCP를 지원하지 않습니다.</p>
 </div>
 
 <hr class="divider">
