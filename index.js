@@ -527,7 +527,7 @@ async function handleRequest(request, env) {
         const originResp = await fetch(env.ORIGIN_BASE + path + '?' + url.searchParams.toString(), {
           headers: { 'User-Agent': 'beopmang-api/1.0' },
           cf: { cacheTtl: 0 },
-          signal: AbortSignal.timeout(15000),
+          signal: AbortSignal.timeout(30000),
         });
         const headers = new Headers(originResp.headers);
         for (const [key, value] of Object.entries(corsHeaders())) headers.set(key, value);
@@ -987,7 +987,7 @@ async function handleCatalog(path, env) {
       const resp = await fetch(url, {
         headers: { 'User-Agent': 'beopmang-api/catalog' },
         cf: { cacheTtl: 0 },
-        signal: AbortSignal.timeout(15000),
+        signal: AbortSignal.timeout(30000),
       });
       const text = await resp.text();
       let payload;
