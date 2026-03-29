@@ -1007,6 +1007,7 @@ body {
 <h3>6. Acknowledgements</h3>
 <ul class="about-list">
 <li><span>대한민국 법령의 SSOT, 국가법령정보센터를 운영해주시는 법제처에 감사드립니다.</span></li>
+<li><span>의안·입법 데이터를 정리하여 개방해주시는 국회사무처에도 감사드립니다.</span></li>
 </ul>
 </section>
 
