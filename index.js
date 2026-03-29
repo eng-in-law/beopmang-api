@@ -96,14 +96,24 @@ const LEGACY_TOOL_COMMANDS = [
 const TOOL_COMMANDS = [...Object.keys(V3_COMMANDS), ...LEGACY_TOOL_COMMANDS, 'sendFeedback'];
 const CATALOG_CHOSUNGS = ['ㄱ', 'ㄴ', 'ㄷ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅅ', 'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'];
 const CATALOG_CATEGORIES = [
+  // 법령
   { slug: 'constitution', label: '헌법', count: 1, single: true },
   { slug: 'acts', label: '법률', filter: (l) => l.type === '법률' },
   { slug: 'presidential-decrees', label: '대통령령', filter: (l) => l.type === '대통령령' },
   { slug: 'ordinances', label: '총리령·부령', filter: (l) => /총리령|부령/.test(l.type) },
-  { slug: 'regulations', label: '국회 등 헌법기관 규칙', filter: (l) => /규칙/.test(l.type), single: true },
+  { slug: 'regulations', label: '헌법기관 규칙', filter: (l) => /규칙/.test(l.type), single: true },
+  // 행정규칙 (하위 분류)
   { slug: 'administrative-rules', label: '행정규칙', listType: 'admrul', count: 23829 },
-  { slug: 'treaties', label: '조약', listType: 'treaty', count: 3260 },
-  { slug: 'local-ordinances', label: '조례', count: 11343, regional: true },
+  // 자치법규 (하위 분류)
+  { slug: 'local-ordinances', label: '자치법규 — 조례', count: 13760, regional: true },
+  { slug: 'local-rules', label: '자치법규 — 규칙', count: 4911, disabled: true },
+  // 조약
+  { slug: 'treaties-bilateral', label: '조약 — 양자', listType: 'treaty', treatyCls: '1', count: 2841 },
+  { slug: 'treaties-multilateral', label: '조약 — 다자', listType: 'treaty', treatyCls: '2', count: 751 },
+  // 의안
+  { slug: 'bills', label: '의안', listType: 'bill', count: 113894, disabled: true },
+  // 해석례
+  { slug: 'interpretations', label: '해석례', count: 8600, disabled: true },
 ];
 
 function buildOriginUrl(base, command, p = {}) {
@@ -1120,16 +1130,18 @@ async function handleCatalog(path, env) {
       .filter((item) => item.name);
     catalogCounts['administrative-rules'] = normalizedItems.length || catalogCounts['administrative-rules'];
   } else if (currentCategory?.listType === 'treaty') {
-    const raw = await fetchCatalogList('catalog:treaty', env.ORIGIN_BASE + '/api/v3/law?action=list&type=treaty');
-    normalizedItems = (Array.isArray(raw) ? raw : [])
+    const clsParam = currentCategory.treatyCls ? '&cls=' + currentCategory.treatyCls : '';
+    const cacheKey = 'catalog:treaty' + (currentCategory.treatyCls || '');
+    const raw = await fetchCatalogList(cacheKey, env.ORIGIN_BASE + '/api/v3/search?action=treaty&q=&limit=5000' + clsParam);
+    normalizedItems = (Array.isArray(raw) ? raw : raw?.results || [])
       .map((item) => ({
-        name: String(item?.name || item?.law_name || item?.title || '').trim(),
-        type: String(item?.type || item?.law_type || '조약').trim(),
+        name: String(item?.name || item?.treaty_name || item?.law_name || item?.title || '').trim(),
+        type: String(item?.treaty_type || item?.type || item?.law_type || '조약').trim(),
         id: String(item?.treaty_id || item?.law_id || item?.id || '').trim(),
         case_count: Number(item?.case_count || 0),
       }))
       .filter((item) => item.name);
-    catalogCounts.treaties = normalizedItems.length || catalogCounts.treaties;
+    catalogCounts[currentCategory.slug] = normalizedItems.length || catalogCounts[currentCategory.slug];
   } else if (currentCategory?.regional) {
     regionItems = (await fetchCatalogList('catalog:regions', env.ORIGIN_BASE + '/api/v3/search?action=regions'))
       .map((item) => ({
