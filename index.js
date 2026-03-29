@@ -855,8 +855,8 @@ async function handleAbout(env) {
 
   const n = (k, fallback) => Number(stats[k] || fallback || 0).toLocaleString('ko-KR');
   const syncDate = stats.last_synced ? stats.last_synced.split('-').map((v,i) => i === 0 ? v : parseInt(v)).join('. ') + '.' : '2026. 3. 28.';
-  const pageTitle = '법망 API — 데이터 카탈로그';
-  const metaDescription = '법령·판례·의안·조약·행정규칙·자치법규 구조화 데이터 API';
+  const pageTitle = '법망 API — 서비스 소개';
+  const metaDescription = '대한민국 법령을 AI 에이전트가 간편하게 참조할 수 있도록 돕는 무료 API. 법령·판례·의안·조약·행정규칙·자치법규 JSON 구조화 데이터.';
   const canonicalUrl = 'https://api.beopmang.org/about';
   const jsonLd = JSON.stringify({
     '@context': 'https://schema.org',
@@ -879,6 +879,8 @@ async function handleAbout(env) {
 <meta property="og:image" content="https://api.beopmang.org/og.jpg">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="법망">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="canonical" href="${escapeHtmlW(canonicalUrl)}">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
@@ -1403,6 +1405,8 @@ ${lawList}
 <meta property="og:image" content="https://api.beopmang.org/og.jpg">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="법망">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="canonical" href="${escapeHtmlW(canonicalUrl)}">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
