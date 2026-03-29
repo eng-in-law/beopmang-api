@@ -200,13 +200,7 @@ async function withOriginSemaphore(env, fn) {
   try {
     const semId = env.ORIGIN_SEMAPHORE.idFromName('global');
     const sem = env.ORIGIN_SEMAPHORE.get(semId);
-    const acqResp = await sem.fetch(new Request('https://sem/acquire'));
-    if (!acqResp.ok) {
-      return new Response(JSON.stringify({ ok: false, error: 'service_unavailable', retry_after: 5 }), {
-        status: 503,
-        headers: { 'Content-Type': 'application/json' },
-      });
-    }
+    await sem.fetch(new Request('https://sem/acquire'));
     try {
       return await fn();
     } finally {
@@ -1944,20 +1938,10 @@ export class OriginSemaphore {
       }
 
       return new Promise((resolve) => {
-        let entry = null;
-        const timer = setTimeout(() => {
-          const idx = this.queue.indexOf(entry);
-          if (idx !== -1) this.queue.splice(idx, 1);
-          resolve(new Response(JSON.stringify({ acquired: false, reason: 'queue_timeout' }), { status: 503 }));
-        }, 25000);
-
-        entry = () => {
-          clearTimeout(timer);
+        this.queue.push(() => {
           this.active++;
           resolve(new Response(JSON.stringify({ acquired: true, active: this.active, queued: true })));
-        };
-
-        this.queue.push(entry);
+        });
       });
     }
 
