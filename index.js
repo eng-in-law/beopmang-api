@@ -1536,7 +1536,7 @@ async function statusPage(env, rlHeaders) {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>법망 — AI 에이전트를 위한 법령정보센터</title>
-<meta name="description" content="대한민국 법령 5,573건·판례 171K·의안 114K 실시간 검색. AI 에이전트를 위한 법령 데이터 API.">
+<meta name="description" content="무료 API — 법령을 AI 에이전트가 간편하게 참조할 수 있도록 돕습니다.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://api.beopmang.org">
 <link rel="canonical" href="https://api.beopmang.org">
@@ -1544,7 +1544,7 @@ async function statusPage(env, rlHeaders) {
 <meta property="og:site_name" content="법망">
 <meta property="og:locale" content="ko_KR">
 <meta property="og:title" content="법망 — AI 에이전트를 위한 법령정보센터">
-<meta property="og:description" content="대한민국 법령 5,573건·판례 171K·의안 114K 실시간 검색. AI 에이전트를 위한 법령 데이터 API.">
+<meta property="og:description" content="무료 API — 법령을 AI 에이전트가 간편하게 참조할 수 있도록 돕습니다.">
 <meta property="og:image" content="https://api.beopmang.org/og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
