@@ -1004,7 +1004,7 @@ body {
 </section>
 
 <section class="about-section">
-<h3>6. Acknowledgement</h3>
+<h3>6. Acknowledgements</h3>
 <ul class="about-list">
 <li><span>대한민국 법령의 SSOT, 국가법령정보센터를 운영해주시는 법제처에 감사드립니다.</span></li>
 </ul>
