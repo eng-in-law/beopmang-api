@@ -1938,10 +1938,18 @@ export class OriginSemaphore {
       }
 
       return new Promise((resolve) => {
-        this.queue.push(() => {
+        const entry = () => {
           this.active++;
           resolve(new Response(JSON.stringify({ acquired: true, active: this.active, queued: true })));
-        });
+        };
+        const timer = setTimeout(() => {
+          const idx = this.queue.indexOf(entry);
+          if (idx !== -1) this.queue.splice(idx, 1);
+          resolve(new Response(JSON.stringify({ acquired: false, fallback: true })));
+        }, 20000);
+        const wrappedEntry = () => { clearTimeout(timer); entry(); };
+        Object.defineProperty(wrappedEntry, '_original', { value: entry });
+        this.queue.push(wrappedEntry);
       });
     }
 
