@@ -914,9 +914,9 @@ body {
 .about-section h3 { font-size: 1rem; font-weight: 900; margin: 0 0 4px; letter-spacing: -0.04em; }
 .about-list { list-style: none; padding: 0 0 0 10px; margin: 0; }
 .about-list li { font-size: 0.88rem; padding: 2px 0; border-bottom: none; line-height: 1.35; }
-.about-list li::before { content: '–  '; font-weight: 700; color: var(--muted); }
+.about-list li::before { content: '– '; font-weight: 500; color: var(--muted); margin-right: 4px; }
 .about-ol { list-style: none; counter-reset: about-counter; }
-.about-ol li::before { content: counter(about-counter) ')  '; counter-increment: about-counter; font-weight: 700; color: var(--muted); }
+.about-ol li::before { content: counter(about-counter) ')  '; counter-increment: about-counter; font-weight: 500; color: var(--muted); margin-right: 4px; }
 .about-list li strong { font-weight: 700; }
 
 .statusline {
