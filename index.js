@@ -1568,7 +1568,7 @@ body {
 .dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--green); vertical-align: middle; }
 .status-bar strong { color: var(--ink); }
 
-.cta-line { margin: 40px 0 12px; text-align: center; font-size: 0.95rem; font-weight: 800; color: var(--ink); letter-spacing: -0.02em; }
+.cta-line { margin: 16px 0 12px; text-align: center; font-size: 0.95rem; font-weight: 800; color: var(--ink); letter-spacing: -0.02em; }
 .stats { display: grid; grid-template-columns: repeat(4, auto); gap: 16px 24px; justify-content: center; }
 .stat { text-align: center; }
 .stat-value { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.02em; }
