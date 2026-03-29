@@ -1546,6 +1546,7 @@ body {
 .dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--green); vertical-align: middle; }
 .status-bar strong { color: var(--ink); }
 
+.cta-line { margin: 0; text-align: center; font-size: 0.95rem; font-weight: 700; color: var(--ink); letter-spacing: -0.02em; }
 .stats { display: grid; grid-template-columns: repeat(4, auto); gap: 16px 24px; justify-content: center; }
 .stat { text-align: center; }
 .stat-value { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.02em; }
@@ -1674,6 +1675,8 @@ JSON API: GET / (Accept에 text/html 없으면 JSON). MCP: POST /mcp (도구명 
 <p class="stat-note" id="stat-note"></p>
 
 <hr class="divider">
+
+<p class="cta-line">내 AI에 법률 데이터 연결하기 ↓</p>
 
 <div class="section">
 <p class="section-title">(권장) Claude / Codex</p>
