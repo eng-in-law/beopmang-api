@@ -932,7 +932,7 @@ body {
 <section class="about-section">
 <h3>데이터</h3>
 <ul class="about-list">
-<li><strong>법령</strong> <span>${n('법령합계', 5573)}건 (법률·시행령·시행규칙·규칙)</span></li>
+<li><strong>법령</strong> <span>${n('법령합계', 5573)}건</span></li>
 <li><strong>판례</strong> <span>${n('판례', 171451)}건</span> · <strong>의안</strong> <span>${n('의안', 113894)}건</span> · <strong>행정규칙</strong> <span>${n('행정규칙', 22303)}건</span></li>
 <li><strong>조약</strong> <span>${n('조약', 3596)}건 (양자 ${n('조약_양자', 2841)} / 다자 ${n('조약_다자', 751)})</span> · <strong>해석례</strong> <span>${n('해석례', 8600)}건</span></li>
 <li><strong>자치법규</strong> <span>${n('조례', 14007)}건</span> · <strong>인용관계</strong> <span>${n('법령인용관계', 132707)}건</span> · <strong>연혁</strong> <span>${n('연혁', 77374)}건</span></li>
