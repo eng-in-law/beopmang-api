@@ -196,13 +196,19 @@ function buildV1ErrorPayload(body, command) {
 }
 
 async function withOriginSemaphore(env, fn) {
-  const semId = env.ORIGIN_SEMAPHORE.idFromName('global');
-  const sem = env.ORIGIN_SEMAPHORE.get(semId);
-  await sem.fetch(new Request('https://sem/acquire'));
+  if (!env.ORIGIN_SEMAPHORE) return await fn();
   try {
+    const semId = env.ORIGIN_SEMAPHORE.idFromName('global');
+    const sem = env.ORIGIN_SEMAPHORE.get(semId);
+    await sem.fetch(new Request('https://sem/acquire'));
+    try {
+      return await fn();
+    } finally {
+      sem.fetch(new Request('https://sem/release')).catch(() => {});
+    }
+  } catch {
+    // Durable Object path should not block origin fetches outright.
     return await fn();
-  } finally {
-    sem.fetch(new Request('https://sem/release')).catch(() => {});
   }
 }
 
@@ -1918,7 +1924,7 @@ export class OriginSemaphore {
     this.state = state;
     this.env = env;
     this.active = 0;
-    this.maxConcurrent = 30;
+    this.maxConcurrent = 50;
     this.queue = [];
   }
 
@@ -1930,11 +1936,23 @@ export class OriginSemaphore {
         this.active++;
         return new Response(JSON.stringify({ acquired: true, active: this.active }));
       }
+
       return new Promise((resolve) => {
-        this.queue.push(() => {
+        let entry = null;
+        const timer = setTimeout(() => {
+          const idx = this.queue.indexOf(entry);
+          if (idx !== -1) this.queue.splice(idx, 1);
+          this.active++;
+          resolve(new Response(JSON.stringify({ acquired: true, active: this.active, timedOut: true })));
+        }, 20000);
+
+        entry = () => {
+          clearTimeout(timer);
           this.active++;
           resolve(new Response(JSON.stringify({ acquired: true, active: this.active, queued: true })));
-        });
+        };
+
+        this.queue.push(entry);
       });
     }
 
