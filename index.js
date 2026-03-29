@@ -1530,10 +1530,10 @@ body {
 .card-desc { margin: 10px 0 0; font-size: 0.92rem; color: var(--ink); }
 .card-body { padding: 28px 24px 56px; display: flex; flex-direction: column; gap: 24px; }
 
-.about-link { font-size: 0.72rem; font-weight: 600; color: var(--muted); text-decoration: none; border: 2px solid var(--border); padding: 4px 10px; box-shadow: 2px 2px 0 var(--border); cursor: pointer; font-family: inherit; }
-.about-link:hover { color: var(--ink); border-color: var(--ink); transform: translate(-1px,-1px); box-shadow: 3px 3px 0 var(--border); }
-.status-bar { display: inline-flex; align-items: center; gap: 5px; font-size: 0.68rem; color: var(--muted); padding: 0; border: none; font-weight: 500; white-space: nowrap; background: none; }
-.dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--green); }
+.about-link { font-size: 0.76rem; font-weight: 700; color: var(--ink); text-decoration: none; border: 2px solid var(--border); padding: 4px 10px; box-shadow: 2px 2px 0 var(--border); cursor: pointer; font-family: inherit; }
+.about-link:hover { background: var(--ink); color: var(--bg); }
+.status-bar { display: inline-flex; align-items: baseline; gap: 5px; font-size: 0.62rem; color: var(--muted); padding: 0; border: none; font-weight: 500; white-space: nowrap; background: none; }
+.dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--green); vertical-align: middle; }
 .status-bar strong { color: var(--ink); }
 
 .stats { display: grid; grid-template-columns: repeat(4, auto); gap: 16px 24px; justify-content: center; }
