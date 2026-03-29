@@ -1860,7 +1860,7 @@ const MCP_TOOLS = [{
 - include=history,cases,xref,bills,timeline (추가 데이터 병합)
 - count=true (본문 없이 건수만 반환)
 URL path/query에 한글이나 공백이 포함되면 반드시 percent-encode 하세요.
-unit_level: JO=조, HANG=항, HO=호, MOK=목
+unit_level: JO=조, HANG=항, HO=호, MOK=목. JO content가 제목만이면 has_children=true — 본문은 같은 응답의 HANG 레벨에 있음.
 law_id는 6자리 숫자 (예: 001706=민법, 001692=형법)
 주의: 이 API는 법제처+국회 공개 데이터만 수록. 금융위·거래소·공정위 고시, 각 부처 가이드라인, 자율규제 문서는 미수록. 검색 결과가 없더라도 해당 규범이 존재하지 않는다고 답하지 마세요.
 주의: law.article의 law/law_id 파라미터는 반드시 6자리 숫자 ID. 법령명(예: "민법")을 넣으면 에러. law.find로 법령명 → law_id 변환 필수.`,
