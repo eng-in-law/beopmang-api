@@ -960,7 +960,7 @@ body {
 </div>
 
 <div class="statusline">
-<p>익명 호출 패턴만 집계하며, 검색어, IP, 개인정보 등은 일절 수집하지 않습니다.</p>
+<p>로그인, IP, 검색어, 개인정보 등은 일절 수집하지 않으며, 익명 엔드포인트 호출 빈도만 집계합니다.</p>
 <p>API 출력(법제처, 국회 출처)은 참고용으로 법적 효력이 없습니다.</p>
 <p>help@beopmang.org</p>
 </div>
@@ -1432,7 +1432,7 @@ ${bodyContent}
 </div>
 
 <div class="statusline">
-<p>익명 호출 패턴만 집계하며, 검색어, IP, 개인정보 등은 일절 수집하지 않습니다.</p>
+<p>로그인, IP, 검색어, 개인정보 등은 일절 수집하지 않으며, 익명 엔드포인트 호출 빈도만 집계합니다.</p>
 <p>API 출력(법제처, 국회 출처)은 참고용으로 법적 효력이 없습니다.</p>
 <p>help@beopmang.org</p>
 </div>
@@ -1708,7 +1708,7 @@ JSON API: GET / (Accept에 text/html 없으면 JSON). MCP: POST /mcp (도구명 
 
 </div>
 <div class="statusline">
-<p>익명 호출 패턴만 집계하며, 검색어, IP, 개인정보 등은 일절 수집하지 않습니다.</p>
+<p>로그인, IP, 검색어, 개인정보 등은 일절 수집하지 않으며, 익명 엔드포인트 호출 빈도만 집계합니다.</p>
 <p>API 출력(법제처, 국회 출처)은 참고용으로 법적 효력이 없습니다.</p>
 <p>help@beopmang.org</p>
 </div>
