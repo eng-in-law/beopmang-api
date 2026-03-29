@@ -195,11 +195,22 @@ function buildV1ErrorPayload(body, command) {
   return errPayload;
 }
 
-async function fetchOriginNormalized(originUrl, userAgent, command) {
-  const httpResp = await fetch(originUrl, {
+async function withOriginSemaphore(env, fn) {
+  const semId = env.ORIGIN_SEMAPHORE.idFromName('global');
+  const sem = env.ORIGIN_SEMAPHORE.get(semId);
+  await sem.fetch(new Request('https://sem/acquire'));
+  try {
+    return await fn();
+  } finally {
+    sem.fetch(new Request('https://sem/release')).catch(() => {});
+  }
+}
+
+async function fetchOriginNormalized(originUrl, userAgent, command, env) {
+  const httpResp = await withOriginSemaphore(env, async () => fetch(originUrl, {
     headers: { 'User-Agent': userAgent },
     cf: { cacheTtl: 0 },
-  });
+  }));
 
   let resp = null;
   try { resp = await httpResp.json(); } catch {}
@@ -247,26 +258,6 @@ async function fetchOriginNormalized(originUrl, userAgent, command) {
     errorPayload: { ok: false, error: { code: 'ORIGIN_INVALID_RESPONSE', message: 'unexpected origin response', command } },
   };
 }
-
-export default {
-  async fetch(request, env, ctx) {
-    if (request.method !== 'GET') return handleRequest(request, env);
-
-    const cache = caches.default;
-    const cacheKey = new Request(request.url, request);
-    const cached = await cache.match(cacheKey);
-    if (cached) return cached;
-
-    const response = await handleRequest(request, env);
-    if (response.status === 200) {
-      const resp = new Response(response.body, response);
-      resp.headers.set('Cache-Control', 'public, max-age=60');
-      ctx.waitUntil(cache.put(cacheKey, resp.clone()));
-      return resp;
-    }
-    return response;
-  }
-};
 
 // Anonymous co-occurrence logging (no PII stored)
 async function logCoOccurrence(env, ip, action, lawId) {
@@ -524,11 +515,11 @@ async function handleRequest(request, env) {
       if (url.searchParams.has('id') && !url.searchParams.has('law_id')) url.searchParams.set('law_id', url.searchParams.get('id'));
       if (url.searchParams.has('article_label') && !url.searchParams.has('label')) url.searchParams.set('label', url.searchParams.get('article_label'));
       try {
-        const originResp = await fetch(env.ORIGIN_BASE + path + '?' + url.searchParams.toString(), {
+        const originResp = await withOriginSemaphore(env, async () => fetch(env.ORIGIN_BASE + path + '?' + url.searchParams.toString(), {
           headers: { 'User-Agent': 'beopmang-api/1.0' },
           cf: { cacheTtl: 0 },
           signal: AbortSignal.timeout(30000),
-        });
+        }));
         const headers = new Headers(originResp.headers);
         for (const [key, value] of Object.entries(corsHeaders())) headers.set(key, value);
         const { action, law } = extractActionAndLaw(path, url.searchParams);
@@ -1880,7 +1871,7 @@ async function handleMcp(request, env) {
           : {error_type:'invalid_argument',retryable:true,message:'Missing required parameters for ' + command,command};
         return mcpOk(id, { content: [{ type: 'text', text: JSON.stringify(errMsg) }], isError: true });
       }
-      const originData = await fetchOriginNormalized(originUrl, 'beopmang-mcp/1.0', command);
+      const originData = await fetchOriginNormalized(originUrl, 'beopmang-mcp/1.0', command, env);
       if (!originData.ok) {
         const enriched = { error_type: 'origin_error', retryable: true, command, ...originData.errorPayload };
         return mcpOk(id, { content: [{ type: 'text', text: JSON.stringify(enriched) }], isError: true });
@@ -1906,7 +1897,7 @@ async function handleMcp(request, env) {
             const includeParams = f === 'bills' ? { query: mainPayload?.law_name || lawId } : { law_id: lawId };
             try {
               const includeUrl = buildOriginUrl(env.ORIGIN_BASE, includeCommand, includeParams);
-              const includeData = await fetchOriginNormalized(includeUrl, 'beopmang-mcp/1.0', includeCommand);
+              const includeData = await fetchOriginNormalized(includeUrl, 'beopmang-mcp/1.0', includeCommand, env);
               if (includeData.ok) inc[f] = includeData.result;
             } catch {}
           }
@@ -1921,3 +1912,65 @@ async function handleMcp(request, env) {
 
   return mcpErr(id, -32601, 'Method not found: ' + method);
 }
+
+export class OriginSemaphore {
+  constructor(state, env) {
+    this.state = state;
+    this.env = env;
+    this.active = 0;
+    this.maxConcurrent = 30;
+    this.queue = [];
+  }
+
+  async fetch(request) {
+    const url = new URL(request.url);
+
+    if (url.pathname === '/acquire') {
+      if (this.active < this.maxConcurrent) {
+        this.active++;
+        return new Response(JSON.stringify({ acquired: true, active: this.active }));
+      }
+      return new Promise((resolve) => {
+        this.queue.push(() => {
+          this.active++;
+          resolve(new Response(JSON.stringify({ acquired: true, active: this.active, queued: true })));
+        });
+      });
+    }
+
+    if (url.pathname === '/release') {
+      this.active = Math.max(0, this.active - 1);
+      if (this.queue.length > 0) {
+        const next = this.queue.shift();
+        next();
+      }
+      return new Response(JSON.stringify({ released: true, active: this.active, queued: this.queue.length }));
+    }
+
+    if (url.pathname === '/status') {
+      return new Response(JSON.stringify({ active: this.active, maxConcurrent: this.maxConcurrent, queued: this.queue.length }));
+    }
+
+    return new Response('Not found', { status: 404 });
+  }
+}
+
+export default {
+  async fetch(request, env, ctx) {
+    if (request.method !== 'GET') return handleRequest(request, env);
+
+    const cache = caches.default;
+    const cacheKey = new Request(request.url, request);
+    const cached = await cache.match(cacheKey);
+    if (cached) return cached;
+
+    const response = await handleRequest(request, env);
+    if (response.status === 200) {
+      const resp = new Response(response.body, response);
+      resp.headers.set('Cache-Control', 'public, max-age=60');
+      ctx.waitUntil(cache.put(cacheKey, resp.clone()));
+      return resp;
+    }
+    return response;
+  }
+};
