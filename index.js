@@ -1606,7 +1606,7 @@ body {
 
 .stat-footer { display: flex; flex-direction: column; gap: 0; margin-top: -12px; }
 .stat-footer .stat-note { margin: 0; }
-.cta-line { font-size: 0.88rem; font-weight: 800; color: var(--ink); letter-spacing: -0.02em; }
+.cta-line { font-size: 0.82rem; font-weight: 600; color: var(--ink); letter-spacing: -0.01em; }
 .cta-wrap { text-align: center; margin: 2px 0 10px; }
 .stats { display: grid; grid-template-columns: repeat(4, auto); gap: 16px 24px; justify-content: center; }
 .stat { text-align: center; }
@@ -1740,7 +1740,7 @@ JSON API: GET / (Accept에 text/html 없으면 JSON). MCP: POST /mcp (도구명 
 </div>
 
 <div class="section">
-<p class="section-title">(권장) Claude / Codex</p>
+<p class="section-title">Claude / Codex <small>(권장)</small></p>
 <ol class="steps">
 <li>아래 내용과 같이 프롬프트 입력</li>
 </ol>
@@ -1750,7 +1750,7 @@ JSON API: GET / (Accept에 text/html 없으면 JSON). MCP: POST /mcp (도구명 
 </div>
 
 <div class="section">
-<p class="section-title">(가능) ChatGPT Web <small>Plus 이상</small></p>
+<p class="section-title">ChatGPT Web <small>(가능 · Plus 이상)</small></p>
 <ol class="steps">
 <li>PC로 접속, 설정 → 앱 → 고급 설정 → 개발자 모드 켜기</li>
 <li>설정 → 앱 → 앱 만들기</li>
@@ -1769,7 +1769,7 @@ JSON API: GET / (Accept에 text/html 없으면 JSON). MCP: POST /mcp (도구명 
 </div>
 
 <div class="section">
-<p class="section-title">(불가) Gemini</p>
+<p class="section-title">Gemini <small>(불가)</small></p>
 <p class="section-desc">환각이 심하여 권장하지 않습니다. 사용 불가.</p>
 </div>
 
