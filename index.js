@@ -587,6 +587,15 @@ async function handleRequest(request, env) {
             };
           }
           headers.delete('content-length');
+          // 요청 메트릭 로깅
+          if (env.ANALYTICS) {
+            const elapsed = body.meta?.elapsed_ms || 0;
+            env.ANALYTICS.writeDataPoint({
+              indexes: [action || path.replace('/api/v3/', '')],
+              blobs: [path, String(originResp.status)],
+              doubles: [elapsed, originResp.status === 200 ? 1 : 0],
+            });
+          }
           return new Response(JSON.stringify(body), { status: originResp.status, headers });
         }
 
