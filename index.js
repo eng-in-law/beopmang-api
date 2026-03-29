@@ -1737,7 +1737,6 @@ JSON API: GET / (Accept에 text/html 없으면 JSON). MCP: POST /mcp (도구명 
 </div>
 <div class="stat-footer">
 <p class="stat-note" id="stat-note"></p>
-<div class="cta-dots">⋮</div>
 <div class="cta-wrap"><span class="cta-line">내 AI에 법률 데이터 연결하기 &nbsp;↓</span></div>
 <hr class="divider">
 </div>
