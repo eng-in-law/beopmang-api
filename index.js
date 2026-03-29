@@ -979,8 +979,7 @@ body {
 <h3>3. 검색 시스템</h3>
 <ul class="about-list">
 <li><span>Cloudflare Workers + PostgreSQL</span></li>
-<li><span>keyword / semantic / hybrid search 3종 지원</span></li>
-<li><span>semantic: 정확한 키워드 대신 "임차인 보호 요건"처럼 의미로 검색</span></li>
+<li><span>keyword / semantic / hybrid search 3종 지원 (semantic: 정확한 키워드 대신 "임차인 보호 요건"처럼 의미로 검색)</span></li>
 </ul>
 </section>
 
