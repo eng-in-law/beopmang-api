@@ -1603,8 +1603,10 @@ body {
 .dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--green); vertical-align: middle; }
 .status-bar strong { color: var(--ink); }
 
+.stat-footer { display: flex; flex-direction: column; gap: 0; }
+.stat-footer .stat-note { margin: 0; }
 .cta-line { font-size: 0.88rem; font-weight: 800; color: var(--ink); letter-spacing: -0.02em; }
-.cta-wrap { text-align: center; margin: 1px 0 14px; }
+.cta-wrap { text-align: center; margin: 4px 0 10px; }
 .stats { display: grid; grid-template-columns: repeat(4, auto); gap: 16px 24px; justify-content: center; }
 .stat { text-align: center; }
 .stat-value { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.02em; }
@@ -1730,11 +1732,11 @@ JSON API: GET / (Accept에 text/html 없으면 JSON). MCP: POST /mcp (도구명 
 <div class="stat"><div class="stat-value" id="sv-6">3,596</div><div class="stat-label">조약</div></div>
 <div class="stat"><div class="stat-value" id="sv-7">18,842</div><div class="stat-label">자치법규</div></div>
 </div>
+<div class="stat-footer">
 <p class="stat-note" id="stat-note"></p>
-
 <div class="cta-wrap"><span class="cta-line">내 AI에 법률 데이터 연결하기 &nbsp;↓</span></div>
-
 <hr class="divider">
+</div>
 
 <div class="section">
 <p class="section-title">(권장) Claude / Codex</p>
