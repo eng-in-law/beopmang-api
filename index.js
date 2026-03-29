@@ -1647,7 +1647,7 @@ JSON API: GET / (Accept에 text/html 없으면 JSON). MCP: POST /mcp (도구명 
 <a href="/about" class="about-link">??</a>
 </div>
 <p class="card-desc">프롬프트 한 줄로 법률AI 흉내내기</p>
-<p class="card-sub">가입, 결제, 인증키 발급, HWP 처리 필요 없음. 데이터 수집 안 함.</p>
+<p class="card-sub">가입, <strong>결제</strong>, 인증키 발급, HWP 처리 <strong>필요 없음</strong>. 데이터 수집 안 함.</p>
 </div>
 
 <div class="card-body">
