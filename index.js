@@ -1605,7 +1605,7 @@ body {
 .dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--green); vertical-align: middle; }
 .status-bar strong { color: var(--ink); }
 
-.stat-footer { display: flex; flex-direction: column; gap: 0; margin-top: -12px; }
+.stat-footer { display: flex; flex-direction: column; gap: 0; margin-top: 4px; }
 .cta-dots { text-align: center; font-size: 1.1rem; color: var(--muted); line-height: 1; margin-bottom: 2px; letter-spacing: 0; }
 .stat-footer .stat-note { margin: 0; }
 .cta-line { font-size: 0.82rem; font-weight: 600; color: var(--ink); letter-spacing: -0.01em; }
