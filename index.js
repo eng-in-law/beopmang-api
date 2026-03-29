@@ -1015,6 +1015,7 @@ async function handleCatalog(path, env) {
         const parsed = JSON.parse(cached);
         if (Array.isArray(parsed)) items = parsed;
         else if (Array.isArray(parsed?.data)) items = parsed.data;
+        else if (Array.isArray(parsed?.data?.results)) items = parsed.data.results;
         else if (Array.isArray(parsed?.result)) items = parsed.result;
         else if (Array.isArray(parsed?.results)) items = parsed.results;
         else items = null;
@@ -1038,7 +1039,9 @@ async function handleCatalog(path, env) {
       }
       if (Array.isArray(payload)) items = payload;
       else if (Array.isArray(payload?.data)) items = payload.data;
+      else if (Array.isArray(payload?.data?.results)) items = payload.data.results;
       else if (Array.isArray(payload?.result)) items = payload.result;
+      else if (Array.isArray(payload?.results)) items = payload.results;
       else items = [];
       env.API_KV.put(cacheKey, JSON.stringify(items), { expirationTtl: 3600 }).catch(() => {});
       return items;
@@ -1167,11 +1170,12 @@ async function handleCatalog(path, env) {
           'catalog:ordin:' + typeSuffix + ':' + selectedRegion + ':' + selectedSubRegion,
           env.ORIGIN_BASE + '/api/v3/search?action=local-ordinance&sido=' + encodeURIComponent(selectedRegion) + '&sigungu=' + encodeURIComponent(selectedSubRegion) + '&limit=5000' + typeParam
         );
-        normalizedItems = (Array.isArray(raw) ? raw : [])
+        const rawItems = Array.isArray(raw) ? raw : raw?.results || [];
+        normalizedItems = rawItems
           .map((item) => ({
-            name: String(item?.name || item?.law_name || item?.title || '').trim(),
-            type: String(item?.org || item?.type || '조례').trim(),
-            id: String(item?.id || item?.law_id || '').trim(),
+            name: String(item?.ordin_name || item?.name || item?.law_name || item?.title || '').trim(),
+            type: String(item?.ordin_type || item?.org || item?.type || '조례').trim(),
+            id: String(item?.ordin_id || item?.id || item?.law_id || '').trim(),
             case_count: Number(item?.case_count || 0),
           }))
           .filter((item) => item.name);
