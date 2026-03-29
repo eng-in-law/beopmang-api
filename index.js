@@ -105,8 +105,8 @@ const CATALOG_CATEGORIES = [
   // 행정규칙 (하위 분류)
   { slug: 'administrative-rules', label: '행정규칙', listType: 'admrul', count: 23829 },
   // 자치법규 (하위 분류)
-  { slug: 'local-ordinances', label: '자치법규 — 조례', count: 13760, regional: true },
-  { slug: 'local-rules', label: '자치법규 — 규칙', count: 4911, disabled: true },
+  { slug: 'local-ordinances', label: '자치법규 — 조례', count: 13760, regional: true, ordinanceType: 'C0001' },
+  { slug: 'local-rules', label: '자치법규 — 규칙', count: 4794, regional: true, ordinanceType: 'C0002' },
   // 조약
   { slug: 'treaties-bilateral', label: '조약 — 양자', listType: 'treaty', treatyCls: '1', count: 2841 },
   { slug: 'treaties-multilateral', label: '조약 — 다자', listType: 'treaty', treatyCls: '2', count: 751 },
@@ -1143,7 +1143,9 @@ async function handleCatalog(path, env) {
       .filter((item) => item.name);
     catalogCounts[currentCategory.slug] = normalizedItems.length || catalogCounts[currentCategory.slug];
   } else if (currentCategory?.regional) {
-    regionItems = (await fetchCatalogList('catalog:regions', env.ORIGIN_BASE + '/api/v3/search?action=regions'))
+    const typeParam = currentCategory.ordinanceType ? '&type=' + currentCategory.ordinanceType : '';
+    const typeSuffix = currentCategory.ordinanceType || 'all';
+    regionItems = (await fetchCatalogList('catalog:regions:' + typeSuffix, env.ORIGIN_BASE + '/api/v3/search?action=regions' + typeParam))
       .map((item) => ({
         sido: String(item?.sido || '').trim(),
         is_edu: !!item?.is_edu,
@@ -1152,8 +1154,8 @@ async function handleCatalog(path, env) {
       .filter((item) => item.sido);
     if (selectedRegion) {
       subRegionItems = (await fetchCatalogList(
-        'catalog:regions:' + selectedRegion,
-        env.ORIGIN_BASE + '/api/v3/search?action=regions&sido=' + encodeURIComponent(selectedRegion)
+        'catalog:regions:' + typeSuffix + ':' + selectedRegion,
+        env.ORIGIN_BASE + '/api/v3/search?action=regions&sido=' + encodeURIComponent(selectedRegion) + typeParam
       ))
         .map((item) => ({
           sigungu: String(item?.sigungu || item?.name || item?.region || '').trim(),
@@ -1162,8 +1164,8 @@ async function handleCatalog(path, env) {
         .filter((item) => item.sigungu);
       if (selectedSubRegion) {
         const raw = await fetchCatalogList(
-          'catalog:ordin:' + selectedRegion + ':' + selectedSubRegion,
-          env.ORIGIN_BASE + '/api/v3/search?action=local-ordinance&sido=' + encodeURIComponent(selectedRegion) + '&sigungu=' + encodeURIComponent(selectedSubRegion) + '&limit=5000'
+          'catalog:ordin:' + typeSuffix + ':' + selectedRegion + ':' + selectedSubRegion,
+          env.ORIGIN_BASE + '/api/v3/search?action=local-ordinance&sido=' + encodeURIComponent(selectedRegion) + '&sigungu=' + encodeURIComponent(selectedSubRegion) + '&limit=5000' + typeParam
         );
         normalizedItems = (Array.isArray(raw) ? raw : [])
           .map((item) => ({
