@@ -528,6 +528,30 @@ async function handleRequest(request, env) {
             body.hint = 'law 파라미터는 law_id(6자리 숫자)입니다. 예: law=001823. 법령명은 불가. law.find로 법령명 → law_id 변환하세요.';
           }
           const data = body.data;
+          if (action === 'explore' && data && typeof data === 'object' && !Array.isArray(data) && data.law_id) {
+            body.suggested_next_actions = [];
+            if (data.top_articles && data.top_articles[0]) {
+              body.suggested_next_actions.push({
+                action: 'law.article',
+                params: { law_id: data.law_id, label: data.top_articles[0] },
+                reason: '가장 많이 인용되는 조문',
+              });
+            }
+            if (data.case_total > 0) {
+              body.suggested_next_actions.push({
+                action: 'case.by-law',
+                params: { law_id: data.law_id },
+                reason: `관련 판례 ${data.case_total}건`,
+              });
+            }
+            if (data.xref_count > 0) {
+              body.suggested_next_actions.push({
+                action: 'graph.xref',
+                params: { law_id: data.law_id },
+                reason: `인용 법령 ${data.xref_count}건`,
+              });
+            }
+          }
           const needsHint = data === null || (Array.isArray(data) && data.length === 0) || (data && data.exists === false) || (data && Array.isArray(data.results) && data.results.length === 0);
           if (needsHint) {
             const eventType = action === 'verify'
