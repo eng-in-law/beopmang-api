@@ -1156,19 +1156,22 @@ async function handleCatalog(path, env) {
       }))
       .filter((item) => item.sido);
     if (selectedRegion) {
-      subRegionItems = (await fetchCatalogList(
+      const regionsRaw = await fetchCatalogList(
         'catalog:regions:' + typeSuffix + ':' + selectedRegion,
         env.ORIGIN_BASE + '/api/v3/search?action=regions&sido=' + encodeURIComponent(selectedRegion) + typeParam
-      ))
+      );
+      subRegionItems = regionsRaw
         .map((item) => ({
-          sigungu: String(item?.sigungu || item?.name || item?.region || '').trim(),
+          sigungu: String(item?.gov || item?.sigungu || item?.name || item?.region || '').trim(),
           count: Number(item?.count || 0),
         }))
         .filter((item) => item.sigungu);
       if (selectedSubRegion) {
+        // gov 파라미터로 해당 지자체 조례만 조회
+        const govParam = '&gov=' + encodeURIComponent(selectedSubRegion);
         const raw = await fetchCatalogList(
           'catalog:ordin:' + typeSuffix + ':' + selectedRegion + ':' + selectedSubRegion,
-          env.ORIGIN_BASE + '/api/v3/search?action=local-ordinance&sido=' + encodeURIComponent(selectedRegion) + '&sigungu=' + encodeURIComponent(selectedSubRegion) + '&limit=5000' + typeParam
+          env.ORIGIN_BASE + '/api/v3/search?action=local-ordinance' + govParam + '&limit=5000' + typeParam
         );
         const rawItems = Array.isArray(raw) ? raw : raw?.results || [];
         normalizedItems = rawItems
