@@ -1924,7 +1924,7 @@ export class OriginSemaphore {
     this.state = state;
     this.env = env;
     this.active = 0;
-    this.maxConcurrent = 50;
+    this.maxConcurrent = 30;
     this.queue = [];
   }
 
