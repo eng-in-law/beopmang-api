@@ -1525,14 +1525,14 @@ body {
 }
 .card-header { padding: 24px 24px 20px; border-bottom: 2px solid #3b2f20; }
 .header-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.header-links { display: flex; align-items: center; gap: 12px; }
+.title-row { display: flex; align-items: center; gap: 10px; }
 .card-header h1 { margin: 0; font-size: 1.15rem; font-weight: 800; letter-spacing: -0.03em; }
 .card-desc { margin: 6px 0 0; font-size: 0.92rem; color: var(--ink); }
 .card-body { padding: 28px 24px 56px; display: flex; flex-direction: column; gap: 24px; }
 
 .about-link { font-size: 0.78rem; font-weight: 600; color: var(--muted); text-decoration: none; border: 1.5px solid var(--muted); padding: 3px 10px; box-shadow: 3px 3px 0 var(--border); cursor: pointer; }
 .about-link:hover { color: var(--ink); border-color: var(--ink); }
-.status-bar { display: inline-flex; align-items: center; gap: 6px; font-size: 0.78rem; color: var(--ink); padding: 6px 12px; border: 1px solid var(--muted); font-weight: 600; }
+.status-bar { display: inline-flex; align-items: center; gap: 5px; font-size: 0.68rem; color: var(--muted); padding: 2px 8px; border: 1px solid var(--muted); font-weight: 500; white-space: nowrap; }
 .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--green); }
 .status-bar strong { color: var(--ink); }
 
@@ -1642,11 +1642,8 @@ JSON API: GET / (Accept에 text/html 없으면 JSON). MCP: POST /mcp (도구명 
 
 <div class="card-header">
 <div class="header-row">
-<h1>🦒 법망 API</h1>
-<div class="header-links">
-<div class="status-bar" id="hc"><span class="dot"></span> 확인 중...</div>
+<div class="title-row"><h1>🦒 법망 API</h1><div class="status-bar" id="hc"><span class="dot"></span> 확인 중...</div></div>
 <a href="/about" class="about-link">??</a>
-</div>
 </div>
 <p class="card-desc">프롬프트 한 줄로 법률AI 흉내내기</p>
 </div>
