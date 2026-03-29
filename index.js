@@ -1528,6 +1528,7 @@ body {
 .title-row { display: flex; align-items: center; gap: 10px; }
 .card-header h1 { margin: 0; font-size: 1.15rem; font-weight: 800; letter-spacing: -0.03em; }
 .card-desc { margin: 10px 0 0; font-size: 0.92rem; color: var(--ink); }
+.card-sub { margin: 4px 0 0; font-size: 0.76rem; color: var(--muted); font-weight: 500; }
 .card-body { padding: 28px 24px 56px; display: flex; flex-direction: column; gap: 24px; }
 
 .about-link { padding: 4px 10px; border: 2px solid #3b2f20; border-radius: 0; box-shadow: 2px 2px 0 #3b2f20; transition: transform 80ms, box-shadow 80ms, background var(--motion-fast); background: #fffdf7; font-size: 0.76rem; font-weight: 700; color: var(--ink); cursor: pointer; font-family: inherit; text-decoration: none; }
@@ -1646,6 +1647,7 @@ JSON API: GET / (Accept에 text/html 없으면 JSON). MCP: POST /mcp (도구명 
 <a href="/about" class="about-link">??</a>
 </div>
 <p class="card-desc">프롬프트 한 줄로 법률AI 흉내내기</p>
+<p class="card-sub">가입, 결제, 인증키 발급, HWP 처리 필요 없음. 데이터 수집 안 함.</p>
 </div>
 
 <div class="card-body">
