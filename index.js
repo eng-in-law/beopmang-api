@@ -1616,7 +1616,7 @@ body {
 .stat-upcoming { font-size: 1.25rem; font-weight: 700; color: var(--muted); letter-spacing: -0.02em; }
 .stat-note { margin: 0; font-size: 0.76rem; color: #6d593f; text-align: center; font-weight: 500; }
 
-.divider { border: none; border-top: 1px solid rgba(59,47,32,0.3); margin: 0; }
+.divider { border: none; border-top: 2px solid #3b2f20; margin: 0; }
 
 .section { display: flex; flex-direction: column; gap: 6px; }
 .section-title { margin: 0 0 4px 0; font-size: 1.05rem; font-weight: 800; letter-spacing: -0.03em; }
