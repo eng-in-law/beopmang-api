@@ -935,43 +935,73 @@ body {
 
 <div class="card-header">
 <h1>🦒 법망 API</h1>
-<p class="card-desc">이런 겁니다</p>
+<p class="card-desc">대한민국 법령을 AI 에이전트가 간편하게 참조할 수 있도록 돕는 무료 API입니다.</p>
 </div>
 
 <div class="card-body">
 <section class="about-section">
-<h3>요약</h3>
+<h3>0. 요약</h3>
 <ul class="about-list">
 <li><span>국가법령정보센터 제공 법령 99.9%+ 수록, 매주 토요일 최신 동기화</span></li>
 <li><span>XML, HWP, PDF 사전 파싱 — 표 데이터 포함 모든 출력 JSON</span></li>
-<li><span>PostgreSQL + pgvector, 조문 118만건 임베딩(768d) — semantic search 지원</span></li>
+<li><span>PostgreSQL + pgvector, 주요 조문 20만건 임베딩(768d) — semantic search 지원</span></li>
 <li><span>인증키 필요 없는 REST API, rate limit 100회/분</span></li>
 <li><span>로그인, IP, 쿼리 등 로깅 없음, 익명 엔드포인트 호출 빈도만 집계</span></li>
 </ul>
 </section>
+
 <section class="about-section">
-<h3>데이터</h3>
+<h3>1. 수록 데이터 범위</h3>
 <ul class="about-list">
-<li><strong>법령</strong> <span>${n('법령합계', 5573)}건</span></li>
-<li><strong>판례</strong> <span>${n('판례', 171451)}건</span> · <strong>의안</strong> <span>${n('의안', 113894)}건</span> · <strong>행정규칙</strong> <span>${n('행정규칙', 22303)}건</span></li>
-<li><strong>조약</strong> <span>${n('조약', 3596)}건 (양자 ${n('조약_양자', 2841)} / 다자 ${n('조약_다자', 751)})</span> · <strong>해석례</strong> <span>${n('해석례', 8600)}건</span></li>
-<li><strong>자치법규</strong> <span>${n('조례', 14007)}건</span> · <strong>인용관계</strong> <span>${n('법령인용관계', 132707)}건</span> · <strong>연혁</strong> <span>${n('연혁', 77374)}건</span></li>
+<li><span>법령 ${n('법령합계', 5573)}건 · 판례 ${n('판례', 171451)}건 · 의안 ${n('의안', 113894)}건 · 행정규칙 ${n('행정규칙', 23829)}건</span></li>
+<li><span>조약 ${n('조약', 3596)}건 (양자 ${n('조약_양자', 2841)} / 다자 ${n('조약_다자', 751)}) · 해석례 ${n('해석례', 8600)}건 · 자치법규 ${n('조례', 18842)}건</span></li>
+<li><span>인용관계 ${n('법령인용관계', 132707)}건 · 연혁 ${n('연혁', 100357)}건</span></li>
+<li><span>출처: 법제처 Open API, 국회 Open API</span></li>
 </ul>
 </section>
 
 <section class="about-section">
-<h3>인터페이스</h3>
+<h3>2. 제공 데이터 형식</h3>
 <ul class="about-list">
-<li><span>REST API v3 — 7개 엔드포인트, 28개 action</span></li>
-<li><span>MCP 서버 내장</span></li>
-<li><span>환각 방지용 law.verify / case.verify</span></li>
+<li><span>법제처 XML 원본을 파싱하여 전 항목 JSON 구조화</span></li>
+<li><span>별표·서식: 5,622개 법령, 12,120건 — HWP/PDF 원본을 JSON 테이블 구조로 변환 (표 rowspan/colspan 보존)</span></li>
+<li><span>조문 단위 분해: 편-장-절-관-조-항-호-목 계층 ${n('조문', 1190000)}건</span></li>
 </ul>
 </section>
 
 <section class="about-section">
-<h3>출처</h3>
+<h3>3. 검색 시스템</h3>
 <ul class="about-list">
-<li><span>법제처 Open API, 국회 Open API</span></li>
+<li><span>Cloudflare Workers + PostgreSQL</span></li>
+<li><span>keyword / semantic / hybrid search 3종 지원</span></li>
+<li><span>semantic: 정확한 키워드 대신 "임차인 보호 요건"처럼 의미로 검색</span></li>
+</ul>
+</section>
+
+<section class="about-section">
+<h3>4. 인터페이스</h3>
+<ul class="about-list">
+<li><span>REST API (7개 엔드포인트, 28개 action) · MCP 서버 제공</span></li>
+<li><span>환각 방지용 인용 검증 기능 지원</span></li>
+<li><span>종합 조회 기능 지원 — 법령 1회 요청으로 조문, 판례, 의안, 인용 법령까지 한 번에 반환</span></li>
+</ul>
+</section>
+
+<section class="about-section">
+<h3>5. 개인정보 보호</h3>
+<ul class="about-list">
+<li><span>인증키·로그인·회원가입 불필요</span></li>
+<li><span>IP 주소, User-Agent 등 개인 식별 가능 정보 일체 수집하지 않음</span></li>
+<li><span>요청 본문(검색어 포함) 서버에 저장하지 않음</span></li>
+<li><span>익명 엔드포인트별 호출 빈도만 집계 (서비스 안정성 모니터링 목적)</span></li>
+<li><span>피드백은 반드시 사용자 승낙 후 전송 — 에이전트 단독 발신 불가</span></li>
+</ul>
+</section>
+
+<section class="about-section">
+<h3>6. Acknowledgement</h3>
+<ul class="about-list">
+<li><span>대한민국 법령의 SSOT, 국가법령정보센터를 운영해주시는 법제처에 감사드립니다.</span></li>
 </ul>
 </section>
 
