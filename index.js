@@ -1836,7 +1836,7 @@ const MCP_TOOLS = [{
 - law.history: 개정 연혁. params: {law_id: "001706"}
 - law.byulpyo: 별표 조회. params: {law_id: "001706"}
 - law.diff: 신구법 대조. params: {law_id: "001706"}
-- law.verify: 조문 인용 검증 (환각 방지). params: {q: "민법 제750조"}. exists=true/false 반환.
+- law.verify: 조문 인용 검증 (환각 방지). params: {q: "민법 제750조"} 또는 {law_id: "001706"}. exists=true/false 반환.
 - case.hsearch: 판례 하이브리드 검색 (키워드+벡터+리랭킹). params: {q: "임대차 보증금"}
 - case.search: 판례 키워드 검색. params: {q: "임대차"}
 - case.view: 판례 상세 (판결요지, 참조조문). params: {case_id: "..."}
@@ -1853,15 +1853,15 @@ const MCP_TOOLS = [{
 - graph.timeline: 입법 타임라인. params: {law_id: "001706"}
 - graph.neighbors: 그래프 노드 연결. params: {law_id: "001706"}
 - search.keyword: 조문 키워드 검색. params: {q: "화학물질"}
-- search.semantic: 자연어 시맨틱 검색. params: {q: "..."}
+- search.semantic: 자연어 시맨틱 검색. params: {q: "...", scope?: "article"|"precedent"|"ordinance"} (기본 article)
 - search.regions: 시도별 조례 건수 조회. params: {sido?: "서울특별시"} (sido 없으면 전체 시도)
 - search.local-ordinance: 자치법규(조례) 검색. params: {q: "주차장", sido?: "서울특별시", sigungu?: "용산구"}
 - search.treaty: 조약 검색. params: {q: "..."}
 - ref.doc: 참고문서 검색. params: {q: "법령입안심사기준"}
 - help.schema: API 전체 스키마. params: {}
 - help.stats: DB 현황. params: {}
-- law.research: 종합 리서치 (1회 호출로 법령+조문+판례+인용 통합). params: {q: "개인정보보호법"}
-- law.amendment: 개정 이력 추적. params: {q: "민법"}. 개정 연혁+신구대조+관련 의안 통합.
+- law.research: 종합 리서치 (1회 호출로 법령+조문+판례+인용 통합). params: {q: "개인정보보호법"} 또는 {law_id: "011357"}
+- law.amendment: 개정 이력 추적. params: {q: "민법"} 또는 {law_id: "001706"}. 개정 연혁+신구대조+관련 의안 통합.
 - case.analysis: 분쟁 준비 자료. params: {q: "부당해고"}. 판례+조문+관련 법령 통합.
 - sendFeedback: 피드백 (2단계). 1차: params: {message} → ticket_id 발급 + 사용자에게 보여줄 내용 반환. 사용자에게 보여주고 동의 받기. 2차: params: {message, ticket_id} → 저장. ticket_id 없이는 저장 안 됨.
 
