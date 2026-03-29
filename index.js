@@ -1610,7 +1610,7 @@ body {
 .stat-footer .stat-note { margin: 0; }
 .cta-line { font-size: 0.82rem; font-weight: 600; color: var(--ink); letter-spacing: -0.01em; }
 .cta-wrap { text-align: center; margin: 2px 0 10px; }
-.stats { display: grid; grid-template-columns: repeat(4, auto); gap: 16px 24px; justify-content: center; }
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px 0; text-align: center; }
 .stat { text-align: center; }
 .stat-value { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.02em; }
 .stat-label { font-size: 0.72rem; color: #6d593f; margin-top: 3px; letter-spacing: 0; font-weight: 600; white-space: nowrap; }
@@ -1663,7 +1663,7 @@ body {
   .card-header { padding: 20px 18px 16px; }
   .card-body { padding: 18px; gap: 16px; }
   .statusline { font-size: 0.62rem; }
-  .stats { grid-template-columns: repeat(2, 1fr); gap: 12px 16px; }
+  .stats { grid-template-columns: repeat(2, 1fr); gap: 12px 0; }
   .stat-value { font-size: 1.1rem; }
   .field-grid { grid-template-columns: 6.2rem 1fr auto; }
 }
