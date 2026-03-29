@@ -16,3 +16,7 @@ id = "8d65ddd831ff4377bcb2e175defdf5e0"
 
 [[analytics_engine_datasets]]
 binding = "ANALYTICS"
+
+[[migrations]]
+tag = "v2"
+deleted_classes = ["OriginSemaphore"]
