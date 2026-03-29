@@ -911,8 +911,8 @@ body {
 
 .about-section { margin-bottom: 24px; }
 .about-section h3 { font-size: 1rem; font-weight: 900; margin: 0 0 10px; letter-spacing: -0.04em; }
-.about-list { list-style: none; padding: 0 0 0 24px; margin: 0; }
-.about-list li { font-size: 0.85rem; padding: 5px 0; border-bottom: none; line-height: 1.7; text-indent: -24px; padding-left: 0; }
+.about-list { list-style: none; padding: 0 0 0 16px; margin: 0; }
+.about-list li { font-size: 0.85rem; padding: 5px 0; border-bottom: none; line-height: 1.7; text-indent: -16px; padding-left: 0; }
 .about-list li::before { content: '–  '; font-weight: 700; color: var(--muted); }
 .about-ol { list-style: none; counter-reset: about-counter; }
 .about-ol li::before { content: counter(about-counter) ')  '; counter-increment: about-counter; font-weight: 700; color: var(--muted); }
