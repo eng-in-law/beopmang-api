@@ -1752,6 +1752,7 @@ const MCP_TOOLS = [{
 2. law.explore로 종합 탐색 (top_articles, top_cases 확인 — 다음 호출 가이드)
 3. law.article로 핵심 조문 조회 (law 파라미터는 반드시 law_id 숫자)
 4. 필요시 case.search/bill.search로 판례/의안 보충
+종합 리서치가 필요하면 law.research(1회 호출로 법령+조문+판례+인용 통합), 개정 추적은 law.amendment, 분쟁 준비는 case.analysis를 사용하세요.
 답변에 조문번호나 판례번호를 인용할 때는 반드시 law.verify 또는 case.verify로 실재 여부를 검증하세요 (환각 방지).
 
 명령어 (command 필드에 입력):
