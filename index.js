@@ -1720,7 +1720,7 @@ JSON API: GET / (Accept에 text/html 없으면 JSON). MCP: POST /mcp (도구명 
 function cc(el,v){navigator.clipboard.writeText(v).then(function(){el.textContent='완료';setTimeout(function(){el.textContent='복사'},1500)})}
 function hc(){fetch('/health').then(function(r){return r.json()}).then(function(d){
 var el=document.getElementById('hc');
-if(d.status==='ok'){var now=new Date();var ts=now.getFullYear()+'. '+(now.getMonth()+1)+'. '+now.getDate()+'. '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')+':'+String(now.getSeconds()).padStart(2,'0');el.innerHTML='<span class="dot" style="background:#2f6b4e"></span> 서버 원활 · '+ts;}
+if(d.status==='ok'){var now=new Date();var ts=now.getFullYear()+'. '+(now.getMonth()+1)+'. '+now.getDate()+'. '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')+':'+String(now.getSeconds()).padStart(2,'0');el.innerHTML='<span class="dot" style="background:#2f6b4e"></span> 서버 원활 - '+ts;}
 else{el.innerHTML='<span class="dot" style="background:#dc2626"></span> 오프라인 · 점검 중';setTimeout(hc,10000);}
 }).catch(function(){document.getElementById('hc').innerHTML='<span class="dot" style="background:#d97706"></span> 확인 불가';setTimeout(hc,10000);});}
 hc();setInterval(hc,60000);
