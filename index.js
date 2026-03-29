@@ -1769,15 +1769,15 @@ JSON API: GET / (Accept에 text/html 없으면 JSON). MCP: POST /mcp (도구명 
 </div>
 
 <div class="section">
-<p class="section-title">Gemini <small>(불가)</small></p>
-<p class="section-desc">환각이 심하여 권장하지 않습니다. 사용 불가.</p>
+<p class="section-title">Gemini <small>(미지원)</small></p>
+<p class="section-desc">MCP 및 시스템 프롬프트 기반 호출을 지원하지 않습니다.</p>
 </div>
 
 <hr class="divider">
 
 <div class="section">
 <p class="section-title">피드백</p>
-<p class="section-desc">AI에게 "법망에 피드백 보내줘"라고 말하면 됩니다.</p>
+<p class="section-desc">API 사용 중 문제가 있으면 연결된 AI에게 "법망에 피드백 보내줘"라고 말하면 됩니다.</p>
 </div>
 
 </div>
