@@ -912,6 +912,9 @@ body {
 .about-section h3 { font-size: 0.95rem; font-weight: 800; margin: 0 0 8px; }
 .about-list { list-style: none; padding: 0; margin: 0; }
 .about-list li { font-size: 0.85rem; padding: 4px 0; border-bottom: 1px solid rgba(59,47,32,0.1); }
+.about-list li::before { content: '- '; font-weight: 700; }
+.about-ol { list-style: none; counter-reset: about-counter; }
+.about-ol li::before { content: counter(about-counter) ') '; counter-increment: about-counter; font-weight: 700; }
 .about-list li strong { font-weight: 700; }
 
 .statusline {
@@ -941,13 +944,13 @@ body {
 <div class="card-body">
 <section class="about-section">
 <h3>0. 요약</h3>
-<ul class="about-list">
+<ol class="about-list about-ol">
 <li><span>국가법령정보센터 제공 법령 99.9%+ 수록, 매주 토요일 최신 동기화</span></li>
 <li><span>XML, HWP, PDF 사전 파싱 — 표 데이터 포함 모든 출력 JSON</span></li>
 <li><span>PostgreSQL + pgvector, 주요 조문 20만건 임베딩(768d) — semantic search 지원</span></li>
 <li><span>인증키 필요 없는 REST API, rate limit 100회/분</span></li>
 <li><span>로그인, IP, 쿼리 등 로깅 없음, 익명 엔드포인트 호출 빈도만 집계</span></li>
-</ul>
+</ol>
 </section>
 
 <section class="about-section">
