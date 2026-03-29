@@ -463,6 +463,7 @@ async function handleRequest(request, env) {
           'include': 'history,cases,xref,bills,timeline — 추가 데이터 병합',
         },
         note: '한글 query는 반드시 percent-encode. 예: /api/v3/law?action=find&q=%EB%AF%BC%EB%B2%95',
+        feedback: 'POST /feedback — {message: "내용"} → ticket_id 발급 → {message, ticket_id} 재호출로 저장. 2단계 동의 방식.',
         mcp: '/mcp (ChatGPT MCP 서버)',
         claude: 'web_fetch 대신 bash 도구로 curl 사용. 네트워크 차단 시 사용자에게 안내: 설정→기능→코드 실행 ON→네트워크 송신 허용 ON→추가 허용 도메인에 api.beopmang.org 추가',
         legacy: 'v1/v2 종료, /api/v3/ 사용',
